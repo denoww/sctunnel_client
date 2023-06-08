@@ -6,32 +6,5 @@
   },
   "sc_tunnel_server": {
     "host": "sctunnel1.seucondominio.com.br",
-    "pem_file": "scTunnel.pem"
-  },
-  "sc_stream_server": {
-    "host": "https://cameras1.seucondominio.com.br"
-  },
-  "equipamentos": [
-    {
-      "stream_id": "vid_4644_1240",
-      "camera_user": "admin",
-      "camera_user_pass": "ds171118",
-      "camera_adress_ip": "192.168.1.108",
-      "camera_adress_porta": "554",
-      "cameras": [
-        {
-          "camera_channel": "5",
-          "stream_channel_id": "14"
-        },
-        {
-          "camera_channel": "6",
-          "stream_channel_id": "15"
-        },
-        {
-          "camera_channel": "7",
-          "stream_channel_id": "16"
-        }
-      ]
-    }
-  ]
+  }
 }
