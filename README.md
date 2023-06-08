@@ -1,6 +1,6 @@
-# sctunnel
+## Executando na mão
 
-TODOS OS DADOS são para testes. Num futuro não muito distante, iremos usar configurações para do condomínio (buscar câmeras dentro do condominio e sempre fazer a atualização)
+$ sudo killall ssh; bash exec.sh
 
 ## Configurando os equipamentos que deseja processar
 
@@ -34,9 +34,7 @@ adicione os 2 comandos:
 `@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /<PROJETO_DIR>/sctunnel; bash exec.sh > logs.txt'`
 
 
-## Executando na mão
 
-$ sudo killall ssh; bash exec.sh
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
 
