@@ -9,7 +9,7 @@ cd /var/lib; sudo chmod 7777 -R . ;sudo git clone --depth 1 https://github.com/d
 
 ## Executando na mão
 
-$ sudo killall ssh; bash exec.sh
+$ bash /var/lib/sctunnel_client/exec.sh
 
 ## Configurando os equipamentos que deseja processar
 
