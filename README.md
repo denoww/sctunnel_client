@@ -19,22 +19,24 @@ token: coloque valor PORTARIA_SERVER_SALT (se for usar localhost pegue em applic
 
 Altere o arquivo config.json conforme sua necessidade
 
-## Configurando rotina para atualizar a câmera no cameras1.seucondominio
+## Rotina pra fazer tunnel de 1 em 1 minuto
 
-Execute:
+Crie o arquivo
 
-$ crontab -u $USER -e
+cron_file=/etc/cron.d/sctunnel
+sudo touch $cron_file
+<br>
+sudo nano $cron_file
+<br>
 
-Obs.: Caso esse comando não abrir corretamente, tente com sudo
+Cole o conteudo abaixo
 
-adicione os 2 comandos:
+```
+*/1 * * * * /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd PASTA_PROJETO/sctunnel_client; bash exec.sh > logs.txt'
 
-`*/1 * * * * /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /<PROJETO_DIR>/sctunnel; bash exec.sh > logs.txt'`
+@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd PASTA_PROJETO/sctunnel_client; bash exec.sh > logs.txt'
 
-`@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /<PROJETO_DIR>/sctunnel; bash exec.sh > logs.txt'`
-
-
-
+```
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
 
