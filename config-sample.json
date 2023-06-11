@@ -5,6 +5,7 @@
     "cliente_id": 2
   },
   "sc_tunnel_server": {
-    "host": "sctunnel1.seucondominio.com.br"
+    "host": "sctunnel1.seucondominio.com.br",
+    "user": "ubuntu"
   }
 }
