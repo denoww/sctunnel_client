@@ -29,11 +29,9 @@ Obs.: Caso esse comando não abrir corretamente, tente com sudo
 
 adicione os 2 comandos:
 
-`*/1 * * * * /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /<PROJETO_DIR>/sctunnel; bash exec.sh > logs.txt'`
+*/1 * * * * /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /home/rodrigo/workspace/sctunnel_client; bash exec.sh > logs.txt'
 
-`@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /<PROJETO_DIR>/sctunnel; bash exec.sh > logs.txt'`
-
-
+@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd /home/rodrigo/workspace/sctunnel_client; bash exec.sh > logs.txt'
 
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
