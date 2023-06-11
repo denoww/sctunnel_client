@@ -16,8 +16,8 @@ $ bash /var/lib/sctunnel_client/exec.sh
 Execute:
 
 ```
-$ cp /var/lib/sctunnel_client/config-sample.json /var/lib/sctunnel_client/config.json
-$ chmod 400 /<PROJETO_DIR>/sctunnel/scTunnel.pem
+cp /var/lib/sctunnel_client/config-sample.json /var/lib/sctunnel_client/config.json;
+chmod 400 /<PROJETO_DIR>/sctunnel/scTunnel.pem;
 ```
 
 ```
