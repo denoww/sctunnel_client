@@ -38,10 +38,8 @@ Altere o arquivo config.json conforme sua necessidade
 
 Crie o arquivo
 
-cron_file=/etc/cron.d/sctunnel
-sudo touch $cron_file
 <br>
-sudo nano $cron_file
+sudo nano /etc/cron.d/sctunnel
 <br>
 
 Cole o conteudo abaixo
