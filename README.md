@@ -25,6 +25,8 @@ chmod 400 /var/lib/sctunnel_client/scTunnel.pem;
 ```
 
 ```
+sudo nano /var/lib/sctunnel_client/config.json
+
 em config.json preencha
 cliente_id: 9999
 token: coloque valor PORTARIA_SERVER_SALT (se for usar localhost pegue em application.yml, se for produção peça ajuda)
