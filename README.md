@@ -32,10 +32,8 @@ sudo nano $cron_file
 Cole o conteudo abaixo
 
 ```
-*/1 * * * * /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd PASTA_PROJETO/sctunnel_client; bash exec.sh > logs.txt'
-
-@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd PASTA_PROJETO/sctunnel_client; bash exec.sh > logs.txt'
-
+@reboot root bash PASTA_PROJETO/sctunnel_client/exec.sh
+*/1 * * * * root bash PASTA_PROJETO/sctunnel_client/exec.sh
 ```
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
