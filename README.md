@@ -19,7 +19,7 @@ token: coloque valor PORTARIA_SERVER_SALT (se for usar localhost pegue em applic
 
 Altere o arquivo config.json conforme sua necessidade
 
-## Rotina pra verificar tunnel de 1 em 1 minuto
+## Rotina pra fazer tunnel de 1 em 1 minuto
 
 Crie o arquivo
 
