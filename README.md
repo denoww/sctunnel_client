@@ -16,7 +16,7 @@ $ sudo killall ssh; bash exec.sh
 Execute:
 
 ```
-$ cp /<PROJETO_DIR>/sctunnel/config-sample.json /<PROJETO_DIR>/sctunnel/config.json
+$ cp /var/lib/sctunnel_client/config-sample.json /var/lib/sctunnel_client/config.json
 $ chmod 400 /<PROJETO_DIR>/sctunnel/scTunnel.pem
 ```
 
@@ -41,8 +41,8 @@ sudo nano $cron_file
 Cole o conteudo abaixo
 
 ```
-@reboot root bash PASTA_PROJETO/sctunnel_client/exec.sh
-*/1 * * * * root bash PASTA_PROJETO/sctunnel_client/exec.sh
+@reboot root bash /var/lib/sctunnel_client/exec.sh
+*/1 * * * * root bash /var/lib/sctunnel_client/exec.sh
 ```
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
