@@ -1,14 +1,23 @@
+## Instale
+
+cd /var/lib; sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client/; sudo chown -R $(whoami) .
+
+ou
+
+cd /var/lib; sudo chmod 7777 -R . ;sudo git clone --depth 1 https://github.com/denoww/midia_indoor_player.git; cd /var/lib/midia_indoor_player/; sudo chown -R $(whoami) .
+
+
 ## Executando na mão
 
-$ sudo killall ssh; bash exec.sh
+$ bash /var/lib/sctunnel_client/exec.sh
 
 ## Configurando os equipamentos que deseja processar
 
 Execute:
 
 ```
-$ cp /<PROJETO_DIR>/sctunnel/config-sample.json /<PROJETO_DIR>/sctunnel/config.json
-$ chmod 400 /<PROJETO_DIR>/sctunnel/scTunnel.pem
+cp /var/lib/sctunnel_client/config-sample.json /var/lib/sctunnel_client/config.json;
+chmod 400 /<PROJETO_DIR>/sctunnel/scTunnel.pem;
 ```
 
 ```
@@ -32,10 +41,8 @@ sudo nano $cron_file
 Cole o conteudo abaixo
 
 ```
-*/1 * * * * /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd PASTA_PROJETO/sctunnel_client; bash exec.sh > logs.txt'
-
-@reboot /usr/bin/sudo -u <USER_NAME> /bin/bash -lc 'cd PASTA_PROJETO/sctunnel_client; bash exec.sh > logs.txt'
-
+@reboot root bash /var/lib/sctunnel_client/exec.sh
+*/1 * * * * root bash /var/lib/sctunnel_client/exec.sh
 ```
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
