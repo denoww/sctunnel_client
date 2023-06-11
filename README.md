@@ -17,7 +17,11 @@ Execute:
 
 ```
 cp /var/lib/sctunnel_client/config-sample.json /var/lib/sctunnel_client/config.json;
-chmod 400 /<PROJETO_DIR>/sctunnel/scTunnel.pem;
+```
+
+Peça o arquivo .pem para alguém ou pegue no tunnel_server
+```
+chmod 400 /var/lib/sctunnel_client/scTunnel.pem;
 ```
 
 ```
