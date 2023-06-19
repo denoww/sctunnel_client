@@ -4,7 +4,7 @@ cd /var/lib; sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.
 
 ou
 
-cd /var/lib; sudo chmod 7777 -R . ;sudo git clone --depth 1 https://github.com/denoww/midia_indoor_player.git; cd /var/lib/midia_indoor_player/; sudo chown -R $(whoami) .
+cd /var/lib; sudo chmod 7777 -R . ;sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client; sudo chown -R $(whoami) .
 
 
 ## Executando na mão
