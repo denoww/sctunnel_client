@@ -1,8 +1,4 @@
-echo ''
-echo '=================================================================================='
-echo "CLIENTE_ID $CLIENTE_ID Sincronizando equipamentos ($(date))"
-echo '=================================================================================='
-echo ''
+
 
 # clear config
 # new_config=$(jq -r '.' "config.json" | jq '.sc_tunnel = {}')
@@ -26,7 +22,11 @@ SC_TUNNEL_PEM_FILE="${DIR}/scTunnel.pem"
 CONEXOES_FILE="${DIR}/conexoes.txt"
 
 
-
+echo ''
+echo '=================================================================================='
+echo "CLIENTE_ID $CLIENTE_ID Sincronizando equipamentos ($(date))"
+echo '=================================================================================='
+echo ''
 
 
 # readarray -t list < <(echo $devices | jq -c '.[]')
