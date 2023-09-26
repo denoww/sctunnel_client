@@ -1,10 +1,10 @@
 ## Instale
 
-cd /var/lib; sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client/; sudo chown -R $(whoami) . ; cp config-sample.json config.json
+cd /var/lib; sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client/; sudo chown -R $(whoami) . ; cp config-sample.json config.json; chmod 400 /var/lib/sctunnel_client/scTunnel.pem;
 
 ou
 
-cd /var/lib; sudo chmod 7777 -R . ;sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client; sudo chown -R $(whoami) . ; cp config-sample.json config.json
+cd /var/lib; sudo chmod 7777 -R . ;sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client; sudo chown -R $(whoami) . ; cp config-sample.json config.json; chmod 400 /var/lib/sctunnel_client/scTunnel.pem;
 
 
 ## Executando na mão
@@ -15,14 +15,7 @@ $ bash /var/lib/sctunnel_client/exec.sh
 
 Execute:
 
-```
-cp /var/lib/sctunnel_client/config-sample.json /var/lib/sctunnel_client/config.json;
-```
 
-Peça o arquivo .pem para alguém ou pegue no tunnel_server
-```
-chmod 400 /var/lib/sctunnel_client/scTunnel.pem;
-```
 
 ```
 sudo nano /var/lib/sctunnel_client/config.json
