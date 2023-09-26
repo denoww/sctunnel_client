@@ -16,7 +16,9 @@ chmod 400 /var/lib/sctunnel_client/scTunnel.pem;
 
 ## Executando na mão
 
-$ bash /var/lib/sctunnel_client/exec.sh
+```
+bash /var/lib/sctunnel_client/exec.sh
+```
 
 ## Configurando os equipamentos que deseja processar
 
