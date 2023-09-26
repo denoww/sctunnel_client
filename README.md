@@ -22,11 +22,10 @@ $ bash /var/lib/sctunnel_client/exec.sh
 
 Execute:
 
-
-
-
+```
 sudo nano /var/lib/sctunnel_client/config.json
 ```
+
 ```
 em config.json preencha
 cliente_id: 9999999999999999999999999999999
