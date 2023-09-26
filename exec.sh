@@ -1,6 +1,6 @@
 echo ''
 echo '=================================================================================='
-echo "Sincronizando equipamentos ($(date))"
+echo "CLIENTE_ID $CLIENTE_ID Sincronizando equipamentos ($(date))"
 echo '=================================================================================='
 echo ''
 
