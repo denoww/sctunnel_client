@@ -1,3 +1,21 @@
+## se o sd tiver pronto basta
+
+```
+sudo nand-sata-install
+```
+
+Desliga o minipc, remova o SD Ligue e configre o cliente_id
+
+```
+sudo nano /var/lib/sctunnel_client/config.json
+```
+
+preencha
+```
+cliente_id: 9999999999999999999999999999999
+token: coloque valor PORTARIA_SERVER_SALT (se for usar localhost pegue em application.yml, se for produção peça ajuda)
+```
+
 ## Instale
 
 cd /var/lib; sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client/; sudo chown -R $(whoami) . ; cp config-sample.json config.json; 
@@ -28,7 +46,7 @@ Execute:
 sudo nano /var/lib/sctunnel_client/config.json
 ```
 
-em config.json preencha
+preencha
 ```
 cliente_id: 9999999999999999999999999999999
 token: coloque valor PORTARIA_SERVER_SALT (se for usar localhost pegue em application.yml, se for produção peça ajuda)
