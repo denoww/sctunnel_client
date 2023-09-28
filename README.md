@@ -58,9 +58,9 @@ Altere o arquivo config.json conforme sua necessidade
 
 Crie o arquivo
 
-<br>
+```
 sudo nano /etc/cron.d/sctunnel
-<br>
+```
 
 Cole o conteudo abaixo
 
