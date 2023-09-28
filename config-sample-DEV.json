@@ -1,8 +1,8 @@
 {
   "sc_server": {
-    "host": "https://www.seucondominio.com.br",
-    "token": "xxxxxxxxxxxxxxxxxxx",
-    "cliente_id": 51
+    "host": "http://localhost:3000",
+    "token": "T7jLk8A4Baor2FFb8mZL9",
+    "cliente_id": 2
   },
   "sc_tunnel_server": {
     "host": "sctunnel1.seucondominio.com.br",
