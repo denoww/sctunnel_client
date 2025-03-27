@@ -67,6 +67,7 @@ Cole o conteudo abaixo
 ```
 @reboot root bash /var/lib/sctunnel_client/exec.sh >> /var/lib/sctunnel_client/log_cron.txt 2>&1
 */1 * * * * root bash /var/lib/sctunnel_client/exec.sh >> /var/lib/sctunnel_client/log_cron.txt 2>&1
+0 * * * * root /usr/bin/systemctl restart NetworkManager >> /var/lib/sctunnel_client/rede.log 2>&1
 ```
 
 ## AWS servidor SCTUNNEL (como criar caso não exista)
