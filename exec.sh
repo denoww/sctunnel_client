@@ -168,8 +168,9 @@ update_firmware(){
 }
 
 arrumar_erro_host_identification_changed(){
-  echo "arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS"
+  echo "ini - arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS"
   ssh-keygen -f "/home/orangepi/.ssh/known_hosts" -R "$SC_TUNNEL_ADDRESS"
+  echo "fim - arrumar_erro_host_identification_changed"
 }
 
 connect_tunnel(){
