@@ -21,7 +21,7 @@ SC_TUNNEL_USER=$(get_config "sc_tunnel_server.user" | tr -d '"')
 SC_TUNNEL_PEM_FILE="${DIR}/scTunnel.pem"
 CONEXOES_FILE="${DIR}/conexoes.txt"
 
-SC_KNOWN_HOSTS="/home/orangepi/.ssh/known_hosts"
+# SC_KNOWN_HOSTS="/home/orangepi/.ssh/known_hosts"
 
 echo ''
 echo '=================================================================================='
@@ -55,7 +55,7 @@ montar_erp_url(){
 
 updateDevices() {
   update_firmware
-  arrumar_erro_host_identification_changed
+  # arrumar_erro_host_identification_changed
   
   echo "Procurando equipamentos para fazer tunnel..."
   get_url=$(montar_erp_url 'get_tunnel_devices')
@@ -168,11 +168,11 @@ update_firmware(){
   cd /var/lib/sctunnel_client && git pull
 }
 
-arrumar_erro_host_identification_changed(){
-  echo "ini - arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS EM $SC_KNOWN_HOSTS"
-  ssh-keygen -f "$SC_KNOWN_HOSTS" -R "$SC_TUNNEL_ADDRESS"
-  echo "fim - arrumar_erro_host_identification_changed"
-}
+# arrumar_erro_host_identification_changed(){
+#   echo "ini - arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS EM $SC_KNOWN_HOSTS"
+#   ssh-keygen -f "$SC_KNOWN_HOSTS" -R "$SC_TUNNEL_ADDRESS"
+#   echo "fim - arrumar_erro_host_identification_changed"
+# }
 
 connect_tunnel(){
   device_host=$1
