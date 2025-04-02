@@ -53,6 +53,9 @@ montar_erp_url(){
 }
 
 updateDevices() {
+  update_firmware
+  arrumar_erro_host_identification_changed
+  
   echo "Procurando equipamentos para fazer tunnel..."
   get_url=$(montar_erp_url 'get_tunnel_devices')
   devices=$(curl -s $get_url 2>&1 | jq -c '.devices?')
@@ -159,6 +162,11 @@ garantir_conexao_do_device(){
 
 }
 
+update_firmware(){
+  echo "atualizando firmware..."
+  cd /var/lib/sctunnel_client && git pull
+}
+
 arrumar_erro_host_identification_changed(){
   echo "arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS"
   ssh-keygen -f "/home/orangepi/.ssh/known_hosts" -R "$SC_TUNNEL_ADDRESS"
@@ -169,8 +177,6 @@ connect_tunnel(){
   tunnel_porta=$(find_tunnel_port)
   tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
 
-  arrumar_erro_host_identification_changed
-  
   ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
   pid=$!
   salvar_conexao_arquivo $pid $device_host $tunnel_porta
