@@ -163,7 +163,7 @@ garantir_conexao_do_device(){
 }
 
 update_firmware(){
-  echo "atualizando firmware..."
+  echo "Atualizando firmware..."
   cd /var/lib/sctunnel_client && git pull
 }
 
