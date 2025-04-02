@@ -160,6 +160,7 @@ garantir_conexao_do_device(){
 }
 
 arrumar_erro_host_identification_changed(){
+  echo "arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS"
   ssh-keygen -f "/home/orangepi/.ssh/known_hosts" -R "$SC_TUNNEL_ADDRESS"
 }
 
