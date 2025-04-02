@@ -159,11 +159,17 @@ garantir_conexao_do_device(){
 
 }
 
+arrumar_erro_host_identification_changed(){
+  ssh-keygen -f "/home/orangepi/.ssh/known_hosts" -R "$SC_TUNNEL_ADDRESS"
+}
 
 connect_tunnel(){
   device_host=$1
   tunnel_porta=$(find_tunnel_port)
   tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
+
+  arrumar_erro_host_identification_changed
+  
   ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
   pid=$!
   salvar_conexao_arquivo $pid $device_host $tunnel_porta
