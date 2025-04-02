@@ -179,7 +179,7 @@ connect_tunnel(){
   tunnel_porta=$(find_tunnel_port)
   tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
 
-  ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
+  ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
   pid=$!
   salvar_conexao_arquivo $pid $device_host $tunnel_porta
   echo
