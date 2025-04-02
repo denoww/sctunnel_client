@@ -170,7 +170,7 @@ update_firmware(){
 
 arrumar_erro_host_identification_changed(){
   echo "ini - arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS EM $SC_KNOWN_HOSTS"
-  sudo ssh-keygen -f "$SC_KNOWN_HOSTS" -R "$SC_TUNNEL_ADDRESS"
+  ssh-keygen -f "$SC_KNOWN_HOSTS" -R "$SC_TUNNEL_ADDRESS"
   echo "fim - arrumar_erro_host_identification_changed"
 }
 
