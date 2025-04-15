@@ -2,7 +2,8 @@
   "sc_server": {
     "host": "https://www.seucondominio.com.br",
     "token": "xxxxxxxxxxxxxxxxxxx",
-    "cliente_id": 51
+    "cliente_id": 51,
+    "equipamento_codigos": []
   },
   "sc_tunnel_server": {
     "host": "sctunnel1.seucondominio.com.br",

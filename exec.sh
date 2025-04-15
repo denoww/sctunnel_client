@@ -14,6 +14,8 @@ function get_config {
 HOST=$(get_config "sc_server.host" | tr -d '"')
 TOKEN=$(get_config "sc_server.token" | tr -d '"')
 CLIENTE_ID=$(get_config "sc_server.cliente_id" | tr -d '"')
+EQUIPAMENTO_CODIGOS=$(get_config "sc_server.equipamento_codigos" | tr -d '"')
+
 
 SC_TUNNEL_ADDRESS=$(get_config "sc_tunnel_server.host" | tr -d '"')
 SC_TUNNEL_USER=$(get_config "sc_tunnel_server.user" | tr -d '"')
@@ -48,18 +50,49 @@ find_tunnel_port() {
   echo $portas | jq -r '.portas[0]'
 }
 
-montar_erp_url(){
+montar_erp_url() {
   path=$1
-  echo "$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID"
+  codigos_query=""
+
+  if [[ -n "${EQUIPAMENTO_CODIGOS:-}" ]] && echo "$EQUIPAMENTO_CODIGOS" | jq -e 'type == "array" and length > 0' >/dev/null 2>&1; then
+    codigos_query=$(echo "$EQUIPAMENTO_CODIGOS" | jq -r '.[]' | while read -r codigo; do
+      printf "&codigos[]=%s" "$codigo"
+    done)
+  fi
+
+
+
+  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID"
+  echo "${base_url}${codigos_query}"
 }
+
+
 
 updateDevices() {
   update_firmware
   # arrumar_erro_host_identification_changed
-  
+
+  # echo "EQUIPAMENTO_CODIGOS"
+  # echo $EQUIPAMENTO_CODIGOS
+
+
   echo "Procurando equipamentos para fazer tunnel..."
   get_url=$(montar_erp_url 'get_tunnel_devices')
-  devices=$(curl -s $get_url 2>&1 | jq -c '.devices?')
+  echo "Url: $get_url"
+
+  # Faz a requisição e guarda a resposta inteira
+  response=$(curl -s "$get_url")
+
+  # Tenta extrair a mensagem de erro, se houver
+  msg=$(echo "$response" | jq -r '.msg // empty')
+
+  if [[ "$msg" == "token inválido" ]]; then
+    echo "Erro: token inválido. Arrume token com PORTARIA_SERVER_SALT em config.json."
+    exit 1
+  fi
+
+  # Extrai os devices
+  devices=$(echo "$response" | jq -c '.devices // empty')
 
   readarray -t list < <(echo $devices | jq -c '.[]')
 
@@ -81,6 +114,7 @@ update_tunnel(){
   }
 
   device_id=$(getDevice '.id')
+  device_codigo=$(getDevice '.codigo')
   # port=$(getDevice '.port')
   # ip=$(getDevice '.ip')
   device_host=$(getDevice '.host')
@@ -124,7 +158,11 @@ update_tunnel(){
     update_no_erp $device_id $tipo $tunnel_address
 
   else
-    garantir_conexao_do_device $device_host $device_id $tipo $tunnel_address
+    echo $tunnel_address
+    echo $tunnel_address
+    echo $tunnel_address
+    echo $tunnel_address
+    garantir_conexao_do_device "$device_host" "$device_id" "$tipo" "$tunnel_address" "$device_codigo"
   fi
   echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
   echo
@@ -141,10 +179,12 @@ update_no_erp(){
 
 garantir_conexao_do_device(){
   # Garantir conexão
-  device_host=$1
-  device_id=$2
-  tipo=$3
-  tunnel_address=$4
+  device_host="$1"
+  device_id="$2"
+  tipo="$3"
+  tunnel_address="$4"
+  device_codigo="$5"
+
 
   linha=$(grep "device_host:$device_host" $CONEXOES_FILE)
   # echo $linha
@@ -152,9 +192,9 @@ garantir_conexao_do_device(){
   pid=$(echo "$linha" | sed 's/pid:\([^§]\+\).*/\1/')
 
   if kill -0 "$pid" >/dev/null 2>&1; then
-    echo "Tunnel ativo de $device_host - PID $pid"
+    echo "Tunnel ativo de #$device_codigo - $device_host - PID $pid"
   else
-    echo "Caiu Tunnel de $device_host - PID $pid"
+    echo "Caiu Tunnel de #$device_codigo - $device_host - PID $pid"
 
     disconnect_old_tunnel $device_host
     connect_tunnel $device_host
