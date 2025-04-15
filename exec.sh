@@ -158,10 +158,6 @@ update_tunnel(){
     update_no_erp $device_id $tipo $tunnel_address
 
   else
-    echo $tunnel_address
-    echo $tunnel_address
-    echo $tunnel_address
-    echo $tunnel_address
     garantir_conexao_do_device "$device_host" "$device_id" "$tipo" "$tunnel_address" "$device_codigo"
   fi
   echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
