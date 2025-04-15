@@ -16,6 +16,16 @@ cliente_id: 9999999999999999999999999999999
 token: coloque valor PORTARIA_SERVER_SALT (se for usar localhost pegue em application.yml, se for produção peça ajuda)
 ```
 
+Pegar somente alguns equipamentos do cliente
+```
+equipamento_codigos: [12, 22]
+```
+
+Pegar todos equipamentos do cliente
+```
+equipamento_codigos: []
+```
+
 ## Instale
 
 cd /var/lib; sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git; cd /var/lib/sctunnel_client/; sudo chown -R $(whoami) . ; cp config-sample.json config.json; 
