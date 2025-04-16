@@ -51,7 +51,6 @@ find_tunnel_port() {
 }
 
 montar_erp_url() {
-  path=$1
   codigos_query=""
 
   if [[ -n "${EQUIPAMENTO_CODIGOS:-}" ]] && echo "$EQUIPAMENTO_CODIGOS" | jq -e 'type == "array" and length > 0' >/dev/null 2>&1; then
@@ -62,11 +61,14 @@ montar_erp_url() {
 
 
 
-  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID"
+  base_url="$HOST/portarias/get_tunnel_devices.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(meusMacAddress)"
   echo "${base_url}${codigos_query}"
 }
 
 
+meusMacAddress(){
+  ip link | awk '/ether/ {print $2}' | paste -sd,
+}
 
 updateDevices() {
   update_firmware
@@ -75,10 +77,17 @@ updateDevices() {
   # echo "EQUIPAMENTO_CODIGOS"
   # echo $EQUIPAMENTO_CODIGOS
 
+  echo
+  echo "========================================"
+  echo "meus macs addres"
+  echo $(meusMacAddress)
+  echo "========================================"
 
-  echo "Procurando equipamentos para fazer tunnel..."
-  get_url=$(montar_erp_url 'get_tunnel_devices')
-  echo "Url: $get_url"
+
+  echo
+  echo "Procurando equipamentos para fazer tunnel em"
+  get_url=$(montar_erp_url)
+  echo "$get_url"
 
   # Faz a requisição e guarda a resposta inteira
   response=$(curl -s "$get_url")
