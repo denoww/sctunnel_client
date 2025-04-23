@@ -51,6 +51,7 @@ find_tunnel_port() {
 }
 
 montar_erp_url() {
+  path=$1
   codigos_query=""
 
   if [[ -n "${EQUIPAMENTO_CODIGOS:-}" ]] && echo "$EQUIPAMENTO_CODIGOS" | jq -e 'type == "array" and length > 0' >/dev/null 2>&1; then
@@ -61,7 +62,7 @@ montar_erp_url() {
 
 
 
-  base_url="$HOST/portarias/get_tunnel_devices.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(meusMacAddress)"
+  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(meusMacAddress)"
   echo "${base_url}${codigos_query}"
 }
 
@@ -86,7 +87,7 @@ updateDevices() {
 
   echo
   echo "Procurando equipamentos para fazer tunnel em"
-  get_url=$(montar_erp_url)
+  get_url=$(montar_erp_url "get_tunnel_devices")
   echo "$get_url"
 
   # Faz a requisição e guarda a resposta inteira
@@ -179,6 +180,16 @@ update_no_erp(){
   tipo=$2
   tunnel_address=$3
   update_url=$(montar_erp_url 'update_tunnel_devices')
+  echo "Atualizando no erp ${device_id} ${tunnel_address} ${update_url}"
+  echo
+  echo "device_id: ${device_id}"
+  # echo
+  # echo "tipo: ${tipo}"
+  echo
+  echo "tunnel_address: ${tunnel_address}"
+  echo
+  echo "POST em: ${update_url}"
+  echo
   curl -X POST -H "Content-Type: application/json" -d '{"id": "'$device_id'", "tipo": "'$tipo'", "tunnel_address": "'$tunnel_address'", "cliente_id": "'$CLIENTE_ID'"}' $update_url &> /dev/null
 }
 
