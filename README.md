@@ -20,7 +20,8 @@ exec_cliente 10
 
 Caso não funcionar faça
 ```bash
-bash /var/lib/sctunnel_client/install.sh
+cd /var/lib/sctunnel_client
+bash install.sh
 exec_cliente 10
 ```
 
