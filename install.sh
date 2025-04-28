@@ -2,10 +2,10 @@
 
 set -e
 
-echo "🔧 Instalando comando 'trocar_cliente' no sistema..."
+echo "🔧 Instalando comando 'exec_cliente' no sistema..."
 
 # Define o destino do comando
-DESTINO="/usr/local/bin/trocar_cliente"
+DESTINO="/usr/local/bin/exec_cliente"
 
 # Cria o script do comando
 sudo tee "$DESTINO" > /dev/null <<'EOF'
@@ -16,6 +16,6 @@ EOF
 # Dá permissão de execução
 sudo chmod +x "$DESTINO"
 
-echo "✅ Comando 'trocar_cliente' instalado com sucesso!"
+echo "✅ Comando 'exec_cliente' instalado com sucesso!"
 echo ""
-echo "📢 Agora você pode usar: trocar_cliente <cliente_id>"
+echo "📢 Agora você pode usar: exec_cliente <cliente_id>"
