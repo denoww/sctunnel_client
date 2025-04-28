@@ -11,7 +11,7 @@ sudo nand-sata-install
 
 ---
 
-## 🔄 2. Trocar o cliente
+## 🔄 2. Executar e salvar cliente
 
 ```bash
 exec_cliente 10
