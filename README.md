@@ -14,9 +14,15 @@ sudo nand-sata-install
 ## 🔄 2. Trocar o cliente
 
 ```bash
-bash /var/lib/sctunnel_client/trocar_cliente.sh 10
+trocar_cliente 10
 ```
 
+
+Caso não funcionar faça
+```bash
+bash /var/lib/sctunnel_client/install.sh
+trocar_cliente 10
+```
 
 
 
