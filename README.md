@@ -18,14 +18,27 @@ exec_cliente 10
 ```
 
 
-Caso não funcionar faça
+Caso não funcionar
+
+Instale
 ```bash
-cd /var/lib/sctunnel_client
-bash install.sh
+bash /var/lib/sctunnel_client/install.sh
 exec_cliente 10
 ```
 
+ou
 
+Instale com cronjobs no mini_pc
+```bash
+bash /var/lib/sctunnel_client/install.sh --install_crons
+exec_cliente 10
+```
+
+Remova os cronjobs no mini_pc
+```bash
+bash /var/lib/sctunnel_client/install.sh --remove_crons
+exec_cliente 10
+```
 
 ---
 
@@ -119,23 +132,7 @@ bash /var/lib/sctunnel_client/exec.sh
 
 ---
 
-## ⏰ 3.4 Configurar rotina automática (cron)
 
-Crie o arquivo:
-
-```bash
-sudo nano /etc/cron.d/sctunnel
-```
-
-Cole o conteúdo:
-
-```cron
-@reboot root bash /var/lib/sctunnel_client/exec.sh >> /var/lib/sctunnel_client/log_cron.txt 2>&1
-*/1 * * * * root bash /var/lib/sctunnel_client/exec.sh >> /var/lib/sctunnel_client/log_cron.txt 2>&1
-*/30 * * * * root /usr/bin/systemctl restart NetworkManager >> /var/lib/sctunnel_client/rede.log 2>&1
-```
-
----
 
 ## ☁️ 3.5 Criar servidor SCTUNNEL (caso não exista)
 
