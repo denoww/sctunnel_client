@@ -1,0 +1,144 @@
+
+==================================================================================
+CLIENTE_ID 10 Sincronizando equipamentos (qua 07 mai 2025 09:09:02 -03)
+==================================================================================
+
+Atualizando firmware...
+fatal: detected dubious ownership in repository at '/var/lib/sctunnel_client'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /var/lib/sctunnel_client
+
+========================================
+meus macs addres
+2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+========================================
+
+Procurando equipamentos para fazer tunnel em
+http://localhost:3000/portarias/get_tunnel_devices.json?token=T7jLk8A4Baor2FFb8mZL9&cliente_id=10&tunnel_macaddres=2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+Nenhum tunnel para fazer (lista vazia)
+
+==================================================================================
+FIM (qua 07 mai 2025 09:09:02 -03)
+==================================================================================
+
+
+==================================================================================
+CLIENTE_ID 10 Sincronizando equipamentos (qua 07 mai 2025 09:10:01 -03)
+==================================================================================
+
+Atualizando firmware...
+fatal: detected dubious ownership in repository at '/var/lib/sctunnel_client'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /var/lib/sctunnel_client
+
+========================================
+meus macs addres
+2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+========================================
+
+Procurando equipamentos para fazer tunnel em
+http://localhost:3000/portarias/get_tunnel_devices.json?token=T7jLk8A4Baor2FFb8mZL9&cliente_id=10&tunnel_macaddres=2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+Nenhum tunnel para fazer (lista vazia)
+
+==================================================================================
+FIM (qua 07 mai 2025 09:10:01 -03)
+==================================================================================
+
+
+==================================================================================
+CLIENTE_ID 10 Sincronizando equipamentos (qua 07 mai 2025 09:11:02 -03)
+==================================================================================
+
+Atualizando firmware...
+fatal: detected dubious ownership in repository at '/var/lib/sctunnel_client'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /var/lib/sctunnel_client
+
+========================================
+meus macs addres
+2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+========================================
+
+Procurando equipamentos para fazer tunnel em
+http://localhost:3000/portarias/get_tunnel_devices.json?token=T7jLk8A4Baor2FFb8mZL9&cliente_id=10&tunnel_macaddres=2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+Nenhum tunnel para fazer (lista vazia)
+
+==================================================================================
+FIM (qua 07 mai 2025 09:11:02 -03)
+==================================================================================
+
+
+==================================================================================
+CLIENTE_ID 10 Sincronizando equipamentos (qua 07 mai 2025 09:12:01 -03)
+==================================================================================
+
+Atualizando firmware...
+fatal: detected dubious ownership in repository at '/var/lib/sctunnel_client'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /var/lib/sctunnel_client
+
+========================================
+meus macs addres
+2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+========================================
+
+Procurando equipamentos para fazer tunnel em
+http://localhost:3000/portarias/get_tunnel_devices.json?token=T7jLk8A4Baor2FFb8mZL9&cliente_id=10&tunnel_macaddres=2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+Nenhum tunnel para fazer (lista vazia)
+
+==================================================================================
+FIM (qua 07 mai 2025 09:12:02 -03)
+==================================================================================
+
+
+==================================================================================
+CLIENTE_ID 10 Sincronizando equipamentos (qua 07 mai 2025 09:13:01 -03)
+==================================================================================
+
+Atualizando firmware...
+fatal: detected dubious ownership in repository at '/var/lib/sctunnel_client'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /var/lib/sctunnel_client
+
+========================================
+meus macs addres
+2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+========================================
+
+Procurando equipamentos para fazer tunnel em
+http://localhost:3000/portarias/get_tunnel_devices.json?token=T7jLk8A4Baor2FFb8mZL9&cliente_id=10&tunnel_macaddres=2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+Nenhum tunnel para fazer (lista vazia)
+
+==================================================================================
+FIM (qua 07 mai 2025 09:13:01 -03)
+==================================================================================
+
+
+==================================================================================
+CLIENTE_ID 10 Sincronizando equipamentos (qua 07 mai 2025 09:18:01 -03)
+==================================================================================
+
+Atualizando firmware...
+fatal: detected dubious ownership in repository at '/var/lib/sctunnel_client'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /var/lib/sctunnel_client
+
+========================================
+meus macs addres
+2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+========================================
+
+Procurando equipamentos para fazer tunnel em
+http://localhost:3000/portarias/get_tunnel_devices.json?token=T7jLk8A4Baor2FFb8mZL9&cliente_id=10&tunnel_macaddres=2c:f0:5d:38:73:39,00:13:ef:20:1e:b7,02:42:38:52:5a:76,02:42:72:83:ac:09,02:42:86:6f:da:83,02:42:0a:c1:4c:0c,4a:66:e6:29:92:1c,0e:1c:d9:b6:4f:e6
+Nenhum tunnel para fazer (lista vazia)
+
+==================================================================================
+FIM (qua 07 mai 2025 09:18:02 -03)
+==================================================================================
+
