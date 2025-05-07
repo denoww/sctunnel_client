@@ -1,5 +1,7 @@
 
 
+
+
 # clear config
 # new_config=$(jq -r '.' "config.json" | jq '.sc_tunnel = {}')
 # echo $new_config | jq '.' > config.json
@@ -31,19 +33,73 @@ echo "CLIENTE_ID $CLIENTE_ID Sincronizando equipamentos ($(date))"
 echo '=================================================================================='
 echo ''
 
+is_empty_or_null() {
+  [ -z "$1" ] || [ "$1" = "null" ]
+}
 
-# readarray -t list < <(echo $devices | jq -c '.[]')
-# for devices in "${list[@]}"; do
+update_tunnel(){
+  device=$1
+  getDevice() {
+    echo ${device} | jq -r ${1}
+  }
 
-#   stream_obj=$(echo "$devices" | jq 'del(.devices)')
+  device_host=$(getDevice '.host')
+  mac1=$(getDevice '.mac_address')
+  mac2=$(getDevice '.mac_address_2')
 
-#   devices=$(echo "$devices" | jq '.devices')
-#   echo $devices | jq -c '.[] | select(.url != null)' | while read camera; do
-#     camera_params=$(echo ''$stream_obj' '$camera'' | jq -s add)
-#     # bash app/sync-devices.sh "$camera_params"
-#   done
+  ###############################
+  ###############################
+  # get_ip_by_mac precisa de sudo
+  # arrumar o tunnel para não pedir senha
+  ###############################
+  # if is_empty_or_null "$device_host"; then
+  #   for mac in "$mac1" "$mac2"; do
+  #     if ! is_empty_or_null "$mac"; then
+  #       echo "Descobrindo ip pelo mac $mac ..."
+  #       device_host=$(get_ip_by_mac "$mac")
+  #       if ! is_empty_or_null "$device_host"; then
+  #         echo "device_host encontrado via $mac: $device_host"
+  #         break
+  #       fi
+  #     fi
+  #   done
+  # fi
+  ###############################
+  ###############################
+  ###############################
 
-# done
+  if is_empty_or_null "$device_host"; then
+    echo "❌ Nenhum device_host encontrado. Verifique se os MACs estão corretos ou disponíveis na rede."
+    return 1
+  fi
+
+  tunnel_me=$(getDevice '.tunnel_me')
+  tipo=$(getDevice '.tipo')
+  tunnel_me=$(getDevice '.tunnel_me')
+
+
+  echo
+  echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
+  if [ "$tunnel_me" != null ]; then
+
+    if [ "$tunnel_me" = false ]; then
+      disconnect_old_tunnel $device_host
+    fi
+
+    if [ "$tunnel_me" = true ]; then
+      disconnect_old_tunnel $device_host
+      connect_tunnel $device_host
+    fi
+
+    update_no_erp $device_id $tipo $tunnel_address
+
+  else
+    garantir_conexao_do_device "$device_host" "$device_id" "$tipo" "$tunnel_address" "$device_codigo"
+  fi
+  echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
+  echo
+
+}
 
 find_tunnel_port() {
   portas=$(curl -s --request GET http://${SC_TUNNEL_ADDRESS}:3020/unused_ports?qtd=1 )
@@ -113,66 +169,19 @@ updateDevices() {
       update_tunnel $device
     done
   fi
+  echo "fim"
 
 }
 
 
-update_tunnel(){
-  device=$1
-  getDevice() {
-    echo ${device} | jq -r ${1}
-  }
-
-  device_id=$(getDevice '.id')
-  device_codigo=$(getDevice '.codigo')
-  # port=$(getDevice '.port')
-  # ip=$(getDevice '.ip')
-  device_host=$(getDevice '.host')
-  tunnel_me=$(getDevice '.tunnel_me')
-  tipo=$(getDevice '.tipo')
-  tunnel_me=$(getDevice '.tunnel_me')
-
-  # if [ -n $address ]; then
-
-  #   protocol=$(echo $address | cut -d : -f 1)
-  #   ip=$(echo $address | cut -d : -f 2)
-  #   ip=${ip#*//} # sem http ou https ou //
-  #   port=$(echo $address | cut -d : -f 3)
-  #   if [ -z $port ]; then
-  #     port=80 # se não tiver port usa a 80
-  #   fi
-  # fi
-  # device_host="${ip}:${port}"
-
-  # address_with_protocol=$tunnel_address
-
-  # if [ -n $protocol ]; then
-  #   address_with_protocol="${protocol}://${address_with_protocol}"
-  # fi
-
-
-
-  echo
-  echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
-  if [ "$tunnel_me" != null ]; then
-
-    if [ "$tunnel_me" = false ]; then
-      disconnect_old_tunnel $device_host
-    fi
-
-    if [ "$tunnel_me" = true ]; then
-      disconnect_old_tunnel $device_host
-      connect_tunnel $device_host
-    fi
-
-    update_no_erp $device_id $tipo $tunnel_address
-
+get_ip_by_mac() {
+  local mac=$1
+  local host=$(bash buscar_ip_pelo_mac.sh "$mac")
+  if [ "$host" != "false" ]; then
+    echo "$host"
   else
-    garantir_conexao_do_device "$device_host" "$device_id" "$tipo" "$tunnel_address" "$device_codigo"
+    echo ""
   fi
-  echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
-  echo
-
 }
 
 update_no_erp(){
