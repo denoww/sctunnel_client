@@ -37,68 +37,117 @@ is_empty_or_null() {
   [ -z "$1" ] || [ "$1" = "null" ]
 }
 
-update_tunnel(){
+getDevice() {
   device=$1
-  getDevice() {
-    echo ${device} | jq -r ${1}
-  }
+  echo ${device} | jq -r ${2}
+}
 
-  device_host=$(getDevice '.host')
-  mac1=$(getDevice '.mac_address')
-  mac2=$(getDevice '.mac_address_2')
+tunel_device(){
+  device=$1
+
+
+  device_host=$(getDevice $device '.host')
+  port=$(getDevice $device '.port')
+  codigo=$(getDevice $device '.codigo')
+  MAC1=$(getDevice $device '.mac_address')
+  MAC2=$(getDevice $device '.mac_address_2')
 
   ###############################
   ###############################
   # get_ip_by_mac precisa de sudo
   # arrumar o tunnel para não pedir senha
   ###############################
-  # if is_empty_or_null "$device_host"; then
-  #   for mac in "$mac1" "$mac2"; do
-  #     if ! is_empty_or_null "$mac"; then
-  #       echo "Descobrindo ip pelo mac $mac ..."
-  #       device_host=$(get_ip_by_mac "$mac")
-  #       if ! is_empty_or_null "$device_host"; then
-  #         echo "device_host encontrado via $mac: $device_host"
-  #         break
-  #       fi
-  #     fi
-  #   done
-  # fi
+  if is_empty_or_null "$device_host"; then
+    for MAC in "$MAC1" "$MAC2"; do
+      if ! is_empty_or_null "$MAC"; then
+        device_host=$(get_ip_by_mac "$MAC")
+        if ! is_empty_or_null "$device_host"; then
+          echo "encontrado $device_host via $MAC: $device_host"
+          break
+        fi
+      fi
+    done
+  fi
   ###############################
   ###############################
   ###############################
 
+
+
+
   if is_empty_or_null "$device_host"; then
-    echo "❌ Nenhum device_host encontrado. Verifique se os MACs estão corretos ou disponíveis na rede."
+    echo "❌ device #$codigo sem ip/host. Verifique se os MACs estão corretos ou disponíveis na rede ou cadastre o ip:porta dele no sistema."
     return 1
   fi
 
-  tunnel_me=$(getDevice '.tunnel_me')
-  tipo=$(getDevice '.tipo')
-  tunnel_me=$(getDevice '.tunnel_me')
+  if is_empty_or_null "$port"; then
+    port=80
+  fi
+  device_host="${device_host}:80"
 
+  tunnel_me=$(getDevice $device '.tunnel_me')
 
   echo
-  echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
+  echo "========================================================================================="
+  echo "========================================================================================="
+  echo "========================================================================================="
+  echo "device"
+  echo $device
+  echo
+
   if [ "$tunnel_me" != null ]; then
 
     if [ "$tunnel_me" = false ]; then
-      disconnect_old_tunnel $device_host
+      disconnect_old_tunnel "$device" "$device_host"
     fi
 
     if [ "$tunnel_me" = true ]; then
-      disconnect_old_tunnel $device_host
-      connect_tunnel $device_host
+      reconnect_tunnel "$device" "$device_host"
     fi
 
-    update_no_erp $device_id $tipo $tunnel_address
-
   else
-    garantir_conexao_do_device "$device_host" "$device_id" "$tipo" "$tunnel_address" "$device_codigo"
+    garantir_conexao_do_device "$device" "$device_host"
   fi
-  echo "¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨"
+  echo "========================================================================================="
+  echo "========================================================================================="
+  echo "========================================================================================="
   echo
 
+}
+
+connect_tunnel() {
+  device=$1
+  device_host=$2
+
+  codigo=$(getDevice "$device" '.codigo')
+
+  tunnel_porta=$(find_tunnel_port)
+  tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
+
+  echo
+  echo "🔐 Conectando túnel SSH para o dispositivo #$codigo"
+  echo "📡 Comando:"
+  echo "ssh -N -o ServerAliveInterval=20 -i \"$SC_TUNNEL_PEM_FILE\" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS"
+  echo
+
+  ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
+  pid=$!
+  salvar_conexao_arquivo "$pid" "$device_host" "$tunnel_porta"
+
+  echo
+  echo "Definindo novo endereço de #$codigo no ERP"
+  echo "----------------------------------------------------------------"
+  echo "${device_host} -> ${tunnel_address}"
+  echo "----------------------------------------------------------------"
+
+  update_no_erp "$device" "$tunnel_address"
+}
+
+reconnect_tunnel() {
+  device="$1"
+  device_host="$2"
+  disconnect_old_tunnel "$device" "$device_host"
+  connect_tunnel "$device" "$device_host"
 }
 
 find_tunnel_port() {
@@ -166,64 +215,58 @@ updateDevices() {
     echo "Nenhum tunnel para fazer (lista vazia)"
   else
     for device in "${list[@]}"; do
-      update_tunnel $device
+      tunel_device $device
     done
   fi
-  echo "fim"
 
 }
 
 
 get_ip_by_mac() {
   local mac=$1
-  local host=$(bash buscar_ip_pelo_mac.sh "$mac")
-  if [ "$host" != "false" ]; then
-    echo "$host"
-  else
-    echo ""
-  fi
+  echo $(bash buscar_ip_pelo_mac.sh "$mac")
 }
 
+
 update_no_erp(){
-  device_id=$1
-  tipo=$2
-  tunnel_address=$3
+  device=$1
+  tunnel_address=$2
+
+  device_id=$(getDevice $device '.id')
   update_url=$(montar_erp_url 'update_tunnel_devices')
-  echo "Atualizando no erp ${device_id} ${tunnel_address} ${update_url}"
+
+
+  JSON_PAYLOAD="{\"id\":\"$device_id\",\"tunnel_address\":\"$tunnel_address\",\"cliente_id\":\"$CLIENTE_ID\"}"
+
   echo
-  echo "device_id: ${device_id}"
-  # echo
-  # echo "tipo: ${tipo}"
-  echo
-  echo "tunnel_address: ${tunnel_address}"
-  echo
-  echo "POST em: ${update_url}"
-  echo
-  curl -X POST -H "Content-Type: application/json" -d '{"id": "'$device_id'", "tipo": "'$tipo'", "tunnel_address": "'$tunnel_address'", "cliente_id": "'$CLIENTE_ID'"}' $update_url &> /dev/null
+  echo "📡 Update ERP em $update_url:"
+  echo "$JSON_PAYLOAD"
+
+  curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$update_url" &> /dev/null
+
+
 }
 
 garantir_conexao_do_device(){
   # Garantir conexão
-  device_host="$1"
-  device_id="$2"
-  tipo="$3"
-  tunnel_address="$4"
-  device_codigo="$5"
 
+  device=$1
+  device_host=$2
+  device_codigo=$(getDevice $device '.codigo')
 
-  linha=$(grep "device_host:$device_host" $CONEXOES_FILE)
-  # echo $linha
+  linha=$(grep "device_host:$device_host" "$CONEXOES_FILE")
+  tunnel_porta=$(echo "$linha" | sed -n 's/.*tunnel_porta:\([^§]*\).*/\1/p')
+  pid=$(echo "$linha" | sed -n 's/.*pid:\([^§]*\).*/\1/p')
 
-  pid=$(echo "$linha" | sed 's/pid:\([^§]\+\).*/\1/')
+  tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
+
 
   if kill -0 "$pid" >/dev/null 2>&1; then
-    echo "Tunnel ativo de #$device_codigo - $device_host - PID $pid"
+    echo "Tunnel ativo de #$device_codigo - $device_host - $tunnel_address - PID $pid"
   else
-    echo "Caiu Tunnel de #$device_codigo - $device_host - PID $pid"
+    echo "Caiu Tunnel de #$device_codigo - $device_host - $tunnel_address - PID $pid"
 
-    disconnect_old_tunnel $device_host
-    connect_tunnel $device_host
-    update_no_erp $device_id $tipo $tunnel_address
+    reconnect_tunnel "$device" "$device_host"
   fi
 
 }
@@ -239,18 +282,8 @@ update_firmware(){
 #   echo "fim - arrumar_erro_host_identification_changed"
 # }
 
-connect_tunnel(){
-  device_host=$1
-  tunnel_porta=$(find_tunnel_port)
-  tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
 
-  ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
-  pid=$!
-  salvar_conexao_arquivo $pid $device_host $tunnel_porta
-  echo
-  echo "Definindo novo endereço de #$device_id no erp"
-  echo "${device_host} -> ${tunnel_address}"
-}
+
 
 remover_conexao_arquivo(){
   device_host=$1
@@ -277,8 +310,13 @@ salvar_conexao_arquivo(){
 # }
 
 disconnect_old_tunnel(){
-  device_host=$1
-  echo "Removendo tunnel antigo de $device_host"
+  device=$1
+  device_host=$2
+
+  codigo=$(getDevice $device '.codigo')
+
+
+  echo "Removendo tunnel antigo de #$codigo $device_host"
 
 
   pids=()

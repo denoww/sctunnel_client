@@ -2,3 +2,4 @@ config.json
 logs.txt
 scTunnel.pem
 conexoes.txt
+ARP_SCAN_INSTALDO.txt
