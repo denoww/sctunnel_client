@@ -109,10 +109,14 @@ tunel_device(){
     if [ "$tunnel_me" = true ]; then
       reconnect_tunnel "$device" "$device_host"
     fi
-
+    update_no_erp "$device" "$device_host"
   else
     garantir_conexao_do_device "$device" "$device_host"
   fi
+
+
+
+
   echo "========================================================================================="
   echo "========================================================================================="
   echo "========================================================================================="
@@ -145,7 +149,6 @@ connect_tunnel() {
   echo "${device_host} -> ${tunnel_address}"
   echo "----------------------------------------------------------------"
 
-  update_no_erp "$device" "$tunnel_address"
 }
 
 reconnect_tunnel() {
@@ -235,7 +238,10 @@ get_ip_by_mac() {
 
 update_no_erp(){
   device=$1
-  tunnel_address=$2
+  device_host=$2
+
+  tunnel_address=$(get_tunnel_address "$device_host")
+
 
   device_id=$(getDevice $device '.id')
   update_url=$(montar_erp_url 'update_tunnel_devices')
@@ -252,29 +258,39 @@ update_no_erp(){
 
 }
 
-garantir_conexao_do_device(){
-  # Garantir conexão
+get_tunnel_address() {
+  local device_host="$1"
 
+  local linha=$(grep "device_host:$device_host" "$CONEXOES_FILE")
+  local tunnel_porta=$(echo "$linha" | sed -n 's/.*tunnel_porta:\([^§]*\).*/\1/p')
+
+  if [ -n "$tunnel_porta" ]; then
+    echo "${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
+  else
+    echo ""
+    return 1
+  fi
+}
+
+
+garantir_conexao_do_device(){
   device=$1
   device_host=$2
-  device_codigo=$(getDevice $device '.codigo')
+  device_codigo=$(getDevice "$device" '.codigo')
 
   linha=$(grep "device_host:$device_host" "$CONEXOES_FILE")
-  tunnel_porta=$(echo "$linha" | sed -n 's/.*tunnel_porta:\([^§]*\).*/\1/p')
   pid=$(echo "$linha" | sed -n 's/.*pid:\([^§]*\).*/\1/p')
-
-  tunnel_address="${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
-
+  tunnel_address=$(get_tunnel_address "$device_host")
 
   if kill -0 "$pid" >/dev/null 2>&1; then
     echo "Tunnel ativo de #$device_codigo - $device_host - $tunnel_address - PID $pid"
   else
     echo "Caiu Tunnel de #$device_codigo - $device_host - $tunnel_address - PID $pid"
-
     reconnect_tunnel "$device" "$device_host"
+    update_no_erp "$device" "$device_host"
   fi
-
 }
+
 
 update_firmware(){
   echo "Atualizando firmware..."
