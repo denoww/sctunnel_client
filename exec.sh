@@ -33,7 +33,7 @@ echo "CLIENTE_ID $CLIENTE_ID Sincronizando equipamentos ($(date))"
 echo '=================================================================================='
 echo ''
 
-is_empty_or_null() {
+is_blank() {
   [ -z "$1" ] || [ "$1" = "null" ]
 }
 
@@ -57,11 +57,11 @@ tunel_device(){
   # get_ip_by_mac precisa de sudo
   # arrumar o tunnel para não pedir senha
   ###############################
-  if is_empty_or_null "$device_host"; then
+  if is_blank "$device_host"; then
     for MAC in "$MAC1" "$MAC2"; do
-      if ! is_empty_or_null "$MAC"; then
+      if ! is_blank "$MAC"; then
         device_host=$(get_ip_by_mac "$MAC")
-        if ! is_empty_or_null "$device_host"; then
+        if ! is_blank "$device_host"; then
           echo "encontrado $device_host via $MAC: $device_host"
           break
         fi
@@ -75,15 +75,20 @@ tunel_device(){
 
 
 
-  if is_empty_or_null "$device_host"; then
+  if is_blank "$device_host"; then
     echo "❌ device #$codigo sem ip/host. Verifique se os MACs estão corretos ou disponíveis na rede ou cadastre o ip:porta dele no sistema."
     return 1
   fi
 
-  if is_empty_or_null "$port"; then
-    port=80
+
+  # Se device_host não tem porta explícita após o host/IP
+  if ! [[ "$device_host" =~ :[0-9]+$ ]]; then
+    if is_blank "$port"; then
+      port=80
+    fi
+    device_host="${device_host}:${port}"
   fi
-  device_host="${device_host}:80"
+
 
   tunnel_me=$(getDevice $device '.tunnel_me')
 
