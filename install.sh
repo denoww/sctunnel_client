@@ -4,6 +4,10 @@ set -e
 
 echo "🔧 Instalando comando 'exec_cliente' no sistema..."
 
+
+# arp-scan
+bash setup_arp_scan_sem_pedir_senha.sh
+
 # Define o destino do comando
 DESTINO="/usr/local/bin/exec_cliente"
 
@@ -59,3 +63,6 @@ EOF
   echo "✅ Cron jobs instalados com sucesso em:"
   echo "$CRONPATH"
 fi
+
+
+
