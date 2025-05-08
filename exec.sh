@@ -85,6 +85,11 @@ is_blank() {
   [ -z "$1" ] || [ "$1" = "null" ]
 }
 
+is_present() {
+  [ -n "$1" ] && [ "$1" != "null" ]
+}
+
+
 getDevice() {
   device=$1
   echo ${device} | jq -r ${2}
@@ -125,12 +130,6 @@ tunel_device(){
 
 
 
-  if is_blank "$device_host"; then
-    echo "❌ device #$codigo sem ip/host. Verifique se os MACs estão corretos ou disponíveis na rede ou cadastre o ip:porta dele no sistema."
-    return 1
-  fi
-
-
   # Se device_host não tem porta explícita após o host/IP
   if ! [[ "$device_host" =~ :[0-9]+$ ]]; then
     if is_blank "$port"; then
@@ -150,10 +149,16 @@ tunel_device(){
   echo $device
   echo
 
+  if [ "$tunnel_me" = false ]; then
+    disconnect_old_tunnel "$device" "$device_host"
+  fi
+
   if [ "$tunnel_me" != null ]; then
 
-    if [ "$tunnel_me" = false ]; then
-      disconnect_old_tunnel "$device" "$device_host"
+
+    if is_blank "$device_host"; then
+      echo "❌ device #$codigo sem ip/host. Verifique se os MACs estão corretos ou disponíveis na rede ou cadastre o ip:porta dele no sistema."
+      return 1
     fi
 
     if [ "$tunnel_me" = true ]; then
@@ -191,7 +196,7 @@ connect_tunnel() {
 
   ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
   pid=$!
-  salvar_conexao_arquivo "$pid" "$device_host" "$tunnel_porta"
+  salvar_conexao_arquivo "$pid" "$device" "$device_host" "$tunnel_porta"
 
   echo
   echo "Definindo novo endereço de #$codigo no ERP"
@@ -298,7 +303,7 @@ update_no_erp(){
   device=$1
   device_host=$2
 
-  tunnel_address=$(get_tunnel_address "$device_host")
+  tunnel_address=$(get_tunnel_address "$device")
 
 
   device_id=$(getDevice $device '.id')
@@ -317,9 +322,12 @@ update_no_erp(){
 }
 
 get_tunnel_address() {
-  local device_host="$1"
+  local device="$1"
 
-  local linha=$(grep "device_host:$device_host" "$CONEXOES_FILE")
+  device_id=$(getDevice "$device" '.id')
+
+
+  local linha=$(grep "device_id:$device_id" "$CONEXOES_FILE")
   local tunnel_porta=$(echo "$linha" | sed -n 's/.*tunnel_porta:\([^§]*\).*/\1/p')
 
   if [ -n "$tunnel_porta" ]; then
@@ -335,10 +343,11 @@ garantir_conexao_do_device(){
   device=$1
   device_host=$2
   device_codigo=$(getDevice "$device" '.codigo')
+  device_id=$(getDevice "$device" '.id')
 
-  linha=$(grep "device_host:$device_host" "$CONEXOES_FILE")
+  linha=$(grep "device_id:$device_id" "$CONEXOES_FILE")
   pid=$(echo "$linha" | sed -n 's/.*pid:\([^§]*\).*/\1/p')
-  tunnel_address=$(get_tunnel_address "$device_host")
+  tunnel_address=$(get_tunnel_address "$device")
 
   if kill -0 "$pid" >/dev/null 2>&1; then
     echo "Tunnel ativo de #$device_codigo - $device_host - $tunnel_address - PID $pid"
@@ -365,28 +374,26 @@ update_firmware(){
 
 
 remover_conexao_arquivo(){
-  device_host=$1
-  device_host_regex=$(echo "$device_host" | sed 's/\./\\./g')
-  sed -i "/device_host:$device_host_regex/d" "$CONEXOES_FILE"
+  device=$1
+  device_id=$(getDevice "$device" '.id')
+  device_host_regex=$(echo "$device_id" | sed 's/\./\\./g')
+  sed -i "/device_id:$device_host_regex/d" "$CONEXOES_FILE"
   # procurar e remover
 }
 
 salvar_conexao_arquivo(){
   pid=$1
-  device_host=$2
-  tunnel_porta=$3
-  echo "pid:${pid}§§§§device_host:${device_host}§§§§tunnel_porta:${tunnel_porta}" >> $CONEXOES_FILE
+  device=$2
+  device_host=$3
+  tunnel_porta=$4
+
+  device_id=$(getDevice "$device" '.id')
+
+
+  echo "pid:${pid}§§§§device_id:${device_id}§§§§device_host:${device_host}§§§§tunnel_porta:${tunnel_porta}" >> $CONEXOES_FILE
 }
 
-# salvar_conexao(){
-#   pid=$1
-#   device_host=$2
-#   tipo=$3
-#   device_id=$4
-#   tunnel_porta=$5
-#   CONEXOES_FILE="${DIR}/conexoes.txt"
-#   echo "pid:${pid}§§§§device_host:${device_host}§§§§tipo:${tipo}§§§§device_id:${device_id}§§§§tunnel_porta:${tunnel_porta}" >> $CONEXOES_FILE
-# }
+
 
 disconnect_old_tunnel(){
   device=$1
@@ -396,25 +403,27 @@ disconnect_old_tunnel(){
 
 
   echo "Removendo tunnel antigo de #$codigo $device_host"
+  remover_conexao_arquivo $device
 
 
-  pids=()
-  while IFS= read -r line; do
-    pids+=("$line")
-  done < <(ps aux | grep "$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS" | awk '{print $2}')
+  if is_present "$device_host"; then
+    pids=()
+    while IFS= read -r line; do
+      pids+=("$line")
+    done < <(ps aux | grep "$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS" | awk '{print $2}')
 
-  # Exibir o array de PIDs
-  for pid in "${pids[@]}"; do
-    # $(kill -9 $pid > /dev/null &)
+    # Exibir o array de PIDs
+    for pid in "${pids[@]}"; do
+      # $(kill -9 $pid > /dev/null &)
 
-    if kill -0 $pid 2>/dev/null; then
-      kill $pid
-      echo "processo $pid encerrado"
-    # else
-      # echo "O processo com o PID fornecido não está em execução."
-    fi
-  done
-  remover_conexao_arquivo $device_host
+      if kill -0 $pid 2>/dev/null; then
+        kill $pid
+        echo "processo $pid encerrado"
+      # else
+        # echo "O processo com o PID fornecido não está em execução."
+      fi
+    done
+  fi
 
 }
 
