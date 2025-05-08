@@ -25,6 +25,54 @@ SC_TUNNEL_USER=$(get_config "sc_tunnel_server.user" | tr -d '"')
 SC_TUNNEL_PEM_FILE="${DIR}/scTunnel.pem"
 CONEXOES_FILE="${DIR}/conexoes.txt"
 
+
+####################################################
+####################################################
+####################################################
+####################################################
+## ARPSCAP
+####################################################
+ARP_SCAN_INSTALDO="ARP_SCAN_INSTALDO.txt"
+
+# Verifica se o marcador de instalação existe
+RED='\033[31m'
+NC='\033[0m'
+if [ ! -f "$ARP_SCAN_INSTALDO" ]; then
+
+  echo -e "${RED}==================================================================${NC}" >&2
+  echo -e "${RED}❌ arp-scan não está instalado.${NC}" >&2
+  echo -e "${RED}Instale com 'bash /var/lib/sctunnel_client/install.sh'${NC}" >&2
+  echo -e "${RED}==================================================================${NC}" >&2
+
+  # exit 1
+fi
+
+ARP_SCAN_PATH=$(command -v arp-scan)
+# Verifica se o comando foi encontrado
+if [ -z "$ARP_SCAN_PATH" ]; then
+  echo -e "${RED}Comando 'arp-scan' não encontrado no PATH. '.${NC}" >&2
+  echo -e "${RED}Faça 'bash /var/lib/sctunnel_client/install.sh' ${NC}" >&2
+  echo -e "${RED}ou ${NC}" >&2
+  echo -e "${RED}Faça 'sudo apt install arp-scan' ${NC}" >&2
+  # exit 1
+fi
+# Detecta a interface e IP principal (default route)
+read -r IFACE IP <<< $(ip route get 1.1.1.1 | awk '{print $5, $7; exit}')
+SUBNET=$(echo "$IP" | sed 's/\.[0-9]\+$/\.0\/24/')
+
+echo "🔄 Escaneando rede com arp-scan (uma vez só)..." >&2
+ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$IFACE" "$SUBNET")
+echo
+echo "--------------------------------------------------------------"
+echo "Macs de todos aparelhos da Rede"
+echo $ARP_SCAN_OUTPUT
+####################################################
+####################################################
+####################################################
+####################################################
+
+
+
 # SC_KNOWN_HOSTS="/home/orangepi/.ssh/known_hosts"
 
 echo ''
@@ -60,9 +108,11 @@ tunel_device(){
   if is_blank "$device_host"; then
     for MAC in "$MAC1" "$MAC2"; do
       if ! is_blank "$MAC"; then
+        echo "" >&2
+        echo "🔍 Procurando IP pelo MAC $MAC" >&2
         device_host=$(get_ip_by_mac "$MAC")
         if ! is_blank "$device_host"; then
-          echo "encontrado $device_host via $MAC: $device_host"
+          echo "encontrado $device_host via $MAC"
           break
         fi
       fi
@@ -175,14 +225,22 @@ montar_erp_url() {
 
 
 
-  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(meusMacAddress)"
+  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)"
   echo "${base_url}${codigos_query}"
 }
 
 
-meusMacAddress(){
+macAddresDoTunnel(){
   ip link | awk '/ether/ {print $2}' | paste -sd,
 }
+
+buscar_ip_na_lista_de_macs() {
+  local mac="$1"
+  local mac_lower=$(echo "$mac" | tr '[:upper:]' '[:lower:]')
+
+  echo "$ARP_SCAN_OUTPUT" | awk -v mac="$mac_lower" 'tolower($2) == mac {print $1}'
+}
+
 
 updateDevices() {
   update_firmware
@@ -193,8 +251,8 @@ updateDevices() {
 
   echo
   echo "========================================"
-  echo "meus macs addres"
-  echo $(meusMacAddress)
+  echo "mac address do tunnel"
+  echo $(macAddresDoTunnel)
   echo "========================================"
 
 
@@ -231,8 +289,8 @@ updateDevices() {
 
 
 get_ip_by_mac() {
-  local mac=$1
-  echo $(bash buscar_ip_pelo_mac.sh "$mac")
+  local mac="$1"
+  buscar_ip_na_lista_de_macs "$mac"
 }
 
 
