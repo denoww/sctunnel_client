@@ -73,7 +73,8 @@ read -r INTERFACE_REDE IP_TUNNEL <<< $(ip route get 1.1.1.1 | awk '{print $5, $7
 SUBNET=$(echo "$IP_TUNNEL" | sed 's/\.[0-9]\+$/\.0\/24/')
 
 echo "🔄 Escaneando rede com arp-scan (uma vez só)..." >&2
-ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
+# ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
+ARP_SCAN_OUTPUT=$($ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
 echo
 echo "--------------------------------------------------------------"
 echo "Macs de todos aparelhos da Rede"
