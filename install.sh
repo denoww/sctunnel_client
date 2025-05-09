@@ -37,10 +37,11 @@ print_footer
 # EXEC_CLIENTE
 print_header "EXEC_CLIENTE INSTALL"
 EXEC_CLIENTE_PATH="/usr/local/bin/exec_cliente"
-sudo tee "$EXEC_CLIENTE_PATH" > /dev/null <<'EOF'
+sudo tee "$EXEC_CLIENTE_PATH" > /dev/null <<EOF
 #!/bin/bash
-bash ${DIR_LIB}/trocar_cliente.sh "$1"
+bash ${DIR_LIB}/trocar_cliente.sh "\$1"
 EOF
+
 sudo chmod +x "$EXEC_CLIENTE_PATH"
 echo "✅ Comando 'exec_cliente' instalado com sucesso!"
 echo ""
