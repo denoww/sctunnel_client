@@ -3,7 +3,7 @@
 set -e
 
 # 🔧 CONFIGURE AQUI
-AUTH_KEY="tskey-auth-k9y5Xc5kSw11CNTRL-s89dvhHX3956g2W5Pqzw85zdzFTh9Tz5G"
+AUTH_KEY="tskey-auth-ksTZgQHeh511CNTRL-ros7ts9GrUgbfako241zUgDsXGGr9bu8L"
 TAG="tag:infra"
 
 MAC=$(ip link | awk '/ether/ {print $2; exit}' | tr -d ':')
