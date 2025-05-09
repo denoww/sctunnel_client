@@ -440,6 +440,7 @@ garantir_conexao_do_device(){
 
 update_firmware(){
   echo "Atualizando firmware..."
+  git config --global --add safe.directory /var/lib/sctunnel_client
   cd ${DIR} && git pull
 }
 
