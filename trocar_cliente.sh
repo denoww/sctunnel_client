@@ -20,6 +20,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
   exit 1
 fi
 
+
 # Faz a substituição do cliente_id no JSON usando jq
 # jq --argjson id "$NOVO_CLIENTE_ID" '.sc_server.cliente_id = $id' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
 jq --argjson id "$NOVO_CLIENTE_ID" '.sc_server.cliente_id = $id' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv -f "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
