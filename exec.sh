@@ -120,8 +120,10 @@ tunel_device(){
         echo "🔍 Procurando IP pelo MAC $MAC" >&2
         device_host=$(get_ip_by_mac "$MAC")
         if ! is_blank "$device_host"; then
-          echo "encontrado $device_host via $MAC"
+          echo "✅ Encontrado device_host: $device_host via MAC: $MAC"
           break
+        else
+          echo "⚠️  Nenhum device_host encontrado via MAC: $MAC"
         fi
       fi
     done
@@ -131,10 +133,7 @@ tunel_device(){
   ###############################
 
 
-
-
-  # Se device_host não tem porta explícita após o host/IP
-  if ! [[ "$device_host" =~ :[0-9]+$ ]]; then
+  if is_present "$device_host" && ! [[ "$device_host" =~ :[0-9]+$ ]]; then
     if is_blank "$port"; then
       port=80
     fi
