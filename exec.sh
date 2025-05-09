@@ -246,7 +246,7 @@ montar_erp_url() {
   device_id=0
   ssh_port=$(extrair_campo_conexao $device_id "tunnel_porta")
 
-  ssh_cmd="ssh -p ${ssh_port} ${USER}@${SC_TUNNEL_ADDRESS}"
+  ssh_cmd="ssh -p ${ssh_port} ${USER}@${SC_TUNNEL_ADDRESS} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
   ssh_cmd_encoded=$(urlencode "$ssh_cmd")
 
   base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)&ssh_cmd=${ssh_cmd_encoded}"
