@@ -61,11 +61,11 @@ if [ -z "$ARP_SCAN_PATH" ]; then
   # exit 1
 fi
 # Detecta a interface e IP principal (default route)
-read -r IFACE IP <<< $(ip route get 1.1.1.1 | awk '{print $5, $7; exit}')
-SUBNET=$(echo "$IP" | sed 's/\.[0-9]\+$/\.0\/24/')
+read -r INTERFACE_REDE IP_TUNNEL <<< $(ip route get 1.1.1.1 | awk '{print $5, $7; exit}')
+SUBNET=$(echo "$IP_TUNNEL" | sed 's/\.[0-9]\+$/\.0\/24/')
 
 echo "🔄 Escaneando rede com arp-scan (uma vez só)..." >&2
-ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$IFACE" "$SUBNET")
+ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
 echo
 echo "--------------------------------------------------------------"
 echo "Macs de todos aparelhos da Rede"
@@ -168,7 +168,7 @@ tunel_device(){
     if [ "$tunnel_me" = true ]; then
       reconnect_tunnel "$device" "$device_host"
     fi
-    update_no_erp "$device" "$device_host"
+    update_device_tunnel_addres_no_erp "$device" "$device_host"
   else
     garantir_conexao_do_device "$device" "$device_host"
   fi
@@ -198,7 +198,7 @@ connect_tunnel() {
   echo "ssh -N -o ServerAliveInterval=20 -i \"$SC_TUNNEL_PEM_FILE\" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS"
   echo
 
-  ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null &
+  ssh -N -o ServerAliveInterval=20 -i "$SC_TUNNEL_PEM_FILE" -oStrictHostKeyChecking=no -oUserKnownHostsFile=/tmp/ssh_known_hosts_temp -R $tunnel_porta:$device_host $SC_TUNNEL_USER@$SC_TUNNEL_ADDRESS > /dev/null 2>&1 &
   pid=$!
   salvar_conexao_arquivo "$pid" "$device" "$device_host" "$tunnel_porta"
 
@@ -232,9 +232,11 @@ montar_erp_url() {
     done)
   fi
 
+  device_id=0
+  ssh_port=$(extrair_campo_conexao $device_id "tunnel_porta")
 
 
-  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)"
+  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)&ssh_port=${ssh_port}"
   echo "${base_url}${codigos_query}"
 }
 
@@ -251,12 +253,24 @@ buscar_ip_na_lista_de_macs() {
 }
 
 
+abrir_ssh_do_tunnel(){
+  host="${IP_TUNNEL}:22"
+  echo "🔐 Abrindo túnel SSH na porta 22 para o device em $host"
+  device="{\"id\":0,\"codigo\":\"0\",\"host\":\"$host\"}"
+  tunel_device "$device"
+}
+
+
 updateDevices() {
   update_firmware
   # arrumar_erro_host_identification_changed
 
   # echo "EQUIPAMENTO_CODIGOS"
   # echo $EQUIPAMENTO_CODIGOS
+
+  abrir_ssh_do_tunnel
+
+
 
   echo
   echo "========================================"
@@ -303,17 +317,20 @@ get_ip_by_mac() {
 }
 
 
-update_no_erp(){
+update_device_tunnel_addres_no_erp(){
   device=$1
   device_host=$2
 
   tunnel_address=$(get_tunnel_address "$device")
-
-
   device_id=$(getDevice $device '.id')
+
+  # 🚫 Não prossegue se device_id for 0 ou "0"
+  if [ "$device_id" = "0" ] || [ "$device_id" = 0 ]; then
+    echo "⚠️  Ignorando update: device_id é 0"
+    return
+  fi
+
   update_url=$(montar_erp_url 'update_tunnel_devices')
-
-
   JSON_PAYLOAD="{\"id\":\"$device_id\",\"tunnel_address\":\"$tunnel_address\",\"cliente_id\":\"$CLIENTE_ID\"}"
 
   echo
@@ -321,9 +338,55 @@ update_no_erp(){
   echo "$JSON_PAYLOAD"
 
   curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$update_url" &> /dev/null
-
-
 }
+
+
+get_device_conexao() {
+  local device_id="$1"
+
+  if [[ -z "$device_id" ]]; then
+    echo "❌ Uso: get_device_conexao <device_id>" >&2
+    return 1
+  fi
+
+  if [[ ! -f "$CONEXOES_FILE" ]]; then
+    echo "❌ Arquivo de conexões '$CONEXOES_FILE' não encontrado." >&2
+    return 1
+  fi
+
+  local linha
+  linha=$(grep "device_id:$device_id" "$CONEXOES_FILE")
+
+  if [[ -n "$linha" ]]; then
+    echo "$linha"
+  else
+    echo "❌ Nenhuma conexão encontrada para device_id:$device_id" >&2
+    return 1
+  fi
+}
+
+extrair_campo_conexao() {
+  local device_id="$1"
+  local chave="$2"
+
+  local conexao_item
+  conexao_item=$(get_device_conexao "$device_id")
+  if [[ -z "$conexao_item" ]]; then
+    # echo "❌ Nenhuma conexão encontrada para device_id: $device_id" >&2
+    return 1
+  fi
+
+  local valor
+  valor=$(echo "$conexao_item" | sed -n "s/.*$chave:\([^§]*\).*/\1/p")
+
+  if [[ -n "$valor" ]]; then
+    echo "$valor"
+  else
+    echo "⚠️ Campo '$chave' não encontrado em conexão de device_id:$device_id" >&2
+    return 1
+  fi
+}
+
 
 get_tunnel_address() {
   local device="$1"
@@ -331,8 +394,8 @@ get_tunnel_address() {
   device_id=$(getDevice "$device" '.id')
 
 
-  local linha=$(grep "device_id:$device_id" "$CONEXOES_FILE")
-  local tunnel_porta=$(echo "$linha" | sed -n 's/.*tunnel_porta:\([^§]*\).*/\1/p')
+  tunnel_porta=$(extrair_campo_conexao $device_id "tunnel_porta")
+
 
   if [ -n "$tunnel_porta" ]; then
     echo "${SC_TUNNEL_ADDRESS}:${tunnel_porta}"
@@ -349,8 +412,7 @@ garantir_conexao_do_device(){
   device_codigo=$(getDevice "$device" '.codigo')
   device_id=$(getDevice "$device" '.id')
 
-  linha=$(grep "device_id:$device_id" "$CONEXOES_FILE")
-  pid=$(echo "$linha" | sed -n 's/.*pid:\([^§]*\).*/\1/p')
+  pid=$(extrair_campo_conexao $device_id "pid")
   tunnel_address=$(get_tunnel_address "$device")
 
   if kill -0 "$pid" >/dev/null 2>&1; then
@@ -358,7 +420,7 @@ garantir_conexao_do_device(){
   else
     echo "Caiu Tunnel de #$device_codigo - $device_host - $tunnel_address - PID $pid"
     reconnect_tunnel "$device" "$device_host"
-    update_no_erp "$device" "$device_host"
+    update_device_tunnel_addres_no_erp "$device" "$device_host"
   fi
 }
 
