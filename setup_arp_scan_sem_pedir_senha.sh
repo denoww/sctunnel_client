@@ -7,9 +7,12 @@ echo "📦 Verificando e instalando arp-scan..."
 # sudo apt-get update -y
 sudo apt-get install -y arp-scan
 
+DIR_LIB=/var/lib/sctunnel_client
+
+
 # Detecta o binário real do arp-scan
 ARP_SCAN_BIN="/usr/sbin/arp-scan"
-ARP_SCAN_INSTALDO="ARP_SCAN_INSTALDO.txt"
+ARP_SCAN_INSTALDO="${DIR_LIB}/ARP_SCAN_INSTALADO.txt"
 
 # Aplica setcap para permitir rodar sem sudo
 echo "🔧 Aplicando permissões com setcap..."

@@ -1,4 +1,8 @@
 
+#!/bin/bash
+
+# Defina o PATH para garantir que comandos como arp-scan e curl funcionem
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 
 
@@ -32,12 +36,12 @@ CONEXOES_FILE="${DIR}/conexoes.txt"
 ####################################################
 ## ARPSCAP
 ####################################################
-ARP_SCAN_INSTALDO="ARP_SCAN_INSTALDO.txt"
+ARP_SCAN_INSTALADO="ARP_SCAN_INSTALADO.txt"
 
 # Verifica se o marcador de instalação existe
 RED='\033[31m'
 NC='\033[0m'
-if [ ! -f "$ARP_SCAN_INSTALDO" ]; then
+if [ ! -f "$ARP_SCAN_INSTALADO" ]; then
 
   echo -e "${RED}==================================================================${NC}" >&2
   echo -e "${RED}❌ arp-scan não está instalado.${NC}" >&2

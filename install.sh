@@ -81,8 +81,8 @@ if $INSTALL_CRONS; then
   print_header "CRONS INSTALL"
   echo "🕒 Instalando cron jobs..."
   sudo tee "$CRONPATH" > /dev/null <<EOF
-@reboot root bash ${DIR_LIB}/exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1
-*/1 * * * * root bash ${DIR_LIB}/exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1
+@reboot root /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
+*/1 * * * * root /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
 */30 * * * * root /usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/logs/rede.log 2>&1
 EOF
   sudo chmod 644 "$CRONPATH"
@@ -92,3 +92,16 @@ EOF
   print_footer
 fi
 
+
+
+################################################################
+# INSTALL_CRON
+print_header "Adiconando Permissoes..."
+sudo mkdir -p "$DIR_LIB/logs"
+sudo touch "$DIR_LIB/logs/cron.txt"
+sudo chmod 666 "$DIR_LIB/logs/cron.txt"
+sudo chmod 777 "$DIR_LIB/logs"
+sudo chmod +x "$DIR_LIB/exec.sh"
+
+
+print_header "Fim"
