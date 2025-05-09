@@ -7,6 +7,9 @@ echo "🔧 Instalando comando 'exec_cliente' no sistema..."
 DIR_LIB=/var/lib/sctunnel_client
 
 
+git config --global --add safe.directory $DIR_LIB/sctunnel_client
+
+
 
 ################################################################
 # FUNCTIONS
