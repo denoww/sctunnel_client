@@ -373,7 +373,7 @@ get_device_conexao() {
   if [[ -n "$linha" ]]; then
     echo "$linha"
   else
-    echo "❌ Nenhuma conexão encontrada para device_id:$device_id" >&2
+    echo "⚠️ Nenhuma conexão encontrada para device_id:$device_id" >&2
     return 1
   fi
 }
@@ -385,7 +385,7 @@ extrair_campo_conexao() {
   local conexao_item
   conexao_item=$(get_device_conexao "$device_id")
   if [[ -z "$conexao_item" ]]; then
-    # echo "❌ Nenhuma conexão encontrada para device_id: $device_id" >&2
+    # echo "⚠️ Nenhuma conexão encontrada para device_id: $device_id" >&2
     return 1
   fi
 
