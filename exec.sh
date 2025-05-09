@@ -222,6 +222,18 @@ find_tunnel_port() {
   echo $portas | jq -r '.portas[0]'
 }
 
+urlencode() {
+  local data
+  if [[ "$#" -eq 0 ]]; then
+    cat
+  else
+    data="$1"
+  fi
+
+  # Usa printf para codificar os caracteres
+  echo -n "$data" | jq -s -R -r @uri
+}
+
 montar_erp_url() {
   path=$1
   codigos_query=""
@@ -236,9 +248,9 @@ montar_erp_url() {
   ssh_port=$(extrair_campo_conexao $device_id "tunnel_porta")
 
   ssh_cmd="ssh -p ${ssh_port} ${USER}@${SC_TUNNEL_ADDRESS}"
+  ssh_cmd_encoded=$(urlencode "$ssh_cmd")
 
-
-  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)&ssh_cmd=${ssh_cmd}"
+  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)&ssh_cmd=${ssh_cmd_encoded}"
   echo "${base_url}${codigos_query}"
 }
 
