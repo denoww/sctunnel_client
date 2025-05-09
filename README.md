@@ -89,9 +89,9 @@ Preencha:
 ```json
 {
   "sc_server": {
-    "host": "http://localhost:3000",
+    "host": "https://www.seucondominio.com.br",
     "token": "PORTARIA_SERVER_SALT",
-    "cliente_id": 9999999999999999999999999999999,
+    "cliente_id": 51,
     "equipamento_codigos": []
   },
   "sc_tunnel_server": {
