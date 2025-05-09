@@ -91,7 +91,12 @@ EOF
   sudo chmod 644 "$CRONPATH"
   sudo chown root:root "$CRONPATH"
   echo "✅ Cron jobs instalados com sucesso em:"
-  echo "$CRONPATH"
+  echo "cat $CRONPATH"
+
+  echo "Teste o Cron"
+  echo "bash /var/lib/sctunnel_client/testar_cron.sh"
+
+
   print_footer
 fi
 
