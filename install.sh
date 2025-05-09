@@ -104,12 +104,19 @@ fi
 
 ################################################################
 # INSTALL_CRON
-print_header "Adiconando Permissoes..."
+print_header "ADICONANDO PERMISSOES"
 sudo mkdir -p "$DIR_LIB/logs"
 sudo touch "$DIR_LIB/logs/cron.txt"
 sudo chmod 666 "$DIR_LIB/logs/cron.txt"
 sudo chmod 777 "$DIR_LIB/logs"
 sudo chmod +x "$DIR_LIB/exec.sh"
+
+
+# HABILITAR E INSTALA SERVIDOR SSH
+print_header "HABILITAR SSH"
+echo "🔧 Verificando SSH..."
+sudo apt install -y openssh-server
+sudo systemctl enable ssh --now
 
 
 print_header "Fim"
