@@ -84,22 +84,27 @@ fi
 if $INSTALL_CRONS; then
   print_header "CRONS INSTALL"
   echo "🕒 Instalando cron jobs..."
-  sudo tee "$CRONPATH" > /dev/null <<EOF
-@reboot root /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
-*/1 * * * * root /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
-*/30 * * * * root /usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/logs/rede.log 2>&1
+
+  # Constrói conteúdo do cron
+  CRON_CONTENT=$(cat <<EOF
+@reboot /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
+*/1 * * * * /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
+*/30 * * * * /usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/logs/rede.log 2>&1
 EOF
-  sudo chmod 644 "$CRONPATH"
-  sudo chown root:root "$CRONPATH"
-  echo "✅ Cron jobs instalados com sucesso em:"
-  echo "cat $CRONPATH"
+)
 
-  echo "Teste o Cron"
-  echo "bash /var/lib/sctunnel_client/testar_cron.sh"
+  # Instala no crontab do usuário atual
+  (crontab -l 2>/dev/null; echo "$CRON_CONTENT") | crontab -
 
+  echo "✅ Cron jobs adicionados para o usuário $USER"
+  echo "Use 'crontab -l' para verificar."
+
+  echo "Teste o Cron:"
+  echo "bash ${DIR_LIB}/testar_cron.sh"
 
   print_footer
 fi
+
 
 
 
