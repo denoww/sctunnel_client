@@ -111,7 +111,8 @@ EOF
   rm "$TMP_CRON"
 
   echo "✅ Cron jobs adicionados para o usuário $(whoami)"
-  echo "🔎 Verifique com: crontab -l"
+  echo "🔎 Verifique com:"
+  echo "crontab -l"
 
   echo "🧪 Teste o cron manualmente com:"
   echo "bash ${DIR_LIB}/testar_cron.sh"
