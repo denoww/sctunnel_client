@@ -45,10 +45,11 @@ CONEXOES_FILE="${DIR}/conexoes.txt"
 RED='\033[31m'
 NC='\033[0m'
 
-# ARP_SCAN_INSTALADO="${DIR}/ARP_SCAN_INSTALADO.txt"
-# ARP_SCAN_PATH=$(which arp-scan 2>/dev/null)
-ARP_SCAN_PATH="/usr/bin/arp-scan"
+ARP_SCAN_PATH=$(which arp-scan 2>/dev/null)
+# ARP_SCAN_PATH=$(command -v arp-scan)
+# ARP_SCAN_PATH="/usr/bin/arp-scan"
 
+ARP_SCAN_INSTALADO="${DIR}/ARP_SCAN_INSTALADO.txt"
 if [ ! -f "$ARP_SCAN_INSTALADO" ]; then
 
   echo -e "${RED}==================================================================${NC}" >&2
@@ -59,7 +60,6 @@ if [ ! -f "$ARP_SCAN_INSTALADO" ]; then
   # exit 1
 fi
 
-ARP_SCAN_PATH=$(command -v arp-scan)
 # Verifica se o comando foi encontrado
 if [ -z "$ARP_SCAN_PATH" ]; then
   echo -e "${RED}Comando 'arp-scan' não encontrado no PATH. '.${NC}" >&2
