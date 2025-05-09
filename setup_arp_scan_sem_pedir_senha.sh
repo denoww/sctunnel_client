@@ -1,20 +1,22 @@
 #!/bin/bash
-
 set -e
 
 echo
 echo "📦 Verificando e instalando arp-scan..."
-# sudo apt-get update -y
-sudo apt-get install -y arp-scan
+sudo apt-get install -y arp-scan libcap2-bin
 
-DIR_LIB=/var/lib/sctunnel_client
-
-
-# Detecta o binário real do arp-scan
-ARP_SCAN_BIN="/usr/sbin/arp-scan"
+DIR_LIB="/var/lib/sctunnel_client"
 ARP_SCAN_INSTALDO="${DIR_LIB}/ARP_SCAN_INSTALADO.txt"
 
-# Aplica setcap para permitir rodar sem sudo
+# Detecta o binário real do arp-scan
+ARP_SCAN_BIN=$(command -v arp-scan)
+
+if [ -z "$ARP_SCAN_BIN" ]; then
+  echo "❌ arp-scan não encontrado após instalação." >&2
+  exit 1
+fi
+
+# Aplica setcap para rodar sem sudo
 echo "🔧 Aplicando permissões com setcap..."
 sudo setcap cap_net_raw,cap_net_admin=eip "$ARP_SCAN_BIN"
 
@@ -26,23 +28,21 @@ else
   exit 1
 fi
 
-# Detecta a melhor interface com IP local na faixa 192.168.*
-echo "🌐 Detectando interface de rede ativa (192.168.*)..."
-# read -r IFACE IP <<< "$(ip -o -4 addr show | awk '$4 ~ /^192\.168\./ {print $2, $4; exit}')"
+# Detecta a melhor interface com IP local na rota padrão
+echo "🌐 Detectando interface de rede ativa..."
+read -r IFACE IP <<< "$(ip route get 1.1.1.1 2>/dev/null | awk '{print $5, $7; exit}')"
 
-read -r IFACE IP <<< $(ip route get 1.1.1.1 | awk '{print $5, $7; exit}')
-
-
-if [ -z "$IFACE" ]; then
-  echo "❌ Nenhuma interface  detectada." >&2
+if [ -z "$IFACE" ] || [ -z "$IP" ]; then
+  echo "❌ Nenhuma interface de rede detectada." >&2
   exit 1
 fi
 
 echo "✅ Interface detectada: $IFACE ($IP)"
+SUBNET=$(echo "$IP" | sed 's/\.[0-9]\+$/\.0\/24/')
 
 # Testa a varredura
-echo "🔍 Iniciando varredura com arp-scan..."
-$ARP_SCAN_BIN --interface="$IFACE" 192.168.0.0/24
+echo "🔍 Iniciando varredura com arp-scan em $SUBNET..."
+$ARP_SCAN_BIN --interface="$IFACE" "$SUBNET"
 
 # Marca como instalado
 touch "$ARP_SCAN_INSTALDO"
