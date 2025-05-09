@@ -4,6 +4,11 @@
 # Defina o PATH para garantir que comandos como arp-scan e curl funcionem
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+# ARP_SCAN_INSTALADO="${DIR}/ARP_SCAN_INSTALADO.txt"
+# ARP_SCAN_PATH=$(which arp-scan 2>/dev/null)
+ARP_SCAN_PATH="/usr/bin/arp-scan"
+
+
 # PATH=${PATH:-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin}
 USER=${USER:-$(whoami)}
 
@@ -37,8 +42,6 @@ CONEXOES_FILE="${DIR}/conexoes.txt"
 ####################################################
 ## ARPSCAP
 ####################################################
-# ARP_SCAN_INSTALADO="${DIR}/ARP_SCAN_INSTALADO.txt"
-ARP_SCAN_PATH=$(which arp-scan 2>/dev/null)
 
 # Verifica se o marcador de instalação existe
 RED='\033[31m'
