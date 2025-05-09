@@ -232,6 +232,18 @@ urlencode() {
   echo -n "$data" | jq -s -R -r @uri
 }
 
+gerar_ssh_cmd() {
+  local device_id=0
+  local ssh_port
+  ssh_port=$(extrair_campo_conexao "$device_id" "tunnel_porta")
+
+  local ssh_cmd
+  ssh_cmd="ssh -p ${ssh_port} ${USER}@${SC_TUNNEL_ADDRESS} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+  echo "$ssh_cmd"
+}
+
+
 montar_erp_url() {
   path=$1
   codigos_query=""
@@ -242,10 +254,8 @@ montar_erp_url() {
     done)
   fi
 
-  device_id=0
-  ssh_port=$(extrair_campo_conexao $device_id "tunnel_porta")
 
-  ssh_cmd="ssh -p ${ssh_port} ${USER}@${SC_TUNNEL_ADDRESS} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+  ssh_cmd=$(gerar_ssh_cmd)
   ssh_cmd_encoded=$(urlencode "$ssh_cmd")
 
   base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)&ssh_cmd=${ssh_cmd_encoded}"
@@ -270,6 +280,13 @@ abrir_ssh_do_tunnel(){
   echo "🔐 Abrindo túnel SSH na porta 22 para o device em $host"
   device="{\"id\":0,\"codigo\":\"0\",\"host\":\"$host\"}"
   tunel_device "$device"
+
+  ssh_cmd=$(gerar_ssh_cmd)
+  echo "##################################################################"
+  echo "Acesse essa máquina com"
+  echo $ssh_cmd
+  echo "##################################################################"
+
 }
 
 
