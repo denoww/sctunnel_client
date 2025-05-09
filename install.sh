@@ -4,9 +4,11 @@ set -e
 
 echo "🔧 Instalando comando 'exec_cliente' no sistema..."
 
+DIR_LIB=/var/lib/sctunnel_client
+
 
 # arp-scan
-bash setup_arp_scan_sem_pedir_senha.sh
+bash "${DIR_LIB}/setup_arp_scan_sem_pedir_senha.sh"
 
 # Define o destino do comando
 DESTINO="/usr/local/bin/exec_cliente"
@@ -14,7 +16,7 @@ DESTINO="/usr/local/bin/exec_cliente"
 # Cria o script do comando
 sudo tee "$DESTINO" > /dev/null <<'EOF'
 #!/bin/bash
-bash /var/lib/sctunnel_client/trocar_cliente.sh "$1"
+bash ${DIR_LIB}/trocar_cliente.sh "$1"
 EOF
 
 # Dá permissão de execução
@@ -52,9 +54,9 @@ fi
 if $INSTALL_CRONS; then
   echo "🕒 Instalando cron jobs..."
   sudo tee "$CRONPATH" > /dev/null <<EOF
-@reboot root bash /var/lib/sctunnel_client/exec.sh >> /var/lib/sctunnel_client/log_cron.txt 2>&1
-*/1 * * * * root bash /var/lib/sctunnel_client/exec.sh >> /var/lib/sctunnel_client/log_cron.txt 2>&1
-*/30 * * * * root /usr/bin/systemctl restart NetworkManager >> /var/lib/sctunnel_client/rede.log 2>&1
+@reboot root bash ${DIR_LIB}/exec.sh >> ${DIR_LIB}/log_cron.txt 2>&1
+*/1 * * * * root bash ${DIR_LIB}/exec.sh >> ${DIR_LIB}/log_cron.txt 2>&1
+*/30 * * * * root /usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/rede.log 2>&1
 EOF
 
   sudo chmod 644 "$CRONPATH"
