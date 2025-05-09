@@ -2,9 +2,9 @@
 #!/bin/bash
 
 # Defina o PATH para garantir que comandos como arp-scan e curl funcionem
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-
+# export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+PATH=${PATH:-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin}
+USER=${USER:-$(whoami)}
 
 # clear config
 # new_config=$(jq -r '.' "config.json" | jq '.sc_tunnel = {}')
@@ -77,7 +77,6 @@ echo $ARP_SCAN_OUTPUT
 
 
 
-# SC_KNOWN_HOSTS="/home/orangepi/.ssh/known_hosts"
 
 echo ''
 echo '=================================================================================='
