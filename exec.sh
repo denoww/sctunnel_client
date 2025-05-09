@@ -117,6 +117,13 @@ tunel_device(){
   MAC1=$(getDevice $device '.mac_address')
   MAC2=$(getDevice $device '.mac_address_2')
 
+  echo
+  echo "========================================================================================="
+  echo "========================================================================================="
+  echo "========================================================================================="
+  echo "device #$codigo"
+  echo $device
+  echo
   ###############################
   ###############################
   # get_ip_by_mac precisa de sudo
@@ -126,7 +133,7 @@ tunel_device(){
     for MAC in "$MAC1" "$MAC2"; do
       if ! is_blank "$MAC"; then
         echo "" >&2
-        echo "🔍 Procurando IP pelo MAC $MAC" >&2
+        echo "🔍 #$codigo Procurando IP pelo MAC $MAC" >&2
         device_host=$(get_ip_by_mac "$MAC")
         if ! is_blank "$device_host"; then
           echo "✅ Encontrado device_host: $device_host via MAC: $MAC"
@@ -152,13 +159,6 @@ tunel_device(){
 
   tunnel_me=$(getDevice $device '.tunnel_me')
 
-  echo
-  echo "========================================================================================="
-  echo "========================================================================================="
-  echo "========================================================================================="
-  echo "device #$codigo"
-  echo $device
-  echo
 
   if [ "$tunnel_me" = false ]; then
     disconnect_old_tunnel "$device" "$device_host"
