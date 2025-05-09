@@ -43,7 +43,7 @@ exec_cliente 10
 Tete o Cron
 
 ```bash
-/bin/bash -c 'cd /var/lib/sctunnel_client && ./exec.sh >> logs/cron.txt 2>&1'
+bash /var/lib/sctunnel_client/testar_cron.sh
 ```
 
 
