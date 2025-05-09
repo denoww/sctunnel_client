@@ -110,6 +110,7 @@ sudo mkdir -p "$DIR_LIB/logs"
 sudo touch "$DIR_LIB/logs/cron.txt"
 sudo chmod 666 "$DIR_LIB/logs/cron.txt"
 sudo chmod 777 "$DIR_LIB/logs"
+sudo chmod 777 "$DIR_LIB/config.json"
 sudo chmod +x "$DIR_LIB/exec.sh"
 
 
