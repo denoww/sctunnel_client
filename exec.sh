@@ -36,7 +36,7 @@ CONEXOES_FILE="${DIR}/conexoes.txt"
 ####################################################
 ## ARPSCAP
 ####################################################
-ARP_SCAN_INSTALADO="ARP_SCAN_INSTALADO.txt"
+ARP_SCAN_INSTALADO="${DIR}/ARP_SCAN_INSTALADO.txt"
 
 # Verifica se o marcador de instalação existe
 RED='\033[31m'
