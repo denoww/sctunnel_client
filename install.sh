@@ -69,14 +69,24 @@ done
 # REMOVE_CRONS
 if $REMOVE_CRONS; then
   print_header "CRONS REMOVE"
+
+  # Remove cron do usuário atual (crontab -r remove todos)
+  if crontab -l &>/dev/null; then
+    crontab -r
+    echo "🗑️  Cron jobs removidos do usuário $(whoami)"
+  else
+    echo "ℹ️  Nenhum cron job encontrado para o usuário $(whoami)"
+  fi
+
+  # Remove também o arquivo em /etc/cron.d se existir
   if [[ -f "$CRONPATH" ]]; then
     sudo rm -f "$CRONPATH"
-    echo "🗑️  Cron job removido: $CRONPATH"
-  else
-    echo "ℹ️  Nenhum cron job para remover em: $CRONPATH"
+    echo "🗑️  Arquivo de cron removido: $CRONPATH"
   fi
+
   print_footer
 fi
+
 
 
 ################################################################
@@ -85,25 +95,30 @@ if $INSTALL_CRONS; then
   print_header "CRONS INSTALL"
   echo "🕒 Instalando cron jobs..."
 
-  # Constrói conteúdo do cron
+  # Constrói conteúdo do cron (com caminhos absolutos para evitar erro)
   CRON_CONTENT=$(cat <<EOF
-@reboot /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
-*/1 * * * * /bin/bash -c 'cd ${DIR_LIB} && ./exec.sh >> logs/cron.txt 2>&1'
-*/30 * * * * /usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/logs/rede.log 2>&1
+@reboot /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
+*/1 * * * * /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
+*/30 * * * * /bin/bash -c '/usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/logs/rede.log 2>&1'
 EOF
 )
 
-  # Instala no crontab do usuário atual
-  (crontab -l 2>/dev/null; echo "$CRON_CONTENT") | crontab -
+  # Instala no crontab do usuário atual, sem duplicar entradas
+  TMP_CRON=$(mktemp)
+  crontab -l 2>/dev/null > "$TMP_CRON" || true
+  echo "$CRON_CONTENT" >> "$TMP_CRON"
+  crontab "$TMP_CRON"
+  rm "$TMP_CRON"
 
-  echo "✅ Cron jobs adicionados para o usuário $USER"
-  echo "Use 'crontab -l' para verificar."
+  echo "✅ Cron jobs adicionados para o usuário $(whoami)"
+  echo "🔎 Verifique com: crontab -l"
 
-  echo "Teste o Cron:"
+  echo "🧪 Teste o cron manualmente com:"
   echo "bash ${DIR_LIB}/testar_cron.sh"
 
   print_footer
 fi
+
 
 
 
