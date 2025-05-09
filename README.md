@@ -40,6 +40,13 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 exec_cliente 10
 ```
 
+Tete o Cron
+
+```bash
+/bin/bash -c 'cd /var/lib/sctunnel_client && ./exec.sh >> logs/cron.txt 2>&1'
+```
+
+
 ---
 
 ## 📥 3. Instalação
