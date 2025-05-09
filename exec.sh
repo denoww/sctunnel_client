@@ -45,7 +45,7 @@ if [ ! -f "$ARP_SCAN_INSTALADO" ]; then
 
   echo -e "${RED}==================================================================${NC}" >&2
   echo -e "${RED}❌ arp-scan não está instalado.${NC}" >&2
-  echo -e "${RED}Instale com 'bash /var/lib/sctunnel_client/install.sh'${NC}" >&2
+  echo -e "${RED}Instale com 'bash ${DIR}/install.sh'${NC}" >&2
   echo -e "${RED}==================================================================${NC}" >&2
 
   # exit 1
@@ -55,7 +55,7 @@ ARP_SCAN_PATH=$(command -v arp-scan)
 # Verifica se o comando foi encontrado
 if [ -z "$ARP_SCAN_PATH" ]; then
   echo -e "${RED}Comando 'arp-scan' não encontrado no PATH. '.${NC}" >&2
-  echo -e "${RED}Faça 'bash /var/lib/sctunnel_client/install.sh' ${NC}" >&2
+  echo -e "${RED}Faça 'bash ${DIR}/install.sh' ${NC}" >&2
   echo -e "${RED}ou ${NC}" >&2
   echo -e "${RED}Faça 'sudo apt install arp-scan' ${NC}" >&2
   # exit 1
@@ -441,7 +441,7 @@ garantir_conexao_do_device(){
 
 update_firmware(){
   echo "Atualizando firmware..."
-  cd /var/lib/sctunnel_client && git pull
+  cd ${DIR} && git pull
 }
 
 # arrumar_erro_host_identification_changed(){
