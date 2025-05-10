@@ -73,7 +73,7 @@ sudo chown -R "$(whoami)" .
 ```
 
 
-Configurar `config.json` (ambiente development)
+⚙️ Configurar `config.json` (ambiente development)
 
 ```bash
 cd /var/lib/sctunnel_client
