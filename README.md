@@ -95,7 +95,7 @@ bash exec.sh
 ```
 
 ```
-Fique atento nos logs para pegar o "Acesse essa máquina com"
+Fique atento nos logs verde em "Acesse essa máquina com"
 Entre no ssh
 execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
 ```
