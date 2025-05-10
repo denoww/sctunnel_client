@@ -39,7 +39,3 @@ if command -v jq >/dev/null; then
 else
   cat "$config_json_path"
 fi
-
-# Instala cron jobs
-bash "$DIR/install.sh" --install_crons
-exec_cliente "$CLIENTE_ID"
