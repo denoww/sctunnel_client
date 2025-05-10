@@ -43,11 +43,11 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 
 ---
 
-## 📥 3. Construir SD
+## 📥 3. Construir CARTÃO SD
 
-### Construir SD
+### Configuração básica
 
-- Usado ubuntu server jammy (sem interface grafica)
+- Imagem usada: ubuntu server jammy (sem interface grafica)
 - Senha
   - `sudo passwd orangepi`
   - `sudo passwd root`
