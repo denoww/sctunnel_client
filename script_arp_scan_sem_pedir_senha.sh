@@ -9,19 +9,20 @@ DIR_LIB="/var/lib/sctunnel_client"
 ARP_SCAN_INSTALDO="${DIR_LIB}/ARP_SCAN_INSTALADO.txt"
 
 # Detecta o binário real do arp-scan
-ARP_SCAN_BIN=$(command -v arp-scan)
+# ARP_SCAN_PATH=$(command -v arp-scan)
+ARP_SCAN_PATH=$(which arp-scan 2>/dev/null)
 
-if [ -z "$ARP_SCAN_BIN" ]; then
+if [ -z "$ARP_SCAN_PATH" ]; then
   echo "❌ arp-scan não encontrado após instalação." >&2
   exit 1
 fi
 
 # Aplica setcap para rodar sem sudo
 echo "🔧 Aplicando permissões com setcap..."
-sudo setcap cap_net_raw,cap_net_admin=eip "$ARP_SCAN_BIN"
+sudo setcap cap_net_raw,cap_net_admin=eip "$ARP_SCAN_PATH"
 
 # Verifica se deu certo
-if getcap "$ARP_SCAN_BIN" | grep -q "cap_net_admin,cap_net_raw+eip"; then
+if getcap "$ARP_SCAN_PATH" | grep -q "cap_net_admin,cap_net_raw+eip"; then
   echo "✅ Permissões aplicadas com sucesso."
 else
   echo "❌ Falha ao aplicar permissões com setcap." >&2
@@ -42,7 +43,7 @@ SUBNET=$(echo "$IP" | sed 's/\.[0-9]\+$/\.0\/24/')
 
 # Testa a varredura
 echo "🔍 Iniciando varredura com arp-scan em $SUBNET..."
-$ARP_SCAN_BIN --interface="$IFACE" "$SUBNET"
+$ARP_SCAN_PATH --interface="$IFACE" "$SUBNET"
 
 # Marca como instalado
 touch "$ARP_SCAN_INSTALDO"
