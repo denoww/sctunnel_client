@@ -4,6 +4,9 @@
 
 ```bash
 sudo nand-sata-install
+-> boot from eMMC - system on eMMC
+-> filesystem -> btrfs
+
 ```
 
 🔌 Desligue o mini PC, remova o SD Card e ligue o mini PC novamente.
