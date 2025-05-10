@@ -91,7 +91,7 @@ sudo mount /dev/sda1 /mnt/usb
 sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.pem
 ```
 
-#### 🧩 set_config_json_and_install
+#### 🧩 set_config_json
 
 
 ```bash
@@ -99,7 +99,7 @@ cd /var/lib
 sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
 cd sctunnel_client
 sudo chown -R "$(whoami)" .
-bash set_config_json_and_install.sh "prod", "51", 'xxxxxxx'
+bash set_config_json.sh "prod" "51" 'xxxxxxx'
 bash exec.sh
 ```
 
@@ -111,7 +111,7 @@ execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
 
 ```
 cd /var/lib/sctunnel_client
-bash set_config_json_and_install.sh "prod", "51", 'PORTARIA_SERVER_SALT'
+bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT"
 ```
 
 Termine a instalação
