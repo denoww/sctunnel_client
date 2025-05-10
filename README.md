@@ -12,6 +12,14 @@ sudo nand-sata-install
 
 🔌 Desligue o mini PC, remova o SD Card e ligue o mini PC novamente.
 
+
+- Após ligar
+```bash
+exec_cliente 51
+```
+
+
+
 ---
 
 ## 💻 COMANDOS
