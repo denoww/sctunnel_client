@@ -52,7 +52,19 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 
 ---
 
-## 📥 3. Instalação
+## 📥 3. Construir SD
+
+### Construir SD
+
+- Usado ubuntu server jammy (sem interface grafica)
+- arrumar teclado
+- sudo passwd orangepi
+- sudo passwd root
+- sudo dpkg-reconfigure keyboard-configuration
+- sudo reboot
+- sudo apt-get update
+- sudo apt-get upgrade
+- sudo reboot
 
 ### Instalação padrão
 
