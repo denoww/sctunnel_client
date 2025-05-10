@@ -2,8 +2,8 @@
 
 DIR=/var/lib/sctunnel_client
 ENVIROM=$1
-PORTARIA_SERVER_SALT="$2"
-CLIENTE_ID="$3"
+CLIENTE_ID="$2"
+PORTARIA_SERVER_SALT="$3"
 
 config_json_path="$DIR/config.json"
 
