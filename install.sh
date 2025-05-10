@@ -26,11 +26,12 @@ print_footer() {
   echo "-------------------------------------------------" >&2
 }
 
-################################################################
-# ARP-SCAN INSTALL
-print_header "ARP-SCAN INSTALL"
-bash "${DIR_LIB}/script_arp_scan_sem_pedir_senha.sh"
-print_footer
+# HABILITAR E INSTALA SERVIDOR SSH
+print_header "HABILITAR SSH"
+echo "🔧 Verificando SSH..."
+sudo apt install -y openssh-server
+sudo systemctl enable ssh --now
+
 
 
 ################################################################
@@ -128,7 +129,7 @@ fi
 
 
 ################################################################
-# INSTALL_CRON
+# PERMISSOES
 print_header "ADICONANDO PERMISSOES"
 sudo mkdir -p "$DIR_LIB/logs"
 sudo touch "$DIR_LIB/logs/cron.txt"
@@ -139,11 +140,14 @@ sudo chmod 777 "$DIR_LIB/config.json"
 sudo chmod +x "$DIR_LIB/exec.sh"
 
 
-# HABILITAR E INSTALA SERVIDOR SSH
-print_header "HABILITAR SSH"
-echo "🔧 Verificando SSH..."
-sudo apt install -y openssh-server
-sudo systemctl enable ssh --now
+
+################################################################
+# ARP-SCAN INSTALL
+print_header "ARP-SCAN INSTALL"
+bash "${DIR_LIB}/script_arp_scan_sem_pedir_senha.sh"
+print_footer
+
+
 
 
 print_header "Fim"
