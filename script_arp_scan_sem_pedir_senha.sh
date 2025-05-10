@@ -49,7 +49,9 @@ echo "✅ Interface detectada: $IFACE ($IP)"
 SUBNET=$(echo "$IP" | sed 's/\.[0-9]\+$/\.0\/24/')
 
 # Testa a varredura
-echo "🔍 Iniciando varredura com arp-scan em $SUBNET..."
+echo
+echo
+echo "🔍 Testando arp-scan em $SUBNET..."
 $ARP_SCAN_PATH --interface="$IFACE" "$SUBNET"
 
 # Marca como instalado
