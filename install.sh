@@ -29,7 +29,7 @@ print_footer() {
 ################################################################
 # ARP-SCAN INSTALL
 print_header "ARP-SCAN INSTALL"
-bash "${DIR_LIB}/setup_arp_scan_sem_pedir_senha.sh"
+bash "${DIR_LIB}/script_arp_scan_sem_pedir_senha.sh"
 print_footer
 
 
