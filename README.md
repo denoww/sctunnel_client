@@ -100,6 +100,7 @@ sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
 cd sctunnel_client
 sudo chown -R "$(whoami)" .
 bash set_config_json_and_install.sh "prod", "51", 'xxxxxxx'
+bash exec.sh
 ```
 
 - Obs
@@ -116,7 +117,11 @@ execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
 bash set_config_json_and_install.sh "prod", "51", 'PORTARIA_SERVER_SALT'
 ```
 
-
+Termine a instalação
+```
+bash "$DIR/install.sh" --install_crons
+exec_cliente "$CLIENTE_ID"
+```
 
 ---
 
