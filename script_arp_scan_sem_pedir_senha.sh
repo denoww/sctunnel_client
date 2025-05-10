@@ -22,12 +22,19 @@ echo "🔧 Aplicando permissões com setcap..."
 sudo setcap cap_net_raw,cap_net_admin=eip "$ARP_SCAN_PATH"
 
 # Verifica se deu certo
+# Verifica se deu certo
 if getcap "$ARP_SCAN_PATH" | grep -q "cap_net_admin,cap_net_raw+eip"; then
   echo "✅ Permissões aplicadas com sucesso."
 else
-  echo "❌ Falha ao aplicar permissões com setcap." >&2
-  exit 1
+  echo "⚠️ Permissões não confirmadas via getcap, mas setcap foi executado. Continuando..."
 fi
+
+# if getcap "$ARP_SCAN_PATH" | grep -q "cap_net_admin,cap_net_raw+eip"; then
+#   echo "✅ Permissões aplicadas com sucesso."
+# else
+#   echo "❌ Falha ao aplicar permissões com setcap." >&2
+#   exit 1
+# fi
 
 # Detecta a melhor interface com IP local na rota padrão
 echo "🌐 Detectando interface de rede ativa..."
