@@ -14,26 +14,32 @@ sudo nand-sata-install
 
 ## 💻 COMANDOS
 
+### ▶️ Executar cliente
+
 ```bash
 exec_cliente 51
 ```
 
-Caso não funcionar
+---
 
-Instale:
+### 🛠️ Caso não funcione (instalar agendador)
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --install_crons
 exec_cliente 51
 ```
 
-Teste o Cron:
+---
+
+### ⏱️ Testar execução automática (cron)
 
 ```bash
 bash /var/lib/sctunnel_client/testar_cron.sh
 ```
 
-Remova os cronjobs no mini_pc:
+---
+
+### ❌ Remover todos os cronjobs do cliente
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --remove_crons
