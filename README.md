@@ -1,6 +1,8 @@
 # 📡 sctunnel_client
 
-## 🧩 Gravar do cartão SD para ORANGEPI 3B
+## 🧩 INSTALAR NO ORANGE PI
+
+- Gravar do cartão SD para ORANGEPI 3B
 
 ```bash
 sudo nand-sata-install
