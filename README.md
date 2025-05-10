@@ -76,27 +76,21 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 ### Instalação padrão
 
 ```bash
+PORTARIA_SERVER_SALT='xxxxxxxxxxxxxxxxxxxx'
 cd /var/lib
 sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
-cd sctunnel_client/
-sudo chown -R $(whoami) .
-cp config-sample-PROD.json config.json
-bash sctunnel_client/install.sh --install_crons
-exec_cliente 51
+cd sctunnel_client
+bash set_config_json_and_install.sh "PROD", "PORTARIA_SERVER_SALT", '51'
 ```
 
-### Instalação alternativa (forçando permissões)
+- Obs
+- PROD ou DEV
+- 51 é o cliente_id
 
+```
+Fique atento nos logs para pegar o login com ssh e aí sim setar o PORTARIA_SERVER_SALT denovo
 ```bash
-cd /var/lib
-sudo chmod 7777 -R .
-sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
-cd sctunnel_client/
-sudo chown -R $(whoami) .
-cp config-sample-PROD.json config.json
-bash sctunnel_client/install.sh --install_crons
-exec_cliente 51
-```
+
 
 ---
 
