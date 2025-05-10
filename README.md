@@ -14,7 +14,7 @@ sudo nand-sata-install
 
 ---
 
-## 🔄 Executar e salvar cliente
+## 🔄 COMANDOS
 
 ```bash
 exec_cliente 51
