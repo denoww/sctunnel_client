@@ -110,6 +110,7 @@ execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
 ```
 
 ```
+cd /var/lib/sctunnel_client
 bash set_config_json_and_install.sh "prod", "51", 'PORTARIA_SERVER_SALT'
 ```
 
