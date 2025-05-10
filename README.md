@@ -76,7 +76,6 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 ### Instalação padrão
 
 ```bash
-PORTARIA_SERVER_SALT='xxxxxxxxxxxxxxxxxxxx'
 cd /var/lib
 sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
 cd sctunnel_client
