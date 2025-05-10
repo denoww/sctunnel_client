@@ -71,7 +71,7 @@ bash /var/lib/sctunnel_client/testar_cron.sh
     - `sudo apt-get upgrade`
     - `sudo reboot`
 - Reiniciar
-    - sudo reboot
+    - `sudo reboot`
 
 ### Instalação padrão
 
