@@ -472,10 +472,17 @@ garantir_conexao_do_device(){
 
 update_firmware(){
   echo "Atualizando firmware..."
-  export GIT_CONFIG_GLOBAL=/dev/null
-  git config --global --add safe.directory "$DIR"
-  cd ${DIR} && git pull
+  git config --global --add safe.directory "$DIR" 2>/dev/null || true
+  cd "$DIR" && git pull
 }
+
+
+# update_firmware(){
+#   echo "Atualizando firmware..."
+#   export GIT_CONFIG_GLOBAL=/dev/null
+#   git config --global --add safe.directory "$DIR"
+#   cd ${DIR} && git pull
+# }
 
 # arrumar_erro_host_identification_changed(){
 #   echo "ini - arrumar_erro_host_identification_changed em $SC_TUNNEL_ADDRESS EM $SC_KNOWN_HOSTS"
