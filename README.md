@@ -46,7 +46,7 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 ```
 
 
-❌ Remover todos os cronjobs do cliente
+❌ Remover cronjobs
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --remove_crons
