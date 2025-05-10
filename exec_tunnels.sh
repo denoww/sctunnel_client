@@ -78,7 +78,7 @@ SUBNET=$(echo "$IP_TUNNEL" | sed 's/\.[0-9]\+$/\.0\/24/')
 
 echo "🔄 Escaneando rede com arp-scan (uma vez só)..." >&2
 # ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
-ARP_SCAN_OUTPUT=$($ARP_SCAN_PATH --interface="$INTERFACE_REDE" "1.1.1.2")
+ARP_SCAN_OUTPUT=$($ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
 
 echo
 echo "--------------------------------------------------------------"
