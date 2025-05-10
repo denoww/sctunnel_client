@@ -60,7 +60,6 @@ for arg in "$@"; do
     INSTALL_CRONS=true
   fi
   if [[ "$arg" == "--remove_crons" ]]; then
-    echo 'sxx'
     REMOVE_CRONS=true
   fi
 done
