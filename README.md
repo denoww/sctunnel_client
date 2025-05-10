@@ -77,13 +77,13 @@ sudo chown -R "$(whoami)" .
 
 ```bash
 cd /var/lib/sctunnel_client
-
 # Define ambiente, cliente e token
 bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT'
+```
 
+```bash
 # Remove crons antigos (caso existam)
 bash install.sh --remove_crons
-
 # Salava e executa cliente 2
 set_cliente 2
 ```
