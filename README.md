@@ -123,58 +123,6 @@ bash exec.sh
 
 ---
 
-## 🛠️ 3.1 Configurar cliente_id e token
-
-```bash
-sudo nano /var/lib/sctunnel_client/config.json
-```
-
-Preencha:
-
-```json
-{
-  "sc_server": {
-    "host": "https://www.seucondominio.com.br",
-    "token": "PORTARIA_SERVER_SALT",
-    "cliente_id": 51,
-    "equipamento_codigos": []
-  },
-  "sc_tunnel_server": {
-    "host": "sctunnel1.seucondominio.com.br",
-    "user": "ubuntu"
-  }
-}
-```
-
-🔹 Se for usar **localhost**, pegue o `PORTARIA_SERVER_SALT` no `application.yml`.
-🔹 Se for **produção**, peça ajuda para um desenvolvedor.
-
-🎯 Para pegar apenas alguns equipamentos:
-
-```json
-"equipamento_codigos": [12, 22]
-```
-
-🎯 Para pegar todos os equipamentos:
-
-```json
-"equipamento_codigos": []
-```
-
-
-
-
----
-
-## 🖐️ 3.3 Executar manualmente
-
-```bash
-bash /var/lib/sctunnel_client/exec.sh
-```
-
----
-
-
 
 ## ☁️ 3.5 Criar servidor SCTUNNEL (caso não exista)
 
