@@ -40,10 +40,45 @@ Remova os cronjobs no mini_pc
 bash /var/lib/sctunnel_client/install.sh --remove_crons
 ```
 
+---
+
+
+## 🛠️ INSTALAR AMBIENTE DE DESENVOLVIMENTO
+
+```bash
+cd /var/lib
+sudo git clone https://github.com/denoww/sctunnel_client.git
+cd sctunnel_client
+sudo chown -R "$(whoami)" .
+```
+
+📄 **Copie o certificado `scTunnel.pem` para:**
+
+```bash
+/var/lib/sctunnel_client
+```
 
 ---
 
-## 📥 Construir CARTÃO SD
+### ⚙️ Configurar `config.json` (ambiente development)
+
+```bash
+cd /var/lib/sctunnel_client
+
+# Define ambiente, cliente e token
+bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT'
+
+# Remove crons antigos (caso existam)
+bash install.sh --remove_crons
+
+# Executa cliente 2
+exec_cliente 2
+```
+
+
+---
+
+## 📥 INSTALAR NO CARTÃO SD
 
 ### Configuração básica
 
@@ -79,11 +114,11 @@ cd sctunnel_client
 sudo chown -R "$(whoami)" .
 ```
 
-#### 🔑 Copiar o certificado `scTunnel.pem`
+#### 🔑 Copiar `scTunnel.pem`
 
-- Coloque o `scTunnel.pem` no pendrive
+- Coloque o `scTunnel.pem` em um pendrive novo
 - Insira o pendrive no tunnel
-- comando mount
+- mount da unidade (linux)
 
 ```bash
 sudo mkdir -p /mnt/usb
@@ -108,7 +143,7 @@ Entre no ssh
 execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
 ```
 
-#### 🧩 set_config_json definitivo
+#### 🧩 config.json produção
 
 Agora dentro do ssh (sua vida mais facil)
 Descubra o PORTARIA_SERVER_SALT e coloque ali embaixo
