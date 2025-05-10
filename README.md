@@ -125,7 +125,7 @@ bash install.sh --install_crons
 bash exec.sh
 ```
 
-Testar cron
+#### ⏱️ Testar cron
 ```
 bash /var/lib/sctunnel_client/testar_cron.sh
 ```
