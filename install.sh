@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🔧 Instalando comando 'exec_cliente' no sistema..."
+echo "🔧 Instalando comando 'set_cliente' no sistema..."
 
 DIR_LIB=/var/lib/sctunnel_client
 
@@ -37,16 +37,16 @@ sudo systemctl enable ssh --now
 ################################################################
 # EXEC_CLIENTE
 print_header "EXEC_CLIENTE INSTALL"
-EXEC_CLIENTE_PATH="/usr/local/bin/exec_cliente"
+EXEC_CLIENTE_PATH="/usr/local/bin/set_cliente"
 sudo tee "$EXEC_CLIENTE_PATH" > /dev/null <<EOF
 #!/bin/bash
 bash ${DIR_LIB}/trocar_cliente.sh "\$1"
 EOF
 
 sudo chmod +x "$EXEC_CLIENTE_PATH"
-echo "✅ Comando 'exec_cliente' instalado com sucesso!"
+echo "✅ Comando 'set_cliente' instalado com sucesso!"
 echo ""
-echo "📢 Agora você pode usar: exec_cliente <cliente_id>"
+echo "📢 Agora você pode usar: set_cliente <cliente_id>"
 print_footer
 
 
