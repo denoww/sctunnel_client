@@ -1,6 +1,6 @@
 # 📡 sctunnel_client
 
-## 🧩 1. Gravar do cartão SD para ORANGEPI 3B
+## 🧩 Gravar do cartão SD para ORANGEPI 3B
 
 ```bash
 sudo nand-sata-install
@@ -14,7 +14,7 @@ sudo nand-sata-install
 
 ---
 
-## 🔄 2. Executar e salvar cliente
+## 🔄 Executar e salvar cliente
 
 ```bash
 exec_cliente 51
@@ -43,7 +43,7 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 
 ---
 
-## 📥 3. Construir CARTÃO SD
+## 📥 Construir CARTÃO SD
 
 ### Configuração básica
 
