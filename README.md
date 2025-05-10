@@ -15,7 +15,7 @@ sudo nand-sata-install
 
 - Após ligar
 ```bash
-exec_cliente 51
+set_cliente 51
 ```
 
 
@@ -27,7 +27,7 @@ exec_cliente 51
 ### ▶️ Executar cliente
 
 ```bash
-exec_cliente 51
+set_cliente 51
 ```
 
 ---
@@ -36,7 +36,7 @@ exec_cliente 51
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --install_crons
-exec_cliente 51
+set_cliente 51
 ```
 
 ---
@@ -86,7 +86,7 @@ bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT'
 bash install.sh --remove_crons
 
 # Executa cliente 2
-exec_cliente 2
+set_cliente 2
 ```
 
 ---
