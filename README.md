@@ -1,6 +1,6 @@
 # 📡 sctunnel_client
 
-## 🧩 1. Gravar no SD Card
+## 🧩 1. Gravar do cartão SD para ORANGEPI 3B
 
 ```bash
 sudo nand-sata-install
@@ -17,7 +17,7 @@ sudo nand-sata-install
 ## 🔄 2. Executar e salvar cliente
 
 ```bash
-exec_cliente 10
+exec_cliente 51
 ```
 
 
@@ -25,28 +25,19 @@ Caso não funcionar
 
 Instale
 ```bash
-bash /var/lib/sctunnel_client/install.sh
-exec_cliente 10
+bash /var/lib/sctunnel_client/install.sh --install_crons
+exec_cliente 51
 ```
 
-ou
+Teste o Cron
 
-Instale com cronjobs no mini_pc
 ```bash
-bash /var/lib/sctunnel_client/install.sh --install_crons
-exec_cliente 10
+bash /var/lib/sctunnel_client/testar_cron.sh
 ```
 
 Remova os cronjobs no mini_pc
 ```bash
 bash /var/lib/sctunnel_client/install.sh --remove_crons
-exec_cliente 10
-```
-
-Tete o Cron
-
-```bash
-bash /var/lib/sctunnel_client/testar_cron.sh
 ```
 
 
