@@ -31,7 +31,7 @@ exec_cliente 51
 
 ---
 
-### ⏱️ Testar execução automática (cron)
+### ⏱️ Testar execução automática (cronjobs)
 
 ```bash
 bash /var/lib/sctunnel_client/testar_cron.sh
