@@ -22,7 +22,7 @@ exec_cliente 51
 
 ---
 
-### 🛠️ Caso não funcione (instalar agendador)
+### 🛠️ Caso não funcione
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --install_crons
