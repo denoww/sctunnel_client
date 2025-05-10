@@ -57,12 +57,12 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 ### Construir SD
 
 - Usado ubuntu server jammy (sem interface grafica)
-- arrumar teclado
-- sudo passwd orangepi
-- sudo passwd root
-- sudo dpkg-reconfigure keyboard-configuration
- - a
- - b
+- Arrumar teclado
+  - `sudo passwd orangepi`
+  - `sudo passwd root`
+  - `sudo dpkg-reconfigure keyboard-configuration`
+    - Escolher opção "Generic 105-key PC"
+    - Escolher layout (ex: Portuguese (Brazil))
 - sudo reboot
 - sudo apt-get update
 - sudo apt-get upgrade
