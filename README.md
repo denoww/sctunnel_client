@@ -110,6 +110,9 @@ bash set_config_json_and_install.sh "prod", "xxxxxxx", '51'
 Fique atento nos logs para pegar o login com ssh
 Entre no ssh
 execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
+```
+
+```
 bash set_config_json_and_install.sh "prod", "PORTARIA_SERVER_SALT", '51'
 ```
 
