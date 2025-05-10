@@ -79,10 +79,15 @@ SUBNET=$(echo "$IP_TUNNEL" | sed 's/\.[0-9]\+$/\.0\/24/')
 echo "🔄 Escaneando rede com arp-scan (uma vez só)..." >&2
 # ARP_SCAN_OUTPUT=$(sudo $ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
 ARP_SCAN_OUTPUT=$($ARP_SCAN_PATH --interface="$INTERFACE_REDE" "$SUBNET")
+
 echo
 echo "--------------------------------------------------------------"
 echo "Macs de todos aparelhos da Rede"
-echo $ARP_SCAN_OUTPUT
+if [ -n "$ARP_SCAN_OUTPUT" ]; then
+  echo -e "\033[0;32m$ARP_SCAN_OUTPUT\033[0m"  # verde
+else
+  echo -e "\033[0;31mNenhum dispositivo encontrado.\033[0m"  # vermelho
+fi
 ####################################################
 ####################################################
 ####################################################
