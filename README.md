@@ -99,7 +99,7 @@ cd /var/lib
 sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
 cd sctunnel_client
 sudo chown -R "$(whoami)" .
-bash set_config_json_and_install.sh "prod", "PORTARIA_SERVER_SALT", '51'
+bash set_config_json_and_install.sh "prod", "xxxxxxx", '51'
 ```
 
 - Obs
@@ -107,8 +107,12 @@ bash set_config_json_and_install.sh "prod", "PORTARIA_SERVER_SALT", '51'
 - 51 é o cliente_id
 
 ```
-Fique atento nos logs para pegar o login com ssh e aí sim setar o PORTARIA_SERVER_SALT denovo
-```bash
+Fique atento nos logs para pegar o login com ssh
+Entre no ssh
+execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
+bash set_config_json_and_install.sh "prod", "PORTARIA_SERVER_SALT", '51'
+```
+
 
 
 ---
