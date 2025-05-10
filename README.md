@@ -1,6 +1,6 @@
 # 📡 sctunnel_client
 
-## 🧩 INSTALAR NO ORANGE PI
+## 💾 INSTALAR NO ORANGE PI
 
 - Gravar do cartão SD para ORANGEPI 3B
 
