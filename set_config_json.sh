@@ -30,7 +30,7 @@ fi
 sed -i "s/\"token\": *\"[^\"]*\"/\"token\": \"$PORTARIA_SERVER_SALT\"/" "$config_json_path"
 
 # Atualiza cliente_id
-# sed -i "s/\"cliente_id\": *[0-9]\+/\"cliente_id\": $CLIENTE_ID/" "$config_json_path"
+sed -i "s/\"cliente_id\": *[0-9]\+/\"cliente_id\": $CLIENTE_ID/" "$config_json_path"
 
 # Exibe config (se tiver jq)
 echo "✅ Configuração atualizada:"
