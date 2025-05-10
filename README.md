@@ -67,6 +67,18 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 
 ---
 
+
+
+#### 🧩 set_config_json
+
+
+```bash
+cd /var/lib
+sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
+cd sctunnel_client
+sudo chown -R "$(whoami)" .
+```
+
 #### 🔑 Copiar o certificado `.pem`
 
 - Coloque o `scTunnel.pem` no pendrive
@@ -82,17 +94,16 @@ sudo mount /dev/sda1 /mnt/usb
 sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.pem
 ```
 
-#### 🧩 set_config_json
+#### 🔑 Copiar o certificado `.pem`
 
+
+💻  Acesse a maquina com ssh para facilitar sua vida
 
 ```bash
-cd /var/lib
-sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
-cd sctunnel_client
-sudo chown -R "$(whoami)" .
 bash set_config_json.sh "prod" "51" 'xxxxxxx'
 bash exec.sh
 ```
+
 
 ```
 Fique atento nos logs verde em "Acesse essa máquina com"
