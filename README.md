@@ -116,7 +116,7 @@ bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT"
 
 Termine a instalação
 ```
-bash "$DIR/install.sh" --install_crons
+bash "/var/lib/sctunnel_client/install.sh" --install_crons
 exec_cliente "$CLIENTE_ID"
 ```
 
