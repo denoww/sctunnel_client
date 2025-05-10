@@ -69,7 +69,7 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 
 
 
-#### 🧩 set_config_json
+#### 📥 git clone
 
 
 ```bash
@@ -94,16 +94,13 @@ sudo mount /dev/sda1 /mnt/usb
 sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.pem
 ```
 
-#### 🔑 Copiar o certificado `.pem`
 
-
-💻  Acesse a maquina com ssh para facilitar sua vida
+#### 💻 Acesse a maquina com ssh para facilitar sua vida
 
 ```bash
 bash set_config_json.sh "prod" "51" 'xxxxxxx'
 bash exec.sh
 ```
-
 
 ```
 Fique atento nos logs verde em "Acesse essa máquina com"
