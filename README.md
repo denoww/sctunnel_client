@@ -117,7 +117,8 @@ cd /var/lib/sctunnel_client
 bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT"
 ```
 
-Termine a instalação
+#### ✅ Finalize o cartão SD com a instalação
+
 ```
 cd /var/lib/sctunnel_client
 bash install.sh --install_crons
