@@ -136,7 +136,7 @@ Entre no ssh
 Execute denovo, mas agora com PORTARIA_SERVER_SALT (pegue no env sc)
 ```
 
-#### 🧩 config.json produção
+#### 🧩 Configurar `config.json` (ambiente produção)
 
 Agora dentro do ssh (sua vida mais fácil).
 Descubra o PORTARIA_SERVER_SALT e coloque ali embaixo:
