@@ -79,7 +79,7 @@ cd sctunnel_client
 sudo chown -R "$(whoami)" .
 ```
 
-#### 🔑 Copiar o certificado `.pem`
+#### 🔑 Copiar o certificado `scTunnel.pem`
 
 - Coloque o `scTunnel.pem` no pendrive
 - Insira o pendrive no tunnel
