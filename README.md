@@ -61,6 +61,8 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 - sudo passwd orangepi
 - sudo passwd root
 - sudo dpkg-reconfigure keyboard-configuration
+ - a
+ - b
 - sudo reboot
 - sudo apt-get update
 - sudo apt-get upgrade
