@@ -298,7 +298,7 @@ abrir_ssh_do_tunnel(){
 
   ssh_cmd=$(gerar_ssh_cmd)
   echo -e "##################################################################"
-  echo -e "Acesse essa máquina com"
+  echo -e "\033[0;32mAcesse essa máquina com\033[0m"
   echo -e "\033[0;32m$ssh_cmd\033[0m"
   echo -e "##################################################################"
 
