@@ -84,7 +84,7 @@ bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT'
 # Remove crons antigos (caso existam)
 bash install.sh --remove_crons
 
-# Executa cliente 2
+# Salava e executa cliente 2
 set_cliente 2
 ```
 
