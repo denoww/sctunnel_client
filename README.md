@@ -74,6 +74,26 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 
 ### Instalação padrão
 
+---
+
+#### 🔑 3.2 Copiar o certificado `.pem`
+
+- Coloque o `scTunnel.pem` no pendrive
+- Insira o pendrive no tunnel
+- comando mount
+
+```bash
+sudo mkdir -p /mnt/usb
+sudo mount /dev/sda1 /mnt/usb
+```
+
+```bash
+sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.pem
+```
+
+#### 🧩 set_config_json_and_install
+
+
 ```bash
 cd /var/lib
 sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
@@ -132,21 +152,7 @@ Preencha:
 ```
 
 
----
 
-## 🔑 3.2 Copiar o certificado `.pem`
-
-Copie o arquivo `scTunnel.pem` para a pasta:
-
-```bash
-/var/lib/sctunnel_client/
-```
-
-Depois rode:
-
-```bash
-chmod 400 /var/lib/sctunnel_client/scTunnel.pem
-```
 
 ---
 
