@@ -41,6 +41,12 @@ CONEXOES_FILE="${DIR}/conexoes.txt"
 ## ARPSCAP
 ####################################################
 
+if [ ! -f "$CONEXOES_FILE" ]; then
+  touch "$CONEXOES_FILE"
+  echo "📝 Arquivo criado: $CONEXOES_FILE"
+fi
+
+
 # Verifica se o marcador de instalação existe
 RED='\033[31m'
 NC='\033[0m'
