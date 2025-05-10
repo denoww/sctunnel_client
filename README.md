@@ -63,7 +63,7 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 - Reiniciar
     - `sudo reboot`
 
-### Instalação padrão
+### Instalar sctunnel
 
 ---
 
