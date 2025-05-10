@@ -76,7 +76,7 @@ bash /var/lib/sctunnel_client/testar_cron.sh
 
 ---
 
-#### 🔑 3.2 Copiar o certificado `.pem`
+#### 🔑 Copiar o certificado `.pem`
 
 - Coloque o `scTunnel.pem` no pendrive
 - Insira o pendrive no tunnel
