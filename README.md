@@ -66,10 +66,11 @@ bash /var/lib/sctunnel_client/testar_cron.sh
     - Layout Portuguese (Brazil)
     - The default for the keyboard
     - No compose key
-- sudo reboot
-- sudo apt-get update
-- sudo apt-get upgrade
-- sudo reboot
+    - sudo reboot
+- Update
+    - `sudo apt-get update`
+    - `sudo apt-get upgrade`
+    - `sudo reboot`
 
 ### Instalação padrão
 
