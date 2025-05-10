@@ -24,32 +24,29 @@ set_cliente 51
 
 ## 💻 COMANDOS
 
-### ▶️ Executar cliente
+▶️ Executar cliente
 
 ```bash
 set_cliente 51
 ```
 
----
 
-### 🛠️ Caso não funcione
+🛠️ Caso não funcione
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --install_crons
 set_cliente 51
 ```
 
----
 
-### ⏱️ Testar execução automática (cronjobs)
+⏱️ Testar cronjobs
 
 ```bash
 bash /var/lib/sctunnel_client/testar_cron.sh
 ```
 
----
 
-### ❌ Remover todos os cronjobs do cliente
+❌ Remover todos os cronjobs do cliente
 
 ```bash
 bash /var/lib/sctunnel_client/install.sh --remove_crons
