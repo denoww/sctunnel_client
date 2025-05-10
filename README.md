@@ -99,11 +99,11 @@ cd /var/lib
 sudo git clone --depth 1 https://github.com/denoww/sctunnel_client.git
 cd sctunnel_client
 sudo chown -R "$(whoami)" .
-bash set_config_json_and_install.sh "PROD", "PORTARIA_SERVER_SALT", '51'
+bash set_config_json_and_install.sh "prod", "PORTARIA_SERVER_SALT", '51'
 ```
 
 - Obs
-- PROD ou DEV
+- prod ou dev
 - 51 é o cliente_id
 
 ```
