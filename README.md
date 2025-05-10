@@ -13,7 +13,7 @@ sudo nand-sata-install
 🔌 Desligue o mini PC, remova o SD Card e ligue o mini PC novamente.
 
 
-- Após ligar
+🚀 Após ligar
 ```bash
 set_cliente 51
 ```
@@ -78,8 +78,10 @@ cd /var/lib/sctunnel_client
 bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT'
 ```
 
+🟢 Executando
+
 ```bash
-# Remove crons antigos (caso existam)
+# Instala removendo cronjobs
 bash install.sh --remove_crons
 # Salava e executa cliente 2
 set_cliente 2
@@ -158,7 +160,7 @@ cd /var/lib/sctunnel_client
 bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT"
 ```
 
-#### ✅ Finalize o cartão SD com a instalação
+#### 🚀 Finalize o cartão SD com a instalação
 
 ```bash
 cd /var/lib/sctunnel_client
