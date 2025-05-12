@@ -124,10 +124,15 @@ EOF
 
   echo "✅ Cron jobs atualizados para o usuário $(whoami)"
   echo "🔎 Verifique com: crontab -l"
-  echo "$CRON_CONTENT"
-
+  echo
+  echo "📋 Cron jobs instalados:"
+  echo "──────────────────────────────────────────────"
+  echo "$CRON_CONTENT" | sed 's/^/  • /'
+  echo "──────────────────────────────────────────────"
+  echo
   echo "🧪 Teste o cron manualmente com:"
   echo "bash ${DIR_LIB}/cron_test.sh"
+
 
   print_footer
 fi
