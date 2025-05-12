@@ -1,11 +1,7 @@
 #!/bin/bash
 
 set -e
-
-
 DIR_LIB=$(dirname "$0")
-
-
 git config --global --add safe.directory $DIR_LIB/sctunnel_client
 
 
@@ -24,6 +20,10 @@ print_header() {
 print_footer() {
   echo "-------------------------------------------------" >&2
 }
+
+print_header "Iniciando EXEC_INSTALL"
+
+
 
 # # HABILITAR E INSTALA SERVIDOR SSH
 # print_header "HABILITAR SSH"
