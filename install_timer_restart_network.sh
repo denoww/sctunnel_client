@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-RESTART_INTERVAL_MIN=1  # intervalo em minutos
+RESTART_INTERVAL_MIN=30  # intervalo em minutos
 
 echo
 echo "🔁 Instalando serviço systemd para reiniciar o NetworkManager a cada $RESTART_INTERVAL_MIN minutos..."
