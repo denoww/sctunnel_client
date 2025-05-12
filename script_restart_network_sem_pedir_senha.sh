@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
+RESTART_INTERVAL_MIN=30  # intervalo em minutos
+
 echo
-echo "🔁 Instalando serviço systemd para reiniciar o NetworkManager a cada 30 minutos..."
+echo "🔁 Instalando serviço systemd para reiniciar o NetworkManager a cada $RESTART_INTERVAL_MIN minutos..."
 
 # Caminhos
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
@@ -12,9 +14,9 @@ TIMER_FILE="/etc/systemd/system/restart-network.timer"
 
 # Cria o script de reinício manual
 echo "📄 Criando script auxiliar: $NM_SCRIPT_PATH"
-sudo tee "$NM_SCRIPT_PATH" > /dev/null <<'EOF'
+sudo tee "$NM_SCRIPT_PATH" > /dev/null <<EOF
 #!/bin/bash
-echo "$(date) - reiniciando rede via systemd" >> /var/lib/sctunnel_client/logs/rede.txt
+echo "\$(date) - reiniciando rede via systemd" >> ${DIR_LIB}/logs/rede.txt
 /usr/bin/systemctl restart NetworkManager
 EOF
 
@@ -31,15 +33,15 @@ Type=oneshot
 ExecStart=${NM_SCRIPT_PATH}
 EOF
 
-# Cria o timer
+# Cria o timer com variável
 echo "⏱️ Criando timer systemd: $TIMER_FILE"
 sudo tee "$TIMER_FILE" > /dev/null <<EOF
 [Unit]
-Description=Executa reinício de rede a cada 30 minutos
+Description=Executa reinício de rede a cada ${RESTART_INTERVAL_MIN} minutos
 
 [Timer]
 OnBootSec=1min
-OnUnitActiveSec=30min
+OnUnitActiveSec=${RESTART_INTERVAL_MIN}min
 Unit=restart-network.service
 
 [Install]
