@@ -25,11 +25,12 @@ echo "$(whoami) ALL=NOPASSWD: /usr/bin/systemctl restart NetworkManager" | sudo 
 sudo chmod 440 "$SUDOERS_FILE"
 
 # Testa execução e derruba a sessão
-echo
-echo "🧪 Testando reinício com: $NM_SCRIPT_PATH (a sessão deve ser encerrada)"
-exec bash "$NM_SCRIPT_PATH"
+# echo
+# echo "🧪 Teste reinício com:"
+# echo "$ exec $NM_SCRIPT_PATH"
+# exec bash "$NM_SCRIPT_PATH"
 
 # (Nunca será alcançado por causa do exec)
 echo
 echo "✅ Tudo pronto! Agora você pode reiniciar o NetworkManager via:"
-echo "   bash $NM_SCRIPT_PATH"
+echo "   exec $NM_SCRIPT_PATH"
