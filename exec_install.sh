@@ -26,28 +26,28 @@ print_footer() {
   echo "-------------------------------------------------" >&2
 }
 
-# HABILITAR E INSTALA SERVIDOR SSH
-print_header "HABILITAR SSH"
-echo "🔧 Verificando SSH..."
-sudo apt install -y openssh-server
-sudo systemctl enable ssh --now
+# # HABILITAR E INSTALA SERVIDOR SSH
+# print_header "HABILITAR SSH"
+# echo "🔧 Verificando SSH..."
+# sudo apt install -y openssh-server
+# sudo systemctl enable ssh --now
 
 
 
-################################################################
-# EXEC_CLIENTE
-print_header "EXEC_CLIENTE INSTALL"
-EXEC_CLIENTE_PATH="/usr/local/bin/set_cliente"
-sudo tee "$EXEC_CLIENTE_PATH" > /dev/null <<EOF
-#!/bin/bash
-bash ${DIR_LIB}/trocar_cliente.sh "\$1"
-EOF
+# ################################################################
+# # EXEC_CLIENTE
+# print_header "EXEC_CLIENTE INSTALL"
+# EXEC_CLIENTE_PATH="/usr/local/bin/set_cliente"
+# sudo tee "$EXEC_CLIENTE_PATH" > /dev/null <<EOF
+# #!/bin/bash
+# bash ${DIR_LIB}/trocar_cliente.sh "\$1"
+# EOF
 
-sudo chmod +x "$EXEC_CLIENTE_PATH"
-echo "✅ Comando 'set_cliente' instalado com sucesso!"
-echo ""
-echo "📢 Agora você pode usar: set_cliente <cliente_id>"
-print_footer
+# sudo chmod +x "$EXEC_CLIENTE_PATH"
+# echo "✅ Comando 'set_cliente' instalado com sucesso!"
+# echo ""
+# echo "📢 Agora você pode usar: set_cliente <cliente_id>"
+# print_footer
 
 
 ################################################################
@@ -143,25 +143,25 @@ fi
 
 
 
-################################################################
-# PERMISSOES
-print_header "ADICONANDO PERMISSOES"
-sudo mkdir -p "$DIR_LIB/logs"
-sudo touch "$DIR_LIB/logs/cron.txt"
-sudo chmod 666 "$DIR_LIB/logs/cron.txt"
-sudo chmod 400 "$DIR_LIB/scTunnel.pem"
-sudo chmod 777 "$DIR_LIB/logs"
-sudo chmod 777 "$DIR_LIB/config.json"
-sudo chmod +x "$DIR_LIB/exec.sh"
-sudo chmod +x "$DIR_LIB/exec_tunnels.sh"
+# ################################################################
+# # PERMISSOES
+# print_header "ADICONANDO PERMISSOES"
+# sudo mkdir -p "$DIR_LIB/logs"
+# sudo touch "$DIR_LIB/logs/cron.txt"
+# sudo chmod 666 "$DIR_LIB/logs/cron.txt"
+# sudo chmod 400 "$DIR_LIB/scTunnel.pem"
+# sudo chmod 777 "$DIR_LIB/logs"
+# sudo chmod 777 "$DIR_LIB/config.json"
+# sudo chmod +x "$DIR_LIB/exec.sh"
+# sudo chmod +x "$DIR_LIB/exec_tunnels.sh"
 
 
 
-################################################################
-# ARP-SCAN INSTALL
-print_header "ARP-SCAN INSTALL"
-bash "${DIR_LIB}/script_arp_scan_sem_pedir_senha.sh"
-print_footer
+# ################################################################
+# # ARP-SCAN INSTALL
+# print_header "ARP-SCAN INSTALL"
+# bash "${DIR_LIB}/script_arp_scan_sem_pedir_senha.sh"
+# print_footer
 
 
 
