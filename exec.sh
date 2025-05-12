@@ -1,4 +1,4 @@
 #!/bin/bash
-DIR_LIB=$(dirname "$0")
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 bash "${DIR_LIB}/update_firmware.sh"
 bash "${DIR_LIB}/exec_tunnels.sh"

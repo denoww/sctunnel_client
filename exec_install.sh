@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-# DIR_LIB=$(dirname "$0")
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 
 git config --global --add safe.directory $DIR_LIB/sctunnel_client
