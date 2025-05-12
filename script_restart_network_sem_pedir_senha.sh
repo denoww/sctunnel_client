@@ -17,9 +17,12 @@ SUDOERS_FILE="/etc/sudoers.d/restart_networkmanager_$(whoami)"
 echo "📄 Criando script auxiliar: $NM_SCRIPT_PATH"
 sudo tee "$NM_SCRIPT_PATH" > /dev/null <<EOF
 #!/bin/bash
-echo "\$(date) - reiniciando rede via systemd" >> ${DIR_LIB}/logs/rede.txt
-/usr/bin/systemctl restart NetworkManager
+echo "\$(date) - reiniciando rede via systemd (nmcli)" >> ${DIR_LIB}/logs/rede.txt
+sudo /usr/bin/nmcli networking off
+sleep 2
+sudo /usr/bin/nmcli networking on
 EOF
+
 
 sudo chmod +x "$NM_SCRIPT_PATH"
 
