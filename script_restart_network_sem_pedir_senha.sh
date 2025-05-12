@@ -18,7 +18,7 @@ echo "📄 Criando script auxiliar: $NM_SCRIPT_PATH"
 sudo tee "$NM_SCRIPT_PATH" > /dev/null <<EOF
 #!/bin/bash
 echo "\$(date) - reiniciando rede via systemd" >> ${DIR_LIB}/logs/rede.txt
-sudo /usr/bin/systemctl restart NetworkManager
+/usr/bin/systemctl restart NetworkManager
 EOF
 
 sudo chmod +x "$NM_SCRIPT_PATH"
@@ -28,7 +28,7 @@ echo "🔐 Configurando sudoers para permitir restart sem senha..."
 echo "$(whoami) ALL=NOPASSWD: /usr/bin/systemctl restart NetworkManager" | sudo tee "$SUDOERS_FILE" > /dev/null
 sudo chmod 440 "$SUDOERS_FILE"
 
-# Cria o serviço systemd com o usuário atual
+# Cria o serviço systemd como root (sem User=)
 echo "🛠️ Criando unidade systemd: $SERVICE_FILE"
 sudo tee "$SERVICE_FILE" > /dev/null <<EOF
 [Unit]
@@ -36,7 +36,6 @@ Description=Reiniciar NetworkManager
 
 [Service]
 Type=oneshot
-User=$(whoami)
 ExecStart=${NM_SCRIPT_PATH}
 EOF
 
