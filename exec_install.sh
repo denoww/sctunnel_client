@@ -153,6 +153,9 @@ sudo chmod 777 "$DIR_LIB/logs"
 sudo chmod 777 "$DIR_LIB/config.json"
 sudo chmod +x "$DIR_LIB/exec.sh"
 sudo chmod +x "$DIR_LIB/exec_tunnels.sh"
+sudo chown -R $(whoami):$(whoami) "$DIR_LIB/.git"
+# sudo chown -R "$USER":"$USER" "$DIR_LIB/.git"
+
 
 
 
