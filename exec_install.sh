@@ -50,6 +50,21 @@ echo "📢 Agora você pode usar: set_cliente <cliente_id>"
 print_footer
 
 
+uninstall_network_restart_timer() {
+  ################################################################
+  # REMOVE_TIMER_RESTART_NETWORK INSTALL
+  print_header "REMOVE_TIMER_RESTART_NETWORK"
+  bash "${DIR_LIB}/remove_timer_restart_network.sh"
+}
+
+
+install_network_restart_timer() {
+  ################################################################
+  # INSTALL_TIMER_RESTART_NETWORK INSTALL
+  print_header "INSTALL_TIMER_RESTART_NETWORK"
+  bash "${DIR_LIB}/install_timer_restart_network.sh"
+}
+
 ################################################################
 # CRONS
 INSTALL_CRONS=false
@@ -58,11 +73,15 @@ CRONPATH="/etc/cron.d/sctunnel"
 for arg in "$@"; do
   if [[ "$arg" == "--install_crons" ]]; then
     INSTALL_CRONS=true
+    install_network_restart_timer
+
   fi
   if [[ "$arg" == "--remove_crons" ]]; then
     REMOVE_CRONS=true
+    uninstall_network_restart_timer
   fi
 done
+
 
 
 ################################################################
@@ -87,14 +106,7 @@ if $REMOVE_CRONS; then
   print_footer
 fi
 
-uninstall_network_restart_timer() {
-  ################################################################
-  # REMOVE_TIMER_RESTART_NETWORK INSTALL
-  print_header "REMOVE_TIMER_RESTART_NETWORK"
-  bash "${DIR_LIB}/remove_timer_restart_network.sh"
 
-
-}
 
 
 
@@ -141,13 +153,6 @@ EOF
   echo "🧪 Teste o cron manualmente com:"
   echo "bash ${DIR_LIB}/cron_test.sh"
 
-  print_footer
-
-
-  ################################################################
-  # INSTALL_TIMER_RESTART_NETWORK INSTALL
-  print_header "INSTALL_TIMER_RESTART_NETWORK"
-  bash "${DIR_LIB}/install_timer_restart_network.sh"
 
 
   print_footer

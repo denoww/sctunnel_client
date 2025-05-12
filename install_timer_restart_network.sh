@@ -65,7 +65,8 @@ EOF
 # Recarrega o systemd e ativa o timer
 echo "🔄 Ativando serviço e timer..."
 sudo systemctl daemon-reload
-sudo systemctl enable --now restart-network.timer
+sudo systemctl enable restart-network.timer
+
 
 echo
 echo "✅ Tudo pronto!"
