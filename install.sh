@@ -96,10 +96,21 @@ if $INSTALL_CRONS; then
   echo "🕒 Instalando cron jobs..."
 
   # Constrói conteúdo do cron com caminhos absolutos
+
+  # Logs A cada 6 horas (0 */6 * * *), ele:
+    # mantém somente as últimas 500 linhas de cron.txt
+    # mantém somente as últimas 500 linhas de rede.log
+    # e faz isso apenas se os arquivos existirem ([ -f ... ])
+
+
+
+
   CRON_CONTENT=$(cat <<EOF
 @reboot /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
 */1 * * * * /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
 */30 * * * * /bin/bash -c '/usr/bin/systemctl restart NetworkManager >> ${DIR_LIB}/logs/rede.log 2>&1'
+0 */6 * * * /bin/bash -c '[ -f ${DIR_LIB}/logs/cron.txt ] && tail -n 500 ${DIR_LIB}/logs/cron.txt > /tmp/cron.tmp && mv /tmp/cron.tmp ${DIR_LIB}/logs/cron.txt'
+0 */6 * * * /bin/bash -c '[ -f ${DIR_LIB}/logs/rede.log ] && tail -n 500 ${DIR_LIB}/logs/rede.log > /tmp/rede.tmp && mv /tmp/rede.tmp ${DIR_LIB}/logs/rede.log'
 EOF
 )
 
