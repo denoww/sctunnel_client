@@ -111,19 +111,6 @@ if $INSTALL_CRONS; then
 EOF
 )
 
-  # Instala os crons do conteúdo acima
-  echo "$CRON_CONTENT" | crontab -
-
-  echo "✅ Crons instalados com sucesso!"
-  echo "📄 Crons ativos:"
-  echo "$CRON_CONTENT"
-
-  echo ""
-  echo "🧐 Para visualizar seus crons a qualquer momento, use o comando:"
-  echo "   crontab -l"
-fi
-
-
 
   # Salva crons atuais em um tmp e remove linhas antigas
   TMP_CRON=$(mktemp)
