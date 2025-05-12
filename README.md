@@ -45,7 +45,7 @@ set_cliente 51
 bash /var/lib/sctunnel_client/cron_test.sh
 ```
 
-⏱️ Logs cronjobs
+⏱️ Ver Logs cronjobs
 
 ```bash
 bash /var/lib/sctunnel_client/cron_logs.sh
