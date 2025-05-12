@@ -2,36 +2,62 @@
 set -e
 
 echo
-echo "🔁 Instalando dependências e configurando restart do NetworkManager sem senha..."
+echo "🔁 Instalando serviço systemd para reiniciar o NetworkManager a cada 30 minutos..."
 
 # Caminhos
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 NM_SCRIPT_PATH="${DIR_LIB}/restart_network.sh"
-SUDOERS_FILE="/etc/sudoers.d/restart_networkmanager_$(whoami)"
+SERVICE_FILE="/etc/systemd/system/restart-network.service"
+TIMER_FILE="/etc/systemd/system/restart-network.timer"
 
-# Cria script que reinicia o NetworkManager
-echo "📄 Criando script de reinício em: $NM_SCRIPT_PATH"
+# Cria o script de reinício manual
+echo "📄 Criando script auxiliar: $NM_SCRIPT_PATH"
 sudo tee "$NM_SCRIPT_PATH" > /dev/null <<'EOF'
 #!/bin/bash
-echo "$(date) - reiniciando rede..." >> /var/lib/sctunnel_client/logs/rede_exec.txt
-exec sudo /bin/systemctl --no-ask-password restart NetworkManager
+echo "$(date) - reiniciando rede via systemd" >> /var/lib/sctunnel_client/logs/rede.txt
+/usr/bin/systemctl restart NetworkManager
 EOF
 
-# Permissão de execução
 sudo chmod +x "$NM_SCRIPT_PATH"
 
-# Cria regra sudoers para permitir executar sem senha
-echo "🔐 Configurando sudoers para permitir restart sem senha..."
-echo "$(whoami) ALL=NOPASSWD: /usr/bin/systemctl restart NetworkManager" | sudo tee "$SUDOERS_FILE" > /dev/null
-sudo chmod 440 "$SUDOERS_FILE"
+# Cria o serviço systemd
+echo "🛠️ Criando unidade systemd: $SERVICE_FILE"
+sudo tee "$SERVICE_FILE" > /dev/null <<EOF
+[Unit]
+Description=Reiniciar NetworkManager
 
-# Testa execução e derruba a sessão
-# echo
-# echo "🧪 Teste reinício com:"
-# echo "$ exec $NM_SCRIPT_PATH"
-# exec bash "$NM_SCRIPT_PATH"
+[Service]
+Type=oneshot
+ExecStart=${NM_SCRIPT_PATH}
+EOF
 
-# (Nunca será alcançado por causa do exec)
+# Cria o timer
+echo "⏱️ Criando timer systemd: $TIMER_FILE"
+sudo tee "$TIMER_FILE" > /dev/null <<EOF
+[Unit]
+Description=Executa reinício de rede a cada 30 minutos
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=30min
+Unit=restart-network.service
+
+[Install]
+WantedBy=timers.target
+EOF
+
+# Recarrega o systemd e ativa o timer
+echo "🔄 Ativando serviço e timer..."
+sudo systemctl daemon-reload
+sudo systemctl enable --now restart-network.timer
+
 echo
-echo "✅ Tudo pronto! Agora você pode reiniciar o NetworkManager via:"
-echo "   exec $NM_SCRIPT_PATH"
+echo "✅ Tudo pronto!"
+echo "📋 Status atual do timer:"
+systemctl list-timers --all | grep restart-network || true
+
+echo
+echo "🧪 Para testar manualmente:"
+echo "   sudo systemctl start restart-network.service"
+echo
+echo "🔍 Log será salvo em: ${DIR_LIB}/logs/rede.txt"

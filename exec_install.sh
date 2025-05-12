@@ -105,10 +105,17 @@ if $INSTALL_CRONS; then
   CRON_CONTENT=$(cat <<EOF
 @reboot /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
 */1 * * * * /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
-*/30 * * * * /bin/bash -c '/var/lib/sctunnel_client/restart_network.sh >> ${DIR_LIB}/logs/rede.txt 2>&1'
 0 */6 * * * /bin/bash -c '[ -f ${DIR_LIB}/logs/cron.txt ] && tail -n 500 ${DIR_LIB}/logs/cron.txt > /tmp/cron.tmp && mv /tmp/cron.tmp ${DIR_LIB}/logs/cron.txt'
 0 */6 * * * /bin/bash -c '[ -f ${DIR_LIB}/logs/rede.txt ] && tail -n 500 ${DIR_LIB}/logs/rede.txt > /tmp/rede.tmp && mv /tmp/rede.tmp ${DIR_LIB}/logs/rede.txt'
 EOF
+
+#   CRON_CONTENT=$(cat <<EOF
+# @reboot /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
+# */1 * * * * /bin/bash -c 'cd ${DIR_LIB} && /bin/bash ./exec.sh >> ${DIR_LIB}/logs/cron.txt 2>&1'
+# */30 * * * * /bin/bash -c '/var/lib/sctunnel_client/restart_network.sh >> ${DIR_LIB}/logs/rede.txt 2>&1'
+# 0 */6 * * * /bin/bash -c '[ -f ${DIR_LIB}/logs/cron.txt ] && tail -n 500 ${DIR_LIB}/logs/cron.txt > /tmp/cron.tmp && mv /tmp/cron.tmp ${DIR_LIB}/logs/cron.txt'
+# 0 */6 * * * /bin/bash -c '[ -f ${DIR_LIB}/logs/rede.txt ] && tail -n 500 ${DIR_LIB}/logs/rede.txt > /tmp/rede.tmp && mv /tmp/rede.tmp ${DIR_LIB}/logs/rede.txt'
+# EOF
 )
 
   # Sobrescreve completamente o crontab do usuário
