@@ -111,17 +111,8 @@ if $INSTALL_CRONS; then
 EOF
 )
 
-
-  # Salva crons atuais em um tmp e remove linhas antigas
-  TMP_CRON=$(mktemp)
-  crontab -l 2>/dev/null | grep -v 'sctunnel_client' > "$TMP_CRON" || true
-
-  # Adiciona os novos crons
-  echo "$CRON_CONTENT" >> "$TMP_CRON"
-
-  # Instala a nova versão
-  crontab "$TMP_CRON"
-  rm "$TMP_CRON"
+  # Sobrescreve completamente o crontab do usuário
+  echo "$CRON_CONTENT" | crontab -
 
   echo "✅ Cron jobs atualizados para o usuário $(whoami)"
   echo "🔎 Verifique com: crontab -l"
@@ -134,9 +125,9 @@ EOF
   echo "🧪 Teste o cron manualmente com:"
   echo "bash ${DIR_LIB}/cron_test.sh"
 
-
   print_footer
 fi
+
 
 
 
