@@ -10,6 +10,6 @@ tail -n 200 "$FILE_LOG"
 echo "----------------------------------------------------------"
 echo "Esse foi o resultado do cronjob executado"
 echo "Resultado aqui"
-echo "cat $FILE_LOG"
+echo "tail -n 200 $FILE_LOG"
 echo "----------------------------------------------------------"
 echo
