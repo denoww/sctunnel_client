@@ -83,9 +83,18 @@ if $REMOVE_CRONS; then
     sudo rm -f "$CRONPATH"
     echo "🗑️  Arquivo de cron removido: $CRONPATH"
   fi
-
+  uninstall_network_restart_timer
   print_footer
 fi
+
+uninstall_network_restart_timer() {
+  ################################################################
+  # REMOVE_TIMER_RESTART_NETWORK INSTALL
+  print_header "REMOVE_TIMER_RESTART_NETWORK"
+  bash "${DIR_LIB}/remove_timer_restart_network.sh"
+
+
+}
 
 
 
@@ -133,6 +142,16 @@ EOF
   echo "bash ${DIR_LIB}/cron_test.sh"
 
   print_footer
+
+
+  ################################################################
+  # INSTALL_TIMER_RESTART_NETWORK INSTALL
+  print_header "INSTALL_TIMER_RESTART_NETWORK"
+  bash "${DIR_LIB}/install_timer_restart_network.sh"
+
+
+  print_footer
+
 fi
 
 
@@ -164,11 +183,6 @@ bash "${DIR_LIB}/script_arp_scan_sem_pedir_senha.sh"
 print_footer
 
 
-################################################################
-# RESTART_NETWORK_SEM_SENHA INSTALL
-print_header "RESTART_NETWORK_SEM_SENHA"
-bash "${DIR_LIB}/script_restart_network_sem_pedir_senha.sh"
-print_footer
 
 
 
