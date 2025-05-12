@@ -55,13 +55,6 @@ INSTALL_CRONS=false
 REMOVE_CRONS=false
 CRONPATH="/etc/cron.d/sctunnel"
 for arg in "$@"; do
-  echo '$arg'
-  echo '$arg'
-  echo '$arg'
-  echo '$arg'
-  echo $arg
-  echo '$arg'
-
   if [[ "$arg" == "--install_crons" ]]; then
     INSTALL_CRONS=true
   fi
