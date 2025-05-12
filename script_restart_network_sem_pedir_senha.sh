@@ -13,7 +13,7 @@ SUDOERS_FILE="/etc/sudoers.d/restart_networkmanager_$(whoami)"
 echo "📄 Criando script de reinício em: $NM_SCRIPT_PATH"
 sudo tee "$NM_SCRIPT_PATH" > /dev/null <<'EOF'
 #!/bin/bash
-echo "reiniciando rede..."
+echo "$(date) - reiniciando rede..." >> /var/lib/sctunnel_client/logs/rede_exec.txt
 exec sudo /usr/bin/systemctl restart NetworkManager
 EOF
 
