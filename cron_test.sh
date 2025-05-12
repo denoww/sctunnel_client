@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR_LIB=$(dirname "$0")
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 
 
 FILE_LOG=$DIR_LIB/logs/cron.txt

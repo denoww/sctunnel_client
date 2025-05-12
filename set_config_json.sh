@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-DIR_LIB=$(dirname "$0")
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 ENVIROM=$1
 CLIENTE_ID="$2"
 PORTARIA_SERVER_SALT="$3"

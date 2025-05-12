@@ -5,7 +5,7 @@ echo
 echo "🔁 Instalando dependências e configurando restart do NetworkManager sem senha..."
 
 # Caminhos
-DIR_LIB="/var/lib/sctunnel_client"
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 NM_SCRIPT_PATH="${DIR_LIB}/restart_network.sh"
 SUDOERS_FILE="/etc/sudoers.d/restart_networkmanager_orangepi"
 

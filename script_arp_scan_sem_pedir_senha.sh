@@ -5,7 +5,7 @@ echo
 echo "📦 Verificando e instalando arp-scan..."
 sudo apt-get install -y arp-scan libcap2-bin
 
-DIR_LIB="/var/lib/sctunnel_client"
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 ARP_SCAN_INSTALDO="${DIR_LIB}/ARP_SCAN_INSTALADO.txt"
 
 # Detecta o binário real do arp-scan
