@@ -2,7 +2,6 @@
 
 set -e
 
-echo "🔧 Instalando comando 'set_cliente' no sistema..."
 
 DIR_LIB=$(dirname "$0")
 
@@ -35,8 +34,8 @@ print_footer() {
 
 
 # ################################################################
-# # EXEC_CLIENTE
-# print_header "EXEC_CLIENTE INSTALL"
+# # SET_CLIENTE
+# print_header "SET_CLIENTE INSTALL"
 # EXEC_CLIENTE_PATH="/usr/local/bin/set_cliente"
 # sudo tee "$EXEC_CLIENTE_PATH" > /dev/null <<EOF
 # #!/bin/bash
