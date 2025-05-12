@@ -4,7 +4,6 @@ set -e
 
 echo "🔧 Instalando comando 'set_cliente' no sistema..."
 
-# DIR_LIB=/var/lib/sctunnel_client
 DIR_LIB=$(dirname "$0")
 
 
@@ -128,7 +127,7 @@ EOF
   echo "🔎 Verifique com: crontab -l"
 
   echo "🧪 Teste o cron manualmente com:"
-  echo "bash ${DIR_LIB}/testar_cron.sh"
+  echo "bash ${DIR_LIB}/cron_test.sh"
 
   print_footer
 fi

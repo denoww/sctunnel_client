@@ -1,11 +1,12 @@
 #!/bin/bash
 
-DIR=/var/lib/sctunnel_client
+
+DIR_LIB=$(dirname "$0")
 ENVIROM=$1
 CLIENTE_ID="$2"
 PORTARIA_SERVER_SALT="$3"
 
-config_json_path="$DIR/config.json"
+config_json_path="$DIR_LIB/config.json"
 
 # Verifica se argumentos foram passados
 if [ -z "$ENVIROM" ] || [ -z "$PORTARIA_SERVER_SALT" ] || [ -z "$CLIENTE_ID" ]; then
@@ -14,10 +15,10 @@ if [ -z "$ENVIROM" ] || [ -z "$PORTARIA_SERVER_SALT" ] || [ -z "$CLIENTE_ID" ]; 
 fi
 
 # Permissão
-sudo chown -R "$(whoami)" "$DIR"
+sudo chown -R "$(whoami)" "$DIR_LIB"
 
 # Copia o config base
-cp "$DIR/config-sample-${ENVIROM}.json" "$config_json_path"
+cp "$DIR_LIB/config-sample-${ENVIROM}.json" "$config_json_path"
 
 if [ ! -f "$config_json_path" ]; then
   echo "❌ Arquivo $config_json_path não encontrado."

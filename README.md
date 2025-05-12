@@ -42,9 +42,14 @@ set_cliente 51
 ⏱️ Testar cronjobs
 
 ```bash
-bash /var/lib/sctunnel_client/testar_cron.sh
+bash /var/lib/sctunnel_client/cron_test.sh
 ```
 
+⏱️ Logs cronjobs
+
+```bash
+bash /var/lib/sctunnel_client/cron_logs.sh
+```
 
 ❌ Remover cronjobs
 
@@ -171,7 +176,7 @@ bash exec.sh
 #### ⏱️ Testar cron
 
 ```bash
-bash /var/lib/sctunnel_client/testar_cron.sh
+bash /var/lib/sctunnel_client/cron_test.sh
 ```
 
 ---
