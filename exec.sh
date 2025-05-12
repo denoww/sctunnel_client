@@ -1,5 +1,4 @@
 #!/bin/bash
-bash update_firmware.sh
-bash exec_tunnels.sh
-
-
+DIR_LIB=$(dirname "$0")
+bash "${DIR_LIB}/update_firmware.sh"
+bash "${DIR_LIB}/exec_tunnels.sh"
