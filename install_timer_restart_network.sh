@@ -57,6 +57,7 @@ OnBootSec=1min
 OnUnitActiveSec=${RESTART_INTERVAL_MIN}min
 Unit=restart-network.service
 
+
 [Install]
 WantedBy=timers.target
 EOF
