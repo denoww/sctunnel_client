@@ -27,9 +27,13 @@ EOF
 sudo chmod +x "$NM_SCRIPT_PATH"
 
 # Garante permissão sudo sem senha
-echo "🔐 Configurando sudoers para permitir restart sem senha..."
-echo "$(whoami) ALL=NOPASSWD: /usr/bin/systemctl restart NetworkManager" | sudo tee "$SUDOERS_FILE" > /dev/null
+echo "🔐 Configurando sudoers para permitir comandos de rede sem senha..."
+# Lista de comandos permitidos sem senha
+SUDO_COMMANDS="/usr/bin/nmcli, /sbin/ifdown, /sbin/ifup"
+# Cria regra sudoers personalizada
+echo "$(whoami) ALL=NOPASSWD: ${SUDO_COMMANDS}" | sudo tee "$SUDOERS_FILE" > /dev/null
 sudo chmod 440 "$SUDOERS_FILE"
+
 
 # Cria o serviço systemd como root (sem User=)
 echo "🛠️ Criando unidade systemd: $SERVICE_FILE"
