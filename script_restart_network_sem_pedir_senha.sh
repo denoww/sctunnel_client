@@ -14,7 +14,7 @@ echo "📄 Criando script de reinício em: $NM_SCRIPT_PATH"
 sudo tee "$NM_SCRIPT_PATH" > /dev/null <<'EOF'
 #!/bin/bash
 echo "$(date) - reiniciando rede..." >> /var/lib/sctunnel_client/logs/rede_exec.txt
-exec sudo /usr/bin/systemctl restart NetworkManager
+exec sudo /bin/systemctl --no-ask-password restart NetworkManager
 EOF
 
 # Permissão de execução
