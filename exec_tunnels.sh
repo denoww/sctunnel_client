@@ -264,26 +264,16 @@ gerar_ssh_cmd() {
 
 montar_erp_url() {
   path=$1
-  codigos_query=""
-
-  if [[ -n "${EQUIPAMENTO_CODIGOS:-}" ]] && echo "$EQUIPAMENTO_CODIGOS" | jq -e 'type == "array" and length > 0' >/dev/null 2>&1; then
-    codigos_query=$(echo "$EQUIPAMENTO_CODIGOS" | jq -r '.[]' | while read -r codigo; do
-      printf "&codigos[]=%s" "$codigo"
-    done)
-  fi
-
-
-  ssh_cmd=$(gerar_ssh_cmd)
-  ssh_cmd_encoded=$(urlencode "$ssh_cmd")
-
-  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID&tunnel_macaddres=$(macAddresDoTunnel)&ssh_cmd=${ssh_cmd_encoded}"
+  base_url="$HOST/portarias/${path}.json?token=$TOKEN&cliente_id=$CLIENTE_ID"
   echo "${base_url}${codigos_query}"
 }
 
 
 macAddresDoTunnel(){
-  ip link | awk '/ether/ {print $2}' | paste -sd,
+  # separa por virgula e ordena por ordem alfabetica
+  ip link | awk '/ether/ {print $2}' | sort | paste -sd,
 }
+
 
 buscar_ip_na_lista_de_macs() {
   local mac="$1"
@@ -329,11 +319,45 @@ updateDevices() {
 
   echo
   echo "Procurando equipamentos para fazer tunnel em"
-  get_url=$(montar_erp_url "get_tunnel_devices")
-  echo "$get_url"
+  api_url=$(montar_erp_url "get_tunnel_devices")
+  echo "$api_url"
+
+  # SSH_CMD=$(gerar_ssh_cmd)
+  tunnel_macaddres=$(macAddresDoTunnel)
+  # ssh_cmd=$(urlencode "$(gerar_ssh_cmd)")
+  ssh_cmd=$(gerar_ssh_cmd)
+
+
+  varredura_rede=$(echo "$ARP_SCAN_OUTPUT" | awk 'NF >= 2 && /^[0-9]+\./ {print $1, $2}' | sort)
+
+
+
+  # codigos_query=""
+
+  if [[ -n "${EQUIPAMENTO_CODIGOS:-}" ]] && echo "$EQUIPAMENTO_CODIGOS" | jq -e 'type == "array" and length > 0' >/dev/null 2>&1; then
+    codigos_json=$(echo "$EQUIPAMENTO_CODIGOS" | jq -c '.')
+  else
+    codigos_json="[]"
+  fi
+
+  # JSON_PAYLOAD="{\"tunnel_macaddres\":\"$tunnel_macaddres\",\"ssh_cmd\":\"$ssh_cmd\"}"
+
+  JSON_PAYLOAD=$(jq -n \
+    --arg tunnel_macaddres "$tunnel_macaddres" \
+    --arg ssh_cmd "$ssh_cmd" \
+    --arg varredura_rede "$varredura_rede" \
+    --argjson codigos "$codigos_json" \
+    '$ARGS.named + {codigos: $codigos}')
+
+
+  echo
+  echo "📡 Update ERP em $api_url:"
+  echo "$JSON_PAYLOAD"
+
 
   # Faz a requisição e guarda a resposta inteira
-  response=$(curl -s "$get_url")
+
+  response=$(curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$api_url")
 
   # Tenta extrair a mensagem de erro, se houver
   msg=$(echo "$response" | jq -r '.msg // empty')
@@ -378,14 +402,14 @@ update_device_tunnel_addres_no_erp(){
     return
   fi
 
-  update_url=$(montar_erp_url 'update_tunnel_devices')
+  api_url=$(montar_erp_url 'update_tunnel_devices')
   JSON_PAYLOAD="{\"id\":\"$device_id\",\"tunnel_address\":\"$tunnel_address\",\"cliente_id\":\"$CLIENTE_ID\"}"
 
   echo
-  echo "📡 Update ERP em $update_url:"
+  echo "📡 Update ERP em $api_url"
   echo "$JSON_PAYLOAD"
 
-  curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$update_url" &> /dev/null
+  curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$api_url" &> /dev/null
 }
 
 
