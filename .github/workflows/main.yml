@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: exec_tunnels-exe
-          path: dist/exec_tunnels.exe
+          path: exec_tunnels.exe
 
 
       # - name: Upload do executável
