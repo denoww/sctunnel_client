@@ -39,4 +39,4 @@ rem     echo ✅ Npcap já está instalado.
 rem )
 
 echo ✅ Instalação finalizada!
-pause
+exit /b
