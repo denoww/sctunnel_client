@@ -4,3 +4,4 @@ conexoes.txt
 __pycache__/
 ARP_SCAN_INSTALADO.txt
 /logs
+/build

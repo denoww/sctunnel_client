@@ -8,7 +8,7 @@ python -m pip install --upgrade pip
 # Linux: instala dependências e permite uso de raw socket sem sudo
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   echo "[INFO] Detecção de SO: Linux"
-  bash exec_install_python_version_linux.sh
+  bash exec_install_linux_python.sh
 fi
 
 # Windows: exibe instrução para instalar o Npcap manualmente
