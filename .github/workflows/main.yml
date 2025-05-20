@@ -1,4 +1,5 @@
 name: Build EXE no Windows
+run-name: ${{ github.workflow }} - ${{ github.actor }}
 
 on:
   push:
