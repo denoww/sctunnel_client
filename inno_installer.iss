@@ -12,11 +12,14 @@ SolidCompression=yes
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "windows_install.bat"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "install_npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "agendar_tarefa.bat"; DestDir: "{tmp}"; Flags: ignoreversion
+
 
 [Run]
 Filename: "{tmp}\install_npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
 Filename: "{tmp}\windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
+Filename: "{tmp}\agendar_tarefa.bat"; Parameters: """{app}"""; Flags: runascurrentuser shellexec waituntilterminated
 
 
 
@@ -56,18 +59,6 @@ begin
   end;
 end;
 
-
-
-procedure AddTaskAgendada;
-var
-  Cmd: string;
-  ResultCode: Integer;
-begin
-  Cmd := 'schtasks /Create /F /SC MINUTE /MO 1 /TN "SeuCondominioTunnel" ' +
-         '/TR "' + ExpandConstant('{app}\exec.exe') + '" /RL HIGHEST';
-  if not Exec('cmd.exe', '/C ' + Cmd, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    MsgBox('Erro ao agendar tarefa no Agendador de Tarefas.', mbError, MB_OK);
-end;
 
 
 
