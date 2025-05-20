@@ -55,7 +55,7 @@ logging.basicConfig(
     format='[%(asctime)s] %(message)s',
     handlers=[
         logging.StreamHandler(),  # Saída no console
-        logging.FileHandler(log_file, encoding='utf-8')  # Arquivo de log
+        logging.FileHandler(log_file, mode='w', encoding='utf-8')  # Arquivo de log
     ]
 )
 
