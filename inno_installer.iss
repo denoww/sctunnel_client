@@ -15,6 +15,6 @@ Source: "windows_install.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Run]
-Filename: "{tmp}\npcap.exe"; Parameters: "/S"; StatusMsg: "Instalando Npcap..."; Flags: runhidden waituntilterminated
+Filename: "{tmp}\npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
 Filename: "windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
