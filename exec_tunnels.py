@@ -76,7 +76,12 @@ def abrir_tunel(config, dispositivo):
     ]
 
     logging.info(f'Abrindo túnel SSH reverso: {host_local}:{porta_local} => {tunnel_host}:{porta_remota}')
-    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    #proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    for line in proc.stdout:
+        logging.info(f'[ssh] {line.strip()}')
+    
+    
     salvar_conexao(proc.pid, dispositivo['id'], host_local, porta_remota)
     atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
