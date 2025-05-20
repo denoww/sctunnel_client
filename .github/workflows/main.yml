@@ -19,13 +19,13 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Cache de dependências do pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+      # - name: Cache de dependências do pip
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.cache/pip
+      #     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pip-
 
       - name: Instalar dependências
         run: |
@@ -45,14 +45,14 @@ jobs:
       #   run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust exec_tunnels.py
 
       - name: Compilar EXE
-        run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." exec_tunnels.py
+        run: pyinstaller --onefile --name exec --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." exec_tunnels.py
 
-        # run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." --add-data "config.json;." exec_tunnels.py
+        # run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." --add-data "config.json;." exec.py
 
 
 
       - name: Mover o EXE para a raiz
-        run: mv dist/exec_tunnels.exe exec_tunnels.exe
+        run: mv dist/exec.exe exec.exe
 
 
       - name: Upload do executável e arquivos necessários
@@ -60,10 +60,11 @@ jobs:
         with:
           name: pacote-tunnel-windows
           path: |
-            exec_tunnels.exe
+            exec.exe
             config.json
+            windows_install.bat
           # path: |
-          #   exec_tunnels.exe
+          #   exec.exe
           #   config.json
           #   scTunnel.pem
 
@@ -71,8 +72,8 @@ jobs:
       # - name: Upload do executável
       #   uses: actions/upload-artifact@v3
       #   with:
-      #     name: exec_tunnels-exe
-      #     path: dist/exec_tunnels.exe
+      #     name: exec-exe
+      #     path: dist/exec.exe
 
 
 
@@ -108,13 +109,13 @@ jobs:
 #           pip install -r requirements.txt
 
 #       - name: Compilar EXE
-#         run: pyinstaller --onefile exec_tunnels.py
+#         run: pyinstaller --onefile exec.py
 
 #       - name: Upload do executável
 #         uses: actions/upload-artifact@v3
 #         with:
-#           name: exec_tunnels-exe
-#           path: dist/exec_tunnels.exe
+#           name: exec-exe
+#           path: dist/exec.exe
 
 #       # - name: Instalar dependências
 #       #   run: |
