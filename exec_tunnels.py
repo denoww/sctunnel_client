@@ -182,8 +182,14 @@ def obter_porta_remota(host):
     return res.json()['portas'][0]
 
 def salvar_conexao(pid, device_id, host, port):
-    with open(CONEXOES_FILE, 'a') as f:
-        f.write(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
+    linhas_novas = []
+    if CONEXOES_FILE.exists():
+        with open(CONEXOES_FILE, 'r') as f:
+            linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
+    linhas_novas.append(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
+    with open(CONEXOES_FILE, 'w') as f:
+        f.writelines(linhas_novas)
+
 
 def atualizar_erp(config, dispositivo, endereco_tunel):
     """
@@ -354,12 +360,27 @@ def p_green(txt):
 
 
 def abrir_tunel(config, dispositivo):
-    print(f"{dispositivo}")
+    device_id = dispositivo.get('id')
     host_local = dispositivo['host']
     porta_local = dispositivo.get('port') or 80
     tunnel_host = config['sc_tunnel_server']['host']
     tunnel_user = config['sc_tunnel_server']['user']
-    porta_remota = dispositivo.get('porta_remota') or obter_porta_remota(tunnel_host)
+
+    # Reutiliza porta antiga se houver
+    porta_remota = extrair_campo_conexao(device_id, "tunnel_porta") or dispositivo.get('porta_remota') or obter_porta_remota(tunnel_host)
+
+    # Evita criar novo túnel se já tiver um PID válido rodando
+    if CONEXOES_FILE.exists():
+        with open(CONEXOES_FILE, 'r') as f:
+            for linha in f:
+                if f'device_id:{device_id}' in linha:
+                    pid_existente = int(linha.split('pid:')[1].split('§§§§')[0])
+                    if psutil.pid_exists(pid_existente):
+                        logging.info(f"🔁 PID {pid_existente} já ativo para device_id {device_id}. Reutilizando conexão.")
+                        return
+                    else:
+                        logging.info(f"💀 PID {pid_existente} morto. Limpando entrada.")
+                        desconectar_tunel_antigo(device_id)
 
     cmd = [
         'ssh', '-N',
@@ -372,10 +393,7 @@ def abrir_tunel(config, dispositivo):
     ]
 
     p_green(f'{host_local}:{porta_local} => {tunnel_host}:{porta_remota}')
-    #proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    # proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    # for line in proc.stdout:
-    #     logging.info(f'[ssh] {line.strip()}')
+
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.DEVNULL,
@@ -384,11 +402,9 @@ def abrir_tunel(config, dispositivo):
     )
 
     logging.info(f"✅ Túnel iniciado com PID {proc.pid}")
-
-    
-    
-    salvar_conexao(proc.pid, dispositivo['id'], host_local, porta_remota)
+    salvar_conexao(proc.pid, device_id, host_local, porta_remota)
     atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
+
 
 def main():
     logging.info("🚀 Iniciando execução do túnel reverso")
