@@ -31,4 +31,4 @@ jobs:
       - name: Executar script
         run: |
           $env:TESTE="true"
-          python exec_tunnels.py.py
+          python exec_tunnels.py
