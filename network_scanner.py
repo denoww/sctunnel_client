@@ -17,6 +17,7 @@ def varredura_arp(interface, subnet):
     pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
     try:
         ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
+        logging.info(f"resposta ARP: {ans} ")
         logging.info(f"{len(ans)} respostas recebidas de ARP")
         resultados = []
         for snd, rcv in ans:
