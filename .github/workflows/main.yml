@@ -63,5 +63,4 @@ jobs:
         with:
           name: pacote-tunnel-windows
           path: |
-            exec.exe
             setup.exe
