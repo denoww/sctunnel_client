@@ -15,7 +15,9 @@ jobs:
         with:
           python-version: '3.11'
 
-
+      - name: Criar config.json com conteúdo secreto
+        run: |
+          echo "${{ secrets.CONFIG_JSON }}" > config.json
       - name: Criar scTunnel.pem com conteúdo secreto
         run: |
           echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
