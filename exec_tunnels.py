@@ -144,10 +144,14 @@ def ping_host(ip):
 
 
 def buscar_ip_por_mac(mac, lista):
+    if not mac:
+        return None  # ← evita erro se mac for None
+
     for item in lista:
-        if item['mac'].lower() == mac.lower():
+        if item.get('mac') and item['mac'].lower() == mac.lower():
             return item['ip']
     return None
+
 
 def obter_porta_remota(host):
     res = requests.get(f'http://{host}:3020/unused_ports?qtd=1')
