@@ -6,10 +6,34 @@ import requests
 import logging
 import socket
 from pathlib import Path
-from scapy.all import ARP, Ether, srp
+import platform
+
+# Tenta importar scapy, mas permite fallback
+try:
+    from scapy.all import ARP, Ether, srp
+    SCAPY_OK = True
+except ImportError:
+    logging.warning("Scapy não disponível. Usando fallback com ping.")
+    SCAPY_OK = False
+
+
+
+
+# Caminho de log opcional, respeitando sistema operacional
+log_dir = os.path.join(os.getcwd(), "logs")
+os.makedirs(log_dir, exist_ok=True)
+
+log_file = os.path.join(log_dir, "app.log")
 
 # Configuração de logging
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(message)s',
+    handlers=[
+        logging.StreamHandler(),  # Saída no console
+        logging.FileHandler(log_file, encoding='utf-8')  # Arquivo de log
+    ]
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / 'config.json'
@@ -30,10 +54,42 @@ def obter_interface_ip_subnet():
     return None, None, None
 
 def varredura_arp(interface, subnet):
-    logging.info(f'Escaneando rede {subnet} via {interface}')
-    pkt = Ether(dst='ff:ff:ff:ff:ff:ff') / ARP(pdst=subnet)
-    ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
-    return [{'ip': rcv.psrc, 'mac': rcv.hwsrc} for _, rcv in ans]
+    if not SCAPY_OK:
+        return varredura_fallback(subnet)
+
+    logging.info(f"Escaneando rede {subnet} via {interface} usando Scapy...")
+    pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
+    try:
+        ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
+        resultados = []
+        for snd, rcv in ans:
+            resultados.append((rcv.psrc, rcv.hwsrc))
+        return resultados
+    except PermissionError:
+        logging.warning("Sem permissão para usar Scapy (raw socket). Usando fallback.")
+        return varredura_fallback(subnet.rsplit('.', 1)[0])
+
+def ping_host(ip):
+    param = "-n" if platform.system().lower() == "windows" else "-c"
+    try:
+        subprocess.check_output(["ping", param, "1", ip], stderr=subprocess.DEVNULL)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def varredura_fallback(subnet):
+    logging.info(f"Escaneando rede {subnet}.x usando ping (modo compatível)...")
+    encontrados = []
+    for i in range(1, 255):
+        ip = f"{subnet}.{i}"
+        if ping_host(ip):
+            try:
+                hostname = socket.gethostbyaddr(ip)[0]
+            except socket.herror:
+                hostname = "desconhecido"
+            encontrados.append((ip, hostname))
+    return encontrados
 
 def buscar_ip_por_mac(mac, lista):
     for item in lista:
