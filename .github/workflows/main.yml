@@ -52,8 +52,9 @@ jobs:
 
 
       - name: Arrumar arquivos
-        run: mv dist/exec.exe exec.exe
-        run: mv windows_install.bat install.bat
+        run: |
+          mv dist/exec.exe exec.exe
+          mv windows_install.bat install.bat
 
 
       - name: Upload do executável e arquivos necessários
