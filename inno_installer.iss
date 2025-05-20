@@ -18,3 +18,40 @@ Source: "npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Filename: "{tmp}\npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
 Filename: "windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
+
+
+
+[Code]
+var
+  ClienteCodigo: string;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  // Só pergunta na página de seleção de diretório
+  if CurPageID = wpSelectDir then begin
+    if not InputQuery('Código do Cliente', 'Qual código do cliente?', ClienteCodigo) then
+    begin
+      MsgBox('Você deve informar o código do cliente para continuar.', mbError, MB_OK);
+      Result := False;
+      Exit;
+    end;
+  end;
+  Result := True;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ClientePath: string;
+  F: Integer;
+begin
+  if CurStep = ssPostInstall then begin
+    ClientePath := ExpandConstant('{app}\cliente.txt');
+    F := FileCreate(ClientePath);
+    if F <> -1 then begin
+      FileWrite(F, ClienteCodigo, Length(ClienteCodigo));
+      FileClose(F);
+    end else begin
+      MsgBox('Erro ao criar cliente.txt', mbError, MB_OK);
+    end;
+  end;
+end;
