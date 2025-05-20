@@ -20,7 +20,8 @@ def varredura_arp(interface, subnet):
         logging.info(f"{len(ans)} respostas recebidas de ARP")
         resultados = []
         for snd, rcv in ans:
-            logging.info(f"Recebido: IP={rcv.psrc} MAC={rcv.hwsrc}")
+            print(f"\033[0;32mIP={rcv.psrc} MAC={rcv.hwsrc}\033[0m")
+            # logging.info(f"Recebido: IP={rcv.psrc} MAC={rcv.hwsrc}")
             resultados.append({"ip": rcv.psrc, "mac": rcv.hwsrc})
         return resultados
     except PermissionError:

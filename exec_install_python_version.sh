@@ -11,8 +11,9 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   #################################
   # python sem sudo
   if command -v setcap >/dev/null; then
+    PYTHON_REAL=$(readlink -f "$(which python3)")
     # PYTHON_REAL=$(readlink -f "$(command -v python3)")
-    PYTHON_REAL="/usr/bin/python3"
+    # PYTHON_REAL="/usr/bin/python3"
     echo "[INFO] Configurando permissões para Python usar raw sockets..."
     sudo setcap cap_net_raw+eip "$PYTHON_REAL"
 
@@ -32,8 +33,8 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 
 
   echo "[INFO] Instalando dependências de sistema no Linux..."
-  # sudo apt update
-  # sudo apt install -y build-essential python3-dev libffi-dev libpcap-dev
+  sudo apt update
+  sudo apt install -y build-essential python3-dev libffi-dev libpcap-dev
 
 else
   echo "[INFO] Detecção de SO: $OSTYPE. Se for Windows, instale o Npcap manualmente:"
