@@ -280,7 +280,7 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
     host = ip_tunnel
     porta_local = 22
     tunnel_host = config['sc_tunnel_server']['host']
-    logging.info(f"🔐 Abrindo túnel SSH na porta 22 para o device em {host}")
+    p_green(f"🔐 Abrindo túnel SSH na porta 22 para o device em {host}")
 
     dispositivo = {
         "id": 0,
@@ -300,12 +300,17 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
     ssh_cmd = gerar_ssh_cmd(config)
 
     print("##################################################################")
-    print("\033[0;32mAcesse essa máquina com\033[0m")
-    print(f"\033[0;32m{ssh_cmd}\033[0m")
+    p_green("Acesse essa máquina com")
+    p_green(ssh_cmd)
     print("##################################################################")
 
 
+def p_green(txt):
+    print(f"\033[0;32m{txt}\033[0m")
+
+
 def abrir_tunel(config, dispositivo):
+    print(f"{dispositivo}")
     host_local = dispositivo['host']
     porta_local = dispositivo.get('port') or 80
     tunnel_host = config['sc_tunnel_server']['host']
@@ -322,7 +327,7 @@ def abrir_tunel(config, dispositivo):
         f'{tunnel_user}@{tunnel_host}'
     ]
 
-    logging.info(f'Abrindo túnel SSH reverso: {host_local}:{porta_local} => {tunnel_host}:{porta_remota}')
+    p_green(f'{host_local}:{porta_local} => {tunnel_host}:{porta_remota}')
     #proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     # proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     # for line in proc.stdout:
@@ -404,6 +409,9 @@ def main():
         logging.error(f"❌ Erro ao consultar ERP: {e}")
         return
 
+    print("---------------------------------------")
+    p_green("Fazendo tunnels...")
+    print("---------------------------------------")
     for dispositivo in dispositivos:
         device_id = dispositivo['id']
         codigo = dispositivo.get('codigo')
@@ -428,6 +436,9 @@ def main():
         else:
             logging.info(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
+
+    print("---------------------------------------")
+    print("---------------------------------------")
 
 
     # for dispositivo in dispositivos:
