@@ -19,14 +19,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      # - name: Cache de dependências do pip
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.cache/pip
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-
       - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
@@ -34,28 +26,31 @@ jobs:
           pip install -r requirements.txt
 
       - name: Criar config.json com conteúdo secreto
-        run: |
-          echo '${{ secrets.CONFIG_JSON }}' > config.json
+        run: echo '${{ secrets.CONFIG_JSON }}' > config.json
 
       - name: Criar scTunnel.pem com conteúdo secreto
-        run: |
-          echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
-
-      # - name: Compilar EXE
-      #   run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust exec_tunnels.py
+        run: echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
 
       - name: Compilar EXE
         run: pyinstaller --onefile --name exec --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." exec_tunnels.py
 
-        # run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." --add-data "config.json;." exec.py
-
-
-
-      - name: Arrumar arquivos
+      - name: Mover arquivos necessários
         run: |
-          mv dist/exec.exe exec.exe
-          mv windows_install.bat install.bat
+          move dist\exec.exe exec.exe
+          move Output\setup.exe setup.exe
+          rename windows_install.bat install.bat
 
+      - name: Baixar Npcap
+        run: curl -L -o npcap.exe https://nmap.org/npcap/dist/npcap-1.78.exe
+
+      - name: Instalar Inno Setup
+        run: |
+          curl -L -o innosetup.exe https://jrsoftware.org/download.php/is.exe
+          start /wait innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+
+      - name: Compilar Inno Setup
+        run: |
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
 
       - name: Upload do executável e arquivos necessários
         uses: actions/upload-artifact@v4
@@ -65,70 +60,4 @@ jobs:
             exec.exe
             config.json
             install.bat
-          # path: |
-          #   exec.exe
-          #   config.json
-          #   scTunnel.pem
-
-
-      # - name: Upload do executável
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: exec-exe
-      #     path: dist/exec.exe
-
-
-
-# name: Teste no Windows com Python
-
-# on: [push, pull_request]
-
-# jobs:
-#   windows:
-#     runs-on: windows-latest
-
-#     steps:
-#       - name: Clonar o repositório
-#         uses: actions/checkout@v3
-
-#       - name: Configurar Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.11'
-
-#       - name: Criar config.json com conteúdo secreto
-#         run: |
-#           echo '${{ secrets.CONFIG_JSON }}' > config.json
-
-#       - name: Criar scTunnel.pem com conteúdo secreto
-#         run: |
-#           echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
-
-#       - name: Instalar dependências
-#         run: |
-#           python -m pip install --upgrade pip
-#           pip install pyinstaller
-#           pip install -r requirements.txt
-
-#       - name: Compilar EXE
-#         run: pyinstaller --onefile exec.py
-
-#       - name: Upload do executável
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: exec-exe
-#           path: dist/exec.exe
-
-#       # - name: Instalar dependências
-#       #   run: |
-#       #     bash exec_install_python_version.sh
-
-#       # - name: Mostrar variáveis e arquivos
-#       #   run: |
-#       #     dir
-#       #     cat config.json
-
-#       # - name: Executar script com logs
-#       #   run: |
-#       #     $env:TESTE_GIT_ACTION = "true"
-#       #     python exec_tunnels.py
+            setup.exe
