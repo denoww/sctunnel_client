@@ -34,6 +34,13 @@ jobs:
           path: dist/exec_tunnels.exe
 
 
+      # - name: Upload do executável
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: exec_tunnels-exe
+      #     path: dist/exec_tunnels.exe
+
+
 
 # name: Teste no Windows com Python
 
