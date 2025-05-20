@@ -9,13 +9,17 @@ SolidCompression=yes
 
 [Files]
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
-; scTunnel.pem só é necessário se não estiver embutido no .exe
 Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
+Source: "config.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "windows_install.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Run]
 Filename: "{tmp}\npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
+Filename: "windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
+
+
 
 [Code]
 var
