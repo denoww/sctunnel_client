@@ -62,7 +62,10 @@ jobs:
           path: |
             exec_tunnels.exe
             config.json
-            scTunnel.pem
+          # path: |
+          #   exec_tunnels.exe
+          #   config.json
+          #   scTunnel.pem
 
 
       # - name: Upload do executável
