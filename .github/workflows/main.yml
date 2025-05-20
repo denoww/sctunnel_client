@@ -46,8 +46,10 @@ jobs:
 
 
       - name: Compilar Inno Setup
+        shell: cmd
         run: |
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
+
 
       - name: Mover arquivos necessários
         run: |
