@@ -9,7 +9,8 @@ SolidCompression=yes
 
 [Files]
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion  ; opcional, pode remover se for embutido
+; scTunnel.pem só é necessário se não estiver embutido no .exe
+Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
 Source: "npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Run]
