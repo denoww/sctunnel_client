@@ -16,6 +16,7 @@ from network_scanner import varredura_arp, verificar_cap_net_raw
 
 
 
+
 # # Tenta importar scapy, mas permite fallback
 # try:
 #     from scapy.all import ARP, Ether, srp
