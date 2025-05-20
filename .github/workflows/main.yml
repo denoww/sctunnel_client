@@ -36,7 +36,7 @@ jobs:
 
 
       - name: Baixar Npcap
-        run: curl -L -o npcap.exe https://nmap.org/npcap/dist/npcap-1.78.exe
+        run: curl -L -o install_npcap.exe https://nmap.org/npcap/dist/npcap-1.78.exe
 
       - name: Instalar Inno Setup
         shell: cmd
