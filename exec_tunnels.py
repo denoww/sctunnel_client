@@ -375,8 +375,8 @@ def main():
     if os.getenv("TESTE_GIT_ACTION") == "true":
         logging.info("🔧 Modo TESTE_GIT_ACTION ativado. Usando dados simulados.")
         dispositivos_rede = [
-            {"ip": "10.1.0.101", "mac": "aa:bb:cc:dd:ee:ff"},
-            {"ip": "10.1.0.102", "mac": "11:22:33:44:55:66"}
+            {"ip": "192.168.15.179", "mac": "08:54:11:2A:FA:BC"},
+            {"ip": "192.168.15.189", "mac": "08:54:11:2A:FA:00"},
         ]
     else:
         if not verificar_cap_net_raw():
