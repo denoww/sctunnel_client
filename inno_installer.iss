@@ -10,7 +10,6 @@ SolidCompression=yes
 [Files]
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
-Source: "config.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "windows_install.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
