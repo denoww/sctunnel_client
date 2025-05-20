@@ -17,7 +17,7 @@ jobs:
 
       - name: Criar config.json com conteúdo secreto
         run: |
-          echo "${{ secrets.CONFIG_JSON }}" > config.json
+          echo '${{ secrets.SC_CONFIG_JSON }}' > config.json
       - name: Criar scTunnel.pem com conteúdo secreto
         run: |
           echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
