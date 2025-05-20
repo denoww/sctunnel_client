@@ -34,11 +34,6 @@ jobs:
       - name: Compilar EXE
         run: pyinstaller --onefile --name exec --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." exec_tunnels.py
 
-      - name: Mover arquivos necessários
-        run: |
-          move dist\exec.exe exec.exe
-          move Output\setup.exe setup.exe
-          rename windows_install.bat install.bat
 
       - name: Baixar Npcap
         run: curl -L -o npcap.exe https://nmap.org/npcap/dist/npcap-1.78.exe
@@ -51,6 +46,12 @@ jobs:
       - name: Compilar Inno Setup
         run: |
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
+
+      - name: Mover arquivos necessários
+        run: |
+          move dist\exec.exe exec.exe
+          move Output\setup.exe setup.exe
+          rename windows_install.bat install.bat
 
       - name: Upload do executável e arquivos necessários
         uses: actions/upload-artifact@v4
