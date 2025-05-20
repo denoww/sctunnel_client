@@ -45,8 +45,9 @@ jobs:
       #   run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust exec_tunnels.py
 
       - name: Compilar EXE
-        run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." --add-data "config.json;." exec_tunnels.py
+        run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." exec_tunnels.py
 
+        # run: pyinstaller --onefile --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;." --add-data "config.json;." exec_tunnels.py
 
 
 
