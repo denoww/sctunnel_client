@@ -70,14 +70,25 @@ logging.info(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
 
 
+# if getattr(sys, 'frozen', False):
+#     BASE_DIR = Path(sys._MEIPASS)
+# else:
+#     BASE_DIR = Path(__file__).resolve().parent
+
+# CONFIG_PATH = BASE_DIR / 'config.json'
+# PEM_FILE = BASE_DIR / 'scTunnel.pem'
+# CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
+
+
 if getattr(sys, 'frozen', False):
-    BASE_DIR = Path(sys._MEIPASS)
+    BASE_DIR = Path(sys.executable).parent  # ← pega a pasta do .exe
 else:
     BASE_DIR = Path(__file__).resolve().parent
 
 CONFIG_PATH = BASE_DIR / 'config.json'
-PEM_FILE = BASE_DIR / 'scTunnel.pem'
 CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
+PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else BASE_DIR / 'scTunnel.pem'
+
 
 def carregar_config():
     with open(CONFIG_PATH, 'r') as f:
