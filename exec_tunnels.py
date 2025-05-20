@@ -1,165 +1,137 @@
 import os
 import json
 import subprocess
-import threading
-import time
-import socket
-import logging
 import psutil
 import requests
-from sshtunnel import SSHTunnelForwarder
+import logging
+import socket
+from pathlib import Path
 from scapy.all import ARP, Ether, srp
 
-# Configurar o logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configuração de logging
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(message)s')
 
-# Carregar configurações do arquivo JSON
-def carregar_configuracoes(caminho_config):
-    with open(caminho_config, 'r') as arquivo:
-        return json.load(arquivo)
+BASE_DIR = Path(__file__).resolve().parent
+CONFIG_PATH = BASE_DIR / 'config.json'
+PEM_FILE = BASE_DIR / 'scTunnel.pem'
+CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
 
-# Obter informações da interface de rede
-def obter_interface_e_ip():
-    try:
-        # Obter o nome da interface de rede padrão
-        interfaces = psutil.net_if_addrs()
-        for interface_nome, enderecos in interfaces.items():
-            for endereco in enderecos:
-                if endereco.family == socket.AF_INET and not endereco.address.startswith("127."):
-                    return interface_nome, endereco.address
-    except Exception as e:
-        logging.error(f"Erro ao obter interface de rede: {e}")
-    return None, None
+def carregar_config():
+    with open(CONFIG_PATH, 'r') as f:
+        return json.load(f)
 
-# Realizar varredura ARP na rede local
-def varredura_arp(interface, ip_rede):
-    try:
-        logging.info(f"Iniciando varredura ARP na rede {ip_rede} pela interface {interface}")
-        pacote = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip_rede)
-        resultado = srp(pacote, timeout=3, iface=interface, inter=0.1, verbose=False)[0]
-        dispositivos = []
-        for _, recebido in resultado:
-            dispositivos.append({'ip': recebido.psrc, 'mac': recebido.hwsrc})
-        return dispositivos
-    except Exception as e:
-        logging.error(f"Erro na varredura ARP: {e}")
-        return []
+def obter_interface_ip_subnet():
+    for iface, addrs in psutil.net_if_addrs().items():
+        for addr in addrs:
+            if addr.family == socket.AF_INET and not addr.address.startswith("127."):
+                ip = addr.address
+                subnet = '.'.join(ip.split('.')[:3]) + '.0/24'
+                return iface, ip, subnet
+    return None, None, None
 
-# Estabelecer túnel SSH para um dispositivo
-def estabelecer_tunel_ssh(config, dispositivo):
-    try:
-        ssh_host = config['sc_tunnel_server']['host']
-        ssh_usuario = config['sc_tunnel_server']['user']
-        ssh_chave = os.path.join(os.path.dirname(__file__), 'scTunnel.pem')
-        dispositivo_host = dispositivo['host']
-        dispositivo_porta = dispositivo.get('port', 80)
-        porta_remota = dispositivo.get('tunnel_porta', 0)
+def varredura_arp(interface, subnet):
+    logging.info(f'Escaneando rede {subnet} via {interface}')
+    pkt = Ether(dst='ff:ff:ff:ff:ff:ff') / ARP(pdst=subnet)
+    ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
+    return [{'ip': rcv.psrc, 'mac': rcv.hwsrc} for _, rcv in ans]
 
-        if not porta_remota:
-            # Obter porta remota disponível via API
-            resposta = requests.get(f"http://{ssh_host}:3020/unused_ports?qtd=1")
-            if resposta.status_code == 200:
-                porta_remota = resposta.json()['portas'][0]
-            else:
-                logging.error("Não foi possível obter porta remota disponível.")
-                return
+def buscar_ip_por_mac(mac, lista):
+    for item in lista:
+        if item['mac'].lower() == mac.lower():
+            return item['ip']
+    return None
 
-        servidor = SSHTunnelForwarder(
-            (ssh_host, 22),
-            ssh_username=ssh_usuario,
-            ssh_pkey=ssh_chave,
-            remote_bind_address=(dispositivo_host, dispositivo_porta),
-            local_bind_address=('0.0.0.0', porta_remota)
-        )
+def obter_porta_remota(host):
+    res = requests.get(f'http://{host}:3020/unused_ports?qtd=1')
+    return res.json()['portas'][0]
 
-        servidor.start()
-        logging.info(f"Túnel SSH estabelecido: {servidor.local_bind_host}:{servidor.local_bind_port} -> {dispositivo_host}:{dispositivo_porta}")
+def salvar_conexao(pid, device_id, host, port):
+    with open(CONEXOES_FILE, 'a') as f:
+        f.write(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
 
-        # Manter o túnel ativo em uma thread separada
-        threading.Thread(target=manter_tunel_ativo, args=(servidor,), daemon=True).start()
-
-        # Atualizar informações do túnel no ERP
-        atualizar_erp(config, dispositivo, f"{ssh_host}:{porta_remota}")
-
-    except Exception as e:
-        logging.error(f"Erro ao estabelecer túnel SSH: {e}")
-
-# Manter o túnel SSH ativo
-def manter_tunel_ativo(servidor):
-    try:
-        while True:
-            time.sleep(60)
-    except KeyboardInterrupt:
-        servidor.stop()
-        logging.info("Túnel SSH encerrado.")
-
-# Atualizar informações do túnel no ERP
 def atualizar_erp(config, dispositivo, endereco_tunel):
-    try:
-        host_erp = config['sc_server']['host']
-        token = config['sc_server']['token']
-        cliente_id = config['sc_server']['cliente_id']
-        dispositivo_id = dispositivo['id']
+    url = f"{config['sc_server']['host']}/portarias/update_tunnel_devices.json"
+    payload = {
+        'id': dispositivo['id'],
+        'tunnel_address': endereco_tunel,
+        'cliente_id': config['sc_server']['cliente_id']
+    }
+    requests.post(url, json=payload)
 
-        url = f"{host_erp}/portarias/update_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
-        payload = {
-            "id": dispositivo_id,
-            "tunnel_address": endereco_tunel,
-            "cliente_id": cliente_id
-        }
+def abrir_tunel(config, dispositivo):
+    host_local = dispositivo['host']
+    porta_local = dispositivo.get('port', 80)
+    tunnel_host = config['sc_tunnel_server']['host']
+    tunnel_user = config['sc_tunnel_server']['user']
+    porta_remota = obter_porta_remota(tunnel_host)
 
-        resposta = requests.post(url, json=payload)
-        if resposta.status_code == 200:
-            logging.info(f"Informações do túnel atualizadas no ERP para o dispositivo {dispositivo_id}.")
-        else:
-            logging.error(f"Falha ao atualizar ERP: {resposta.status_code} - {resposta.text}")
+    cmd = [
+        'ssh', '-N',
+        '-o', 'ServerAliveInterval=20',
+        '-i', str(PEM_FILE),
+        '-o', 'StrictHostKeyChecking=no',
+        '-o', 'UserKnownHostsFile=/tmp/ssh_known_hosts_temp',
+        '-R', f'{porta_remota}:{host_local}:{porta_local}',
+        f'{tunnel_user}@{tunnel_host}'
+    ]
 
-    except Exception as e:
-        logging.error(f"Erro ao atualizar ERP: {e}")
+    logging.info(f'Abrindo túnel SSH reverso: {host_local}:{porta_local} => {tunnel_host}:{porta_remota}')
+    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    salvar_conexao(proc.pid, dispositivo['id'], host_local, porta_remota)
+    atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
-# Função principal
 def main():
-    caminho_config = os.path.join(os.path.dirname(__file__), 'config.json')
-    config = carregar_configuracoes(caminho_config)
-
-    interface, ip_local = obter_interface_e_ip()
-    if not interface or not ip_local:
-        logging.error("Não foi possível determinar a interface de rede ou o IP local.")
+    if not PEM_FILE.exists():
+        logging.error('Arquivo scTunnel.pem não encontrado.')
         return
 
-    # Determinar a sub-rede (assumindo máscara /24)
-    ip_rede = '.'.join(ip_local.split('.')[:3]) + '.0/24'
+    config = carregar_config()
+    interface, ip_local, subnet = obter_interface_ip_subnet()
+    if not interface:
+        logging.error('Interface de rede não encontrada.')
+        return
 
-    dispositivos_rede = varredura_arp(interface, ip_rede)
-    logging.info(f"Dispositivos encontrados na rede: {dispositivos_rede}")
+    dispositivos_rede = varredura_arp(interface, subnet)
+    logging.info(f'{len(dispositivos_rede)} dispositivos encontrados.')
 
-    # Obter lista de dispositivos para estabelecer túneis via API
-    host_erp = config['sc_server']['host']
-    token = config['sc_server']['token']
-    cliente_id = config['sc_server']['cliente_id']
-    url = f"{host_erp}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
+    macs = sorted({d['mac'] for d in dispositivos_rede})
+    mac_str = ','.join(macs)
+
+    ssh_cmd_exemplo = f'ssh -p 22 {os.getlogin()}@{config["sc_tunnel_server"]["host"]}'
+    varredura = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
+
+    url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={config['sc_server']['token']}&cliente_id={config['sc_server']['cliente_id']}"
+    payload = {
+        "tunnel_macaddres": mac_str,
+        "ssh_cmd": ssh_cmd_exemplo,
+        "varredura_rede": varredura,
+        "codigos": config['sc_server'].get('equipamento_codigos', [])
+    }
 
     try:
-        resposta = requests.get(url)
-        if resposta.status_code == 200:
-            dispositivos = resposta.json().get('devices', [])
-            for dispositivo in dispositivos:
-                # Verificar se o dispositivo está na rede local
-                mac_dispositivo = dispositivo.get('mac_address')
-                for dispositivo_rede in dispositivos_rede:
-                    if dispositivo_rede['mac'].lower() == mac_dispositivo.lower():
-                        dispositivo['host'] = dispositivo_rede['ip']
-                        break
-                else:
-                    logging.warning(f"Dispositivo {dispositivo.get('codigo')} não encontrado na rede local.")
-                    continue
-
-                if dispositivo.get('tunnel_me') is True:
-                    estabelecer_tunel_ssh(config, dispositivo)
-        else:
-            logging.error(f"Falha ao obter dispositivos do ERP: {resposta.status_code} - {resposta.text}")
+        res = requests.post(url, json=payload)
+        res.raise_for_status()
+        dispositivos = res.json().get('devices', [])
     except Exception as e:
-        logging.error(f"Erro ao obter dispositivos do ERP: {e}")
+        logging.error(f'Erro ao consultar ERP: {e}')
+        return
 
-if __name__ == "__main__":
+    for dispositivo in dispositivos:
+        if dispositivo.get('tunnel_me') is not True:
+            continue
+
+        mac1 = dispositivo.get('mac_address')
+        mac2 = dispositivo.get('mac_address_2')
+        ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
+
+        if not ip:
+            logging.warning(f"Dispositivo #{dispositivo.get('codigo')} sem IP conhecido.")
+            continue
+
+        dispositivo['host'] = ip
+        abrir_tunel(config, dispositivo)
+
+    logging.info('✅ Execução finalizada.')
+
+if __name__ == '__main__':
     main()
