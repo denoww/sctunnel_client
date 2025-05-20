@@ -46,16 +46,12 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   ClientePath: string;
-  F: Integer;
+  ClienteTexto: string;
 begin
   if CurStep = ssPostInstall then begin
     ClientePath := ExpandConstant('{app}\cliente.txt');
-    F := FileCreate(ClientePath);
-    if F <> -1 then begin
-      FileWrite(F, ClientePage.Values[0], Length(ClientePage.Values[0]));
-      FileClose(F);
-    end else begin
+    ClienteTexto := ClientePage.Values[0];
+    if not SaveStringToFile(ClientePath, ClienteTexto, False) then
       MsgBox('Erro ao criar cliente.txt', mbError, MB_OK);
-    end;
   end;
 end;
