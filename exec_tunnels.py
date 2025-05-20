@@ -8,6 +8,7 @@ import socket
 from pathlib import Path
 import platform
 import ipaddress
+import sys
 
 # from scapy.all import ARP, Ether, srp
 
@@ -63,7 +64,17 @@ logging.info(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
 
 
-BASE_DIR = Path(__file__).resolve().parent
+# BASE_DIR = Path(__file__).resolve().parent
+# CONFIG_PATH = BASE_DIR / 'config.json'
+# PEM_FILE = BASE_DIR / 'scTunnel.pem'
+
+
+
+if getattr(sys, 'frozen', False):
+    BASE_DIR = Path(sys._MEIPASS)
+else:
+    BASE_DIR = Path(__file__).resolve().parent
+
 CONFIG_PATH = BASE_DIR / 'config.json'
 PEM_FILE = BASE_DIR / 'scTunnel.pem'
 CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
