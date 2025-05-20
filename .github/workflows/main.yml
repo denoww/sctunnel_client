@@ -1,3 +1,4 @@
+
 name: Teste no Windows com Python
 
 on: [push, pull_request]
@@ -18,17 +19,22 @@ jobs:
       - name: Criar config.json com conteúdo secreto
         run: |
           echo '${{ secrets.CONFIG_JSON }}' > config.json
+
       - name: Criar scTunnel.pem com conteúdo secreto
         run: |
           echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
-          chmod 400 scTunnel.pem
-          
+
       - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Executar script
+      - name: Mostrar variáveis e arquivos
         run: |
-          $env:TESTE="true"
+          dir
+          cat config.json
+
+      - name: Executar script com logs
+        run: |
+          $env:TESTE = "true"
           python exec_tunnels.py
