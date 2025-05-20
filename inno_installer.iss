@@ -12,14 +12,12 @@ SolidCompression=yes
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "windows_install.bat"; DestDir: "{tmp}"; Flags: ignoreversion
 Source: "install_npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "agendar_tarefa.bat"; DestDir: "{tmp}"; Flags: ignoreversion
 
 
 [Run]
 Filename: "{tmp}\install_npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
-Filename: "{tmp}\windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
-Filename: "{tmp}\agendar_tarefa.bat"; Parameters: """{app}"""; Flags: runascurrentuser shellexec waituntilterminated
+Filename: "{tmp}\windows_install.bat"; Parameters: """{app}"""; Flags: runascurrentuser shellexec waituntilterminated
 
 
 
