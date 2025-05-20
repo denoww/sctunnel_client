@@ -91,7 +91,15 @@ def main():
         logging.error('Interface de rede não encontrada.')
         return
 
-    dispositivos_rede = varredura_arp(interface, subnet)
+    # dispositivos_rede = varredura_arp(interface, subnet)
+    if os.getenv("TESTE") == "true":
+        dispositivos_rede = [
+            {"ip": "10.1.0.101", "mac": "aa:bb:cc:dd:ee:ff"},
+            {"ip": "10.1.0.102", "mac": "11:22:33:44:55:66"}
+        ]
+    else:
+        dispositivos_rede = varredura_arp(interface, subnet)
+    
     logging.info(f'{len(dispositivos_rede)} dispositivos encontrados.')
 
     macs = sorted({d['mac'] for d in dispositivos_rede})
