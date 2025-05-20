@@ -43,9 +43,12 @@ jobs:
           curl -L -o innosetup.exe https://jrsoftware.org/download.php/is.exe
           start /wait innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 
-      - name: Compilar Inno Setup
-        run: |
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
+      - name: Instalar Inno Setup
+        run: cmd /c "innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
+
+      # - name: Compilar Inno Setup
+      #   run: |
+      #     "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
 
       - name: Mover arquivos necessários
         run: |
