@@ -399,6 +399,8 @@ def main():
 
     logging.info("📥 Carregando configurações do arquivo config.json")
     config = carregar_config()
+    print(json.dumps(config, indent=2, ensure_ascii=False))  # para imprimir bonito
+
 
 
     logging.info("🌐 Descobrindo interface de rede ativa...")
