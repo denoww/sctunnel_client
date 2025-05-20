@@ -1,5 +1,9 @@
 @echo off
 setlocal
+
+set APP_DIR=%~1
+
+
 echo 🔧 Instalando e ativando OpenSSH Server...
 
 :: Verifica se é Admin
@@ -37,6 +41,38 @@ rem     )
 rem ) else (
 rem     echo ✅ Npcap já está instalado.
 rem )
+
+
+
+
+
+:: Recebe apenas o diretório base (ex: C:\SeuCondominioTunnel)
+set EXEC_PATH=%APP_DIR%\exec.exe
+set TAREFA_NOME=SeuCondominioTunnel
+
+if not exist "%EXEC_PATH%" (
+    echo ❌ Executável não encontrado: %EXEC_PATH%
+    pause
+    exit /b 1
+)
+
+:: Remove tarefa antiga (caso exista)
+schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
+
+:: Cria a nova tarefa
+schtasks /Create /F /SC MINUTE /MO 1 ^
+  /TN "%TAREFA_NOME%" ^
+  /TR "\"%EXEC_PATH%\"" ^
+  /RL HIGHEST
+
+if %errorlevel% equ 0 (
+    echo ✅ Tarefa agendada com sucesso para: %EXEC_PATH%
+) else (
+    echo ❌ Falha ao agendar tarefa. Código: %errorlevel%
+)
+
+endlocal
+
 
 echo ✅ Instalação finalizada!
 exit /b
