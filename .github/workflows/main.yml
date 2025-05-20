@@ -21,4 +21,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar script
-        run: python exec.py
+        run: python exec_tunnels.py
