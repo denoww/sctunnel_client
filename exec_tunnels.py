@@ -368,8 +368,8 @@ def main():
         return
     logging.info(f"✅ Interface ativa: {interface}, IP local: {ip_local}, Subnet: {subnet}/24")
 
-    ssh_cmd_exemplo = gerar_ssh_cmd(config)
     abrir_ssh_do_tunnel(ip_local, config)
+    ssh_cmd_exemplo = gerar_ssh_cmd(config)
 
     dispositivos_rede = []
     if os.getenv("TESTE_GIT_ACTION") == "true":
