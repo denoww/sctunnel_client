@@ -25,14 +25,25 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
 
+      - name: Criar config.json com conteúdo secreto
+        run: |
+          echo '${{ secrets.CONFIG_JSON }}' > config.json
+
+      - name: Criar scTunnel.pem com conteúdo secreto
+        run: |
+          echo "${{ secrets.SC_TUNNEL_PEM }}" > scTunnel.pem
+
       - name: Compilar EXE
         run: pyinstaller --onefile exec_tunnels.py
 
       - name: Upload do executável
         uses: actions/upload-artifact@v4
         with:
-          name: exec_tunnels-exe
-          path: exec_tunnels.exe
+          name: pacote-tunnel-windows
+           path: |
+             dist/exec_tunnels.exe
+             config.json
+             scTunnel.pem
 
 
       # - name: Upload do executável
