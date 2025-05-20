@@ -51,8 +51,9 @@ jobs:
 
 
 
-      - name: Mover o EXE para a raiz
+      - name: Arrumar arquivos
         run: mv dist/exec.exe exec.exe
+        run: mv windows_install.bat install.bat
 
 
       - name: Upload do executável e arquivos necessários
@@ -62,7 +63,7 @@ jobs:
           path: |
             exec.exe
             config.json
-            windows_install.bat
+            install.bat
           # path: |
           #   exec.exe
           #   config.json
