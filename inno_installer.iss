@@ -64,7 +64,7 @@ var
 begin
   Cmd := 'schtasks /Create /F /SC MINUTE /MO 1 /TN "SeuCondominioTunnel" ' +
          '/TR "' + ExpandConstant('{app}\exec.exe') + '" /RL HIGHEST';
-  Exec('cmd.exe', '/C ' + Cmd, '', SW_HIDE, ewWaitUntilTerminated, _);
+  Exec('cmd.exe', '/C ' + Cmd, '', SW_HIDE, ewWaitUntilTerminated, IgnoreResult);
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
