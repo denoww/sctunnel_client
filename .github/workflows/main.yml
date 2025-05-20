@@ -26,14 +26,29 @@ jobs:
 
       - name: Instalar dependências
         run: |
-          bash exec_install_python_version.sh
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
 
-      - name: Mostrar variáveis e arquivos
-        run: |
-          dir
-          cat config.json
+      - name: Compilar EXE
+        run: pyinstaller --onefile exec_tunnels.py
 
-      - name: Executar script com logs
-        run: |
-          $env:TESTE_GIT_ACTION = "true"
-          python exec_tunnels.py
+      - name: Upload do executável
+        uses: actions/upload-artifact@v3
+        with:
+          name: exec_tunnels-exe
+          path: dist/exec_tunnels.exe
+
+      # - name: Instalar dependências
+      #   run: |
+      #     bash exec_install_python_version.sh
+
+      # - name: Mostrar variáveis e arquivos
+      #   run: |
+      #     dir
+      #     cat config.json
+
+      # - name: Executar script com logs
+      #   run: |
+      #     $env:TESTE_GIT_ACTION = "true"
+      #     python exec_tunnels.py
