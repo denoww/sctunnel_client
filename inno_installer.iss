@@ -55,3 +55,31 @@ begin
       MsgBox('Erro ao criar cliente.txt', mbError, MB_OK);
   end;
 end;
+
+
+
+procedure AddTaskAgendada;
+var
+  Cmd: string;
+begin
+  Cmd := 'schtasks /Create /F /SC MINUTE /MO 1 /TN "SeuCondominioTunnel" ' +
+         '/TR "' + ExpandConstant('{app}\exec.exe') + '" /RL HIGHEST';
+  Exec('cmd.exe', '/C ' + Cmd, '', SW_HIDE, ewWaitUntilTerminated, _);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ClientePath: string;
+  ClienteTexto: string;
+begin
+  if CurStep = ssPostInstall then begin
+    // Salva cliente.txt
+    ClientePath := ExpandConstant('{app}\cliente.txt');
+    ClienteTexto := ClientePage.Values[0];
+    if not SaveStringToFile(ClientePath, ClienteTexto, False) then
+      MsgBox('Erro ao criar cliente.txt', mbError, MB_OK);
+
+    // Agenda tarefa
+    AddTaskAgendada;
+  end;
+end;
