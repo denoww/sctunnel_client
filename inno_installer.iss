@@ -26,7 +26,7 @@ var
 
 procedure InitializeWizard;
 begin
-  ClientePage := CreateInputQueryPage(wpSelectDir, 'Código do Cliente',
+  ClientePage := CreateInputQueryPage(wpSelectDir, 'Código do Cliente', 'Código do Cliente',
     'Informe o código do cliente');
   ClientePage.Add('Código do Cliente:', False);
 end;
