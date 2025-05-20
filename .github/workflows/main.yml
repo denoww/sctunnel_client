@@ -28,7 +28,7 @@ jobs:
         run: pyinstaller --onefile exec_tunnels.py
 
       - name: Upload do executável
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: exec_tunnels-exe
           path: dist/exec_tunnels.exe
