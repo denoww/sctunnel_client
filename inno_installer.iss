@@ -20,6 +20,12 @@ Filename: "{app}\windows_install.bat"; Flags: runascurrentuser shellexec waitunt
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
 
 
+[UninstallRun]
+Filename: "schtasks"; Parameters: "/Delete /TN ""SeuCondominioTunnel"" /F"; Flags: runhidden
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}"
+
 
 
 [Code]
