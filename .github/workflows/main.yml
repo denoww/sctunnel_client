@@ -35,5 +35,5 @@ jobs:
 
       - name: Executar script com logs
         run: |
-          $env:TESTE = "true"
+          $env:TESTE_GIT_ACTION = "true"
           python exec_tunnels.py

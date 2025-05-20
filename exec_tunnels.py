@@ -7,14 +7,36 @@ import logging
 import socket
 from pathlib import Path
 import platform
+import ipaddress
 
-# Tenta importar scapy, mas permite fallback
-try:
-    from scapy.all import ARP, Ether, srp
-    SCAPY_OK = True
-except ImportError:
-    logging.warning("Scapy não disponível. Usando fallback com ping.")
-    SCAPY_OK = False
+# from scapy.all import ARP, Ether, srp
+
+from network_scanner import varredura_arp, verificar_cap_net_raw
+
+
+
+
+# # Tenta importar scapy, mas permite fallback
+# try:
+#     from scapy.all import ARP, Ether, srp
+#     SCAPY_OK = True
+# except ImportError:
+#     logging.warning("Scapy não disponível. Usando fallback com ping.")
+#     SCAPY_OK = False
+
+
+
+
+# def verificar_permissoes():
+#     if platform.system().lower() == "linux":
+#         try:
+#             with open("/proc/sys/net/ipv4/ip_forward") as f:
+#                 return os.geteuid() == 0 or "cap_net_raw" in os.popen(f"getcap {os.readlink('/proc/self/exe')}").read()
+#         except:
+#             return False
+#     elif platform.system().lower() == "windows":
+#         return True  # Assumimos Npcap instalado
+#     return False
 
 
 
@@ -35,6 +57,11 @@ logging.basicConfig(
     ]
 )
 
+
+logging.info(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
+
+
+
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / 'config.json'
 PEM_FILE = BASE_DIR / 'scTunnel.pem'
@@ -47,27 +74,63 @@ def carregar_config():
 def obter_interface_ip_subnet():
     for iface, addrs in psutil.net_if_addrs().items():
         for addr in addrs:
-            if addr.family == socket.AF_INET and not addr.address.startswith("127."):
+            if addr.family == socket.AF_INET:
                 ip = addr.address
-                subnet = '.'.join(ip.split('.')[:3]) + '.0/24'
-                return iface, ip, subnet
+                if not ip.startswith("127.") and not ip.startswith("169.254."):
+                    try:
+                        rede = ipaddress.IPv4Interface(f"{ip}/{addr.netmask}").network
+                        base_ip = str(rede.network_address)  # ← apenas o IP base
+                        return iface, ip, base_ip  # ← sem /24
+                    except Exception:
+                        continue
     return None, None, None
 
-def varredura_arp(interface, subnet):
-    if not SCAPY_OK:
-        return varredura_fallback(subnet)
 
-    logging.info(f"Escaneando rede {subnet} via {interface} usando Scapy...")
-    pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
-    try:
-        ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
-        resultados = []
-        for snd, rcv in ans:
-            resultados.append((rcv.psrc, rcv.hwsrc))
-        return resultados
-    except PermissionError:
-        logging.warning("Sem permissão para usar Scapy (raw socket). Usando fallback.")
-        return varredura_fallback(subnet.rsplit('.', 1)[0])
+# def obter_interface_ip_subnet():
+#     """
+#     Retorna a interface de rede ativa com IP IPv4 válido e a subnet /24 correspondente.
+#     Exemplo de retorno: ('eno1', '192.168.15.115', '192.168.15.0/24')
+#     """
+#     for iface, addrs in psutil.net_if_addrs().items():
+#         for addr in addrs:
+#             if addr.family == socket.AF_INET:
+#                 ip = addr.address
+#                 if not ip.startswith("127.") and not ip.startswith("169.254."):
+#                     try:
+#                         # Calcula a rede com base na máscara
+#                         rede = ipaddress.IPv4Interface(f"{ip}/{addr.netmask}").network
+#                         return iface, ip, str(rede)
+#                     except Exception:
+#                         continue
+#     return None, None, None
+
+# def obter_interface_ip_subnet():
+#     return "eno1", "192.168.15.115", "192.168.15.0"
+
+# def obter_interface_ip_subnet():
+#     for iface, addrs in psutil.net_if_addrs().items():
+#         for addr in addrs:
+#             if addr.family == socket.AF_INET and not addr.address.startswith("127."):
+#                 ip = addr.address
+#                 subnet = '.'.join(ip.split('.')[:3]) + '.0/24'
+#                 return iface, ip, subnet
+#     return None, None, None
+
+# def varredura_arp(interface, subnet):
+#     logging.info(f"Escaneando rede {subnet} via {interface} usando Scapy...")
+#     pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
+#     ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
+
+#     logging.info(f"{len(ans)} respostas recebidas de ARP")
+
+#     resultados = []
+#     for snd, rcv in ans:
+#         logging.info(f"Recebido: IP={rcv.psrc} MAC={rcv.hwsrc}")
+#         resultados.append({"ip": rcv.psrc, "mac": rcv.hwsrc})
+
+#     return resultados
+
+
 
 def ping_host(ip):
     param = "-n" if platform.system().lower() == "windows" else "-c"
@@ -78,18 +141,7 @@ def ping_host(ip):
         return False
 
 
-def varredura_fallback(subnet):
-    logging.info(f"Escaneando rede {subnet}.x usando ping (modo compatível)...")
-    encontrados = []
-    for i in range(1, 255):
-        ip = f"{subnet}.{i}"
-        if ping_host(ip):
-            try:
-                hostname = socket.gethostbyaddr(ip)[0]
-            except socket.herror:
-                hostname = "desconhecido"
-            encontrados.append((ip, hostname))
-    return encontrados
+
 
 def buscar_ip_por_mac(mac, lista):
     for item in lista:
@@ -152,14 +204,20 @@ def main():
         logging.error('Interface de rede não encontrada.')
         return
 
-    # dispositivos_rede = varredura_arp(interface, subnet)
-    if os.getenv("TESTE") == "true":
+    dispositivos_rede = []
+    if os.getenv("TESTE_GIT_ACTION") == "true":
         dispositivos_rede = [
             {"ip": "10.1.0.101", "mac": "aa:bb:cc:dd:ee:ff"},
             {"ip": "10.1.0.102", "mac": "11:22:33:44:55:66"}
         ]
     else:
-        dispositivos_rede = varredura_arp(interface, subnet)
+        if not verificar_cap_net_raw():
+            logging.info(f'1')
+            logging.error("❌ Python atual não possui cap_net_raw. Use '/usr/bin/python3.10' com setcap.")
+            return
+        else:
+            logging.info(f'2')
+            dispositivos_rede = varredura_arp(interface, subnet)
     
     logging.info(f'{len(dispositivos_rede)} dispositivos encontrados.')
 
