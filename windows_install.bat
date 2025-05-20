@@ -4,29 +4,42 @@ setlocal
 
 
 
-:: Define o caminho completo do executavel
-set "EXEC_PATH=%~dp0exec.exe"
+:: Define o diretório do script
+set "SCRIPT_DIR=%~dp0"
+set "EXEC_PATH=%SCRIPT_DIR%exec.exe"
+set "VBS_PATH=%SCRIPT_DIR%executar_oculto.vbs"
 set "TAREFA_NOME=SeuCondominioTunnel"
 
-
-:: Verifica se o executavel existe
+:: Verifica se o executável existe
 if not exist "%EXEC_PATH%" (
-    echo [ERRO] Executável não encontrado em
-
+    echo [ERRO] Executável não encontrado em "%EXEC_PATH%"
     pause
+    exit /b 1
 )
+
+:: Cria o script VBScript para execução oculta
+echo Set WshShell = CreateObject("WScript.Shell") > "%VBS_PATH%"
+echo WshShell.CurrentDirectory = "%SCRIPT_DIR%" >> "%VBS_PATH%"
+echo WshShell.Run "exec.exe", 0, False >> "%VBS_PATH%"
 
 :: Remove a tarefa existente, se houver
 schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
 
-:: Cria a nova tarefa agendada
-schtasks /create /tn "%TAREFA_NOME%" /tr "\"%EXEC_PATH%\"" /sc minute /mo 1 /rl highest /f
+:: Cria a nova tarefa agendada que executa o script VBS
+schtasks /create ^
+  /tn "%TAREFA_NOME%" ^
+  /tr "wscript.exe \"%VBS_PATH%\"" ^
+  /sc minute ^
+  /mo 1 ^
+  /ru SYSTEM ^
+  /f
 
 if %errorlevel% equ 0 (
-    echo  Tarefa agendada com sucesso para: %EXEC_PATH%
+    echo Tarefa agendada com sucesso para: %EXEC_PATH%
 ) else (
-    echo  Falha ao agendar tarefa. Codigo: %errorlevel%
+    echo Falha ao agendar tarefa. Código: %errorlevel%
 )
+
 
 
 
