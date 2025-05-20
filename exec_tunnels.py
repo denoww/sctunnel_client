@@ -85,8 +85,9 @@ if getattr(sys, 'frozen', False):
 else:
     BASE_DIR = Path(__file__).resolve().parent
 
-CONFIG_PATH = BASE_DIR / 'config.json'
 CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
+
+CONFIG_PATH = Path(sys._MEIPASS) / 'config.json'
 PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else BASE_DIR / 'scTunnel.pem'
 
 
@@ -186,18 +187,33 @@ def salvar_conexao(pid, device_id, host, port):
 
 def atualizar_erp(config, dispositivo, endereco_tunel):
     """
-    Atualiza o endereço do túnel no ERP, exceto se device_id for 0.
+    Atualiza o endereço do túnel no ERP, usando cliente_id de cliente.txt.
+    Gera erro se cliente.txt não existir ou estiver vazio.
     """
     device_id = dispositivo.get("id")
     if device_id in (0, "0"):
         logging.warning("⚠️  Ignorando update: device_id é 0")
         return
 
+    cliente_path = BASE_DIR / "cliente.txt"
+    if not cliente_path.exists():
+        logging.error("❌ cliente.txt não encontrado. Instalação inválida.")
+        raise FileNotFoundError("cliente.txt não encontrado.")
+
+    try:
+        with open(cliente_path, "r", encoding="utf-8") as f:
+            cliente_id = f.read().strip()
+            if not cliente_id:
+                raise ValueError("cliente.txt está vazio.")
+    except Exception as e:
+        logging.error(f"❌ Falha ao ler cliente.txt: {e}")
+        raise
+
     url = f"{config['sc_server']['host']}/portarias/update_tunnel_devices.json"
     payload = {
         "id": device_id,
         "tunnel_address": endereco_tunel,
-        "cliente_id": config["sc_server"]["cliente_id"]
+        "cliente_id": cliente_id
     }
 
     logging.info(f"📡 Atualizando ERP: {url}")
@@ -207,6 +223,7 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
         requests.post(url, json=payload)
     except Exception as e:
         logging.error(f"❌ Falha ao atualizar ERP: {e}")
+
 
 
 def desconectar_tunel_antigo(device_id):
