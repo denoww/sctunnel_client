@@ -44,6 +44,9 @@ jobs:
           curl -L -o innosetup.exe https://jrsoftware.org/download.php/is.exe
           innosetup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
 
+      - name: Mover primeiro lote arquivos
+        run: |
+          move dist\exec.exe exec.exe
 
       - name: Compilar Inno Setup
         shell: cmd
@@ -51,11 +54,9 @@ jobs:
           "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
 
 
-      - name: Mover arquivos necessários
+      - name: Mover setup.exe
         run: |
-          move dist\exec.exe exec.exe
           move Output\setup.exe setup.exe
-          rename windows_install.bat install.bat
 
       - name: Upload do executável e arquivos necessários
         uses: actions/upload-artifact@v4
@@ -64,5 +65,4 @@ jobs:
           path: |
             exec.exe
             config.json
-            install.bat
             setup.exe
