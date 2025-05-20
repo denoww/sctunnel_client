@@ -284,7 +284,7 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
     host = ip_tunnel
     porta_local = 22
     tunnel_host = config['sc_tunnel_server']['host']
-    p_green(f"🔐 Abrindo túnel SSH na porta 22 para o device em {host}")
+    p_green(f"Abrindo túnel SSH na porta 22 para o device em {host}")
 
     dispositivo = {
         "id": 0,
