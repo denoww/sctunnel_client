@@ -71,6 +71,10 @@ if %errorlevel% equ 0 (
     echo ❌ Falha ao agendar tarefa. Código: %errorlevel%
 )
 
+
+echo Executando agendamento em %DATE% %TIME% >> %APP_DIR%\agendamento.log
+
+
 endlocal
 
 
