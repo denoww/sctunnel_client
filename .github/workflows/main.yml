@@ -46,7 +46,7 @@ jobs:
 
 
       - name: Mover o EXE para a raiz
-        run: mv dist/exec_tunnels.exe ./exec_tunnels.exe
+        run: mv dist/exec_tunnels.exe exec_tunnels.exe
 
 
       - name: Upload do executável e arquivos necessários
