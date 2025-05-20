@@ -36,14 +36,14 @@ jobs:
       - name: Compilar EXE
         run: pyinstaller --onefile exec_tunnels.py
 
-      - name: Upload do executável
+      - name: Upload do executável e arquivos necessários
         uses: actions/upload-artifact@v4
         with:
           name: pacote-tunnel-windows
-           path: |
-             dist/exec_tunnels.exe
-             config.json
-             scTunnel.pem
+          path: |
+            dist/exec_tunnels.exe
+            config.json
+            scTunnel.pem
 
 
       # - name: Upload do executável
