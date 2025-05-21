@@ -8,7 +8,7 @@ Compression=lzma
 SolidCompression=yes
 
 [Files]
-; Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
+Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "windows_install.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "install_npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
@@ -18,6 +18,7 @@ Source: "install_npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Filename: "{tmp}\install_npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
 Filename: "{app}\windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\scTunnel.pem"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
 
 
 [UninstallRun]
