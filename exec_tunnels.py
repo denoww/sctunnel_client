@@ -203,7 +203,12 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
     puts(f"Payload: {json.dumps(payload)}")
 
     try:
-        requests.post(url, json=payload)
+        # requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout=5)
+        puts(f"📥 Status code: {response.status_code}")
+        puts(f"📄 Resposta: {response.text}")
+        response.raise_for_status()  # Lança exceção para 4xx ou 5xx
+
     except Exception as e:
         p_red(f"❌ Falha ao atualizar ERP: {e}")
 
@@ -386,7 +391,6 @@ def abrir_tunel(config, dispositivo):
         f'{tunnel_user}@{tunnel_host}'
     ]
 
-    p_green(f'{host_local}:{porta_local} => {tunnel_host}:{porta_remota}')
 
     proc = subprocess.Popen(
         cmd,
@@ -396,6 +400,7 @@ def abrir_tunel(config, dispositivo):
     )
 
     puts(f"✅ Túnel iniciado com PID {proc.pid}")
+    p_green(f'pid: {proc.pid} - {host_local}:{porta_local} => {tunnel_host}:{porta_remota} ')
     salvar_conexao(proc.pid, device_id, host_local, porta_remota)
     atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
