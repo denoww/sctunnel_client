@@ -201,19 +201,8 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
         logging.warning("⚠️  Ignorando update: device_id é 0")
         return
 
-    cliente_path = BASE_DIR / "cliente.txt"
-    if not cliente_path.exists():
-        logging.error("❌ cliente.txt não encontrado. Instalação inválida.")
-        raise FileNotFoundError("cliente.txt não encontrado.")
+    cliente_id = get_cliente_id()
 
-    try:
-        with open(cliente_path, "r", encoding="utf-8") as f:
-            cliente_id = f.read().strip()
-            if not cliente_id:
-                raise ValueError("cliente.txt está vazio.")
-    except Exception as e:
-        logging.error(f"❌ Falha ao ler cliente.txt: {e}")
-        raise
 
     url = f"{config['sc_server']['host']}/portarias/update_tunnel_devices.json"
     payload = {
@@ -406,6 +395,23 @@ def abrir_tunel(config, dispositivo):
     atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
 
+def get_cliente_id():
+    cliente_path = BASE_DIR / "cliente.txt"
+    if not cliente_path.exists():
+        logging.error("❌ cliente.txt não encontrado. Instalação inválida.")
+        raise FileNotFoundError("cliente.txt não encontrado.")
+
+    try:
+        with open(cliente_path, "r", encoding="utf-8") as f:
+            cliente_id = f.read().strip()
+            if not cliente_id:
+                raise ValueError("cliente.txt está vazio.")
+            return cliente_id
+    except Exception as e:
+        logging.error(f"❌ Falha ao ler cliente.txt: {e}")
+        raise
+
+
 def main():
     logging.info("🚀 Iniciando execução do túnel reverso")
 
@@ -453,7 +459,9 @@ def main():
 
     varredura = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
-    url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={config['sc_server']['token']}&cliente_id={config['sc_server']['cliente_id']}"
+    cliente_id = get_cliente_id()
+    url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={config['sc_server']['token']}&cliente_id={cliente_id}"
+
     payload = {
         "tunnel_macaddres": mac_str,
         "ssh_cmd": ssh_cmd_exemplo,
