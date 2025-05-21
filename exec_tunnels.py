@@ -477,11 +477,11 @@ def abrir_tunel(config, dispositivo):
         start_new_session=True  # funciona em Linux; no Windows é ignorado com segurança
     )
 
-    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    puts("PEM_FILE")
-    puts(str(PEM_FILE))
-    mostrar_conteudo_pem(PEM_FILE)
-    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    # puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    # puts("PEM_FILE")
+    # puts(str(PEM_FILE))
+    # mostrar_conteudo_pem(PEM_FILE)
+    # puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     comando_para_exibir = " ".join(comando_ssh)
