@@ -416,18 +416,32 @@ def abrir_tunel(config, dispositivo):
                         puts(f"💀 PID {pid} morto. Limpando entrada.")
                         desconectar_tunel_antigo(device_id)
 
+    # Caminho correto para UserKnownHostsFile no Windows
+    user_known_hosts = "NUL" if platform.system() == "Windows" else "/tmp/ssh_known_hosts_temp"
+
+    # Comando SSH
     comando_ssh = [
         'ssh', '-N',
         '-o', 'ServerAliveInterval=20',
-        '-i', str(PEM_FILE),
+        '-i', PEM_FILE,
         '-o', 'StrictHostKeyChecking=no',
-        '-o', 'UserKnownHostsFile=/tmp/ssh_known_hosts_temp',
+        '-o', f'UserKnownHostsFile={user_known_hosts}',
         '-R', f'{porta_remota}:{host_local}:{porta_local}',
         f'{tunnel_user}@{tunnel_host}'
     ]
 
+    # Execução do processo
+    proc = subprocess.Popen(
+        comando_ssh,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True  # funciona em Linux; no Windows é ignorado com segurança
+    )
+
     puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     puts("PEM_FILE")
+    puts(str(PEM_FILE))
     mostrar_conteudo_pem(PEM_FILE)
     puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
