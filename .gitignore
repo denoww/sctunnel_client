@@ -1,5 +1,8 @@
 config.json
+
 scTunnel.pem
+scTunnel_windows.pem
+
 conexoes.txt
 __pycache__/
 ARP_SCAN_INSTALADO.txt
