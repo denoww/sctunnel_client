@@ -340,7 +340,7 @@ def pid_existe(pid):
         p_red(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         p_red(f"nome do processo {nome_processo}")
         if platform.system() == "Windows":
-            return nome_processo == "exec.exe"
+            return nome_processo == "ssh.exe"
         else:
             return processo.is_running()
     except psutil.NoSuchProcess:
