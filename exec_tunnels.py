@@ -90,9 +90,9 @@ def fixar_permissoes_pem_windows(pem_path):
 
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        puts("🔐 icacls output:\n", result.stdout)
+        puts(f"🔐 icacls output:\n{result.stdout}")
         if result.returncode != 0:
-            puts("❌ Erro ao ajustar permissões com icacls:", result.stderr)
+            puts(f"❌ Erro ao ajustar permissões com icacls: {result.stderr}")
 
 fixar_permissoes_pem_windows(PEM_FILE)
 
