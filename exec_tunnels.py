@@ -48,23 +48,21 @@ from network_scanner import varredura_arp, verificar_cap_net_raw
 # Caminho de log opcional, respeitando sistema operacional
 
 # Caminho para o arquivo de log na raiz do projeto
-log_file = os.path.join(os.path.dirname(__file__), "logs.log")
+base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(sys.argv[0])))
+log_file = os.path.join(base_dir, "logs.log")
 
-print(f"📄 Arquivo de log: {log_file}")
-# logging.info("✅ Teste de log - deve aparecer no terminal e no arquivo.")
-
-
-
-# Configuração de logging com RotatingFileHandler (limita tamanho do arquivo)
+# Configuração do logging
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(message)s',
     handlers=[
-        logging.StreamHandler(),  # Saída no console
-        RotatingFileHandler(log_file, maxBytes=100_000, backupCount=0, encoding='utf-8')  # ~1000 linhas
+        logging.StreamHandler(),
+        RotatingFileHandler(log_file, maxBytes=100_000, backupCount=0, encoding='utf-8')
     ]
 )
 
+logging.info("✅ Logging inicializado.")
+print(f"📄 Log em: {log_file}")
 
 
 
