@@ -18,14 +18,67 @@ if not exist "%EXEC_PATH%" (
 )
 
 
-:: Remove a tarefa existente, se houver
-schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
 
-schtasks /create ^
-  /tn "%TAREFA_NOME%" ^
-  /xml "%APP_DIR%windows_permissao_agendador_tarefas.xml" ^
-  /ru SYSTEM ^
-  /f
+
+
+:: Escapa caracteres XML perigosos como &
+set "ESC_EXEC_PATH=%EXEC_PATH:&=&amp;%"
+:: Cria XML da tarefa agendada
+> "%XML_PATH%" echo ^<?xml version="1.0" encoding="UTF-16"?^>
+>> "%XML_PATH%" echo ^<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"^>
+>> "%XML_PATH%" echo   ^<RegistrationInfo^>
+>> "%XML_PATH%" echo     ^<Description^>Túnel reverso SeuCondominio^</Description^>
+>> "%XML_PATH%" echo     ^<Author^>SeuCondominio^</Author^>
+>> "%XML_PATH%" echo   ^</RegistrationInfo^>
+>> "%XML_PATH%" echo   ^<Triggers^>
+>> "%XML_PATH%" echo     ^<TimeTrigger^>
+>> "%XML_PATH%" echo       ^<Repetition^>^<Interval^>PT1M^</Interval^>^<StopAtDurationEnd^>false^</StopAtDurationEnd^>^</Repetition^>
+>> "%XML_PATH%" echo       ^<StartBoundary^>2025-01-01T00:00:00^</StartBoundary^>
+>> "%XML_PATH%" echo       ^<Enabled^>true^</Enabled^>
+>> "%XML_PATH%" echo     ^</TimeTrigger^>
+>> "%XML_PATH%" echo   ^</Triggers^>
+>> "%XML_PATH%" echo   ^<Principals^>
+>> "%XML_PATH%" echo     ^<Principal id="Author"^>
+>> "%XML_PATH%" echo       ^<RunLevel^>HighestAvailable^</RunLevel^>
+>> "%XML_PATH%" echo     ^</Principal^>
+>> "%XML_PATH%" echo   ^</Principals^>
+>> "%XML_PATH%" echo   ^<Settings^>
+>> "%XML_PATH%" echo     ^<MultipleInstancesPolicy^>IgnoreNew^</MultipleInstancesPolicy^>
+>> "%XML_PATH%" echo     ^<AllowStartOnDemand^>true^</AllowStartOnDemand^>
+>> "%XML_PATH%" echo     ^<Enabled^>true^</Enabled^>
+>> "%XML_PATH%" echo     ^<Hidden^>false^</Hidden^>
+>> "%XML_PATH%" echo     ^<ExecutionTimeLimit^>PT0S^</ExecutionTimeLimit^>
+>> "%XML_PATH%" echo   ^</Settings^>
+>> "%XML_PATH%" echo   ^<Actions Context="Author"^>
+>> "%XML_PATH%" echo     ^<Exec^>
+>> "%XML_PATH%" echo       ^<Command^>%ESC_EXEC_PATH%^</Command^>
+>> "%XML_PATH%" echo     ^</Exec^>
+>> "%XML_PATH%" echo   ^</Actions^>
+>> "%XML_PATH%" echo ^</Task^>
+:: Remove a tarefa se já existir
+schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
+:: Cria a nova tarefa agendada
+rem schtasks /create /tn "%TAREFA_NOME%" /xml "%XML_PATH%" /ru SYSTEM /f
+schtasks /create /tn "%TAREFA_NOME%" /xml "%XML_PATH%" /f
+
+if %errorlevel% equ 0 (
+    echo [OK] Tarefa agendada com sucesso para: %EXEC_PATH%
+) else (
+    echo [ERRO] Falha ao agendar tarefa. Código: %errorlevel%
+)
+
+
+
+
+
+:: Remove a tarefa existente, se houver
+rem schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
+
+rem schtasks /create ^
+rem   /tn "%TAREFA_NOME%" ^
+rem   /xml "%APP_DIR%windows_permissao_agendador_tarefas.xml" ^
+rem   /ru SYSTEM ^
+rem   /f
 
 :: Cria a nova tarefa agendada que executa o script VBS
 rem :: Cria o script VBScript para execução oculta
