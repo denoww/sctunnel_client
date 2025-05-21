@@ -409,6 +409,11 @@ def abrir_tunel(config, dispositivo):
         f'{tunnel_user}@{tunnel_host}'
     ]
 
+    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    puts("str(PEM_FILE)")
+    puts(str(PEM_FILE))
+    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
 
     proc = subprocess.Popen(
         cmd,
