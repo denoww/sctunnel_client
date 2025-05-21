@@ -456,7 +456,7 @@ def abrir_tunel(config, dispositivo):
     comando_ssh = [
         'ssh', '-N',
         '-o', 'ServerAliveInterval=20',
-        '-i', pem_file_str,  # <--- Make sure this is a string!
+        '-i', f"{pem_file_str}",  # <--- Make sure this is a string!
         '-o', 'StrictHostKeyChecking=no',
         '-o', f'UserKnownHostsFile={user_known_hosts}',
         '-R', f'{porta_remota}:{host_local}:{porta_local}',
