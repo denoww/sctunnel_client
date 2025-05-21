@@ -251,7 +251,7 @@ def garantir_conexao_do_device(config, dispositivo):
     device_id = dispositivo['id']
     host = dispositivo.get('host')
     tunnel_host = config['sc_tunnel_server']['host']
-    dispositivo['porta_remota'] = obter_porta_remota
+    dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
     if not host:
         logging.warning(f"❌ Dispositivo #{dispositivo.get('codigo')} sem IP/host definido.")
         return
@@ -512,7 +512,9 @@ def main():
         elif tunnel_me is not None:
             logging.info(f"🔗 Dispositivo #{codigo} marcado para conexão.")
             abrir_tunel(config, dispositivo)
-            atualizar_erp(config, dispositivo, f"{config['sc_tunnel_server']['host']}:{obter_porta_remota(config['sc_tunnel_server']['host'])}")
+            tunnel_host = config['sc_tunnel_server']['host']
+
+            atualizar_erp(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
         else:
             logging.info(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
