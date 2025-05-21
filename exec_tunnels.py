@@ -60,6 +60,25 @@ logging.info("✅ Logging inicializado.")
 print(f"📄 Log salvo em: {LOG_FILE}")
 
 
+def mostrar_conteudo_pem(pem_path):
+    puts("🔍 Conteúdo de scTunnel.pem:")
+    puts("═════════════════════════════════════")
+    try:
+        with open(pem_path, "r", encoding="utf-8") as f:
+            for linha in f:
+                print(linha.strip())
+    except Exception as e:
+        p_red(f"❌ Erro ao ler PEM: {e}")
+    puts("═════════════════════════════════════")
+
+
+
+
+puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+puts("PEM_FILE")
+mostrar_conteudo_pem(PEM_FILE)
+puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
 
 
 def carregar_config():
@@ -375,19 +394,6 @@ def pid_existe(pid):
     except psutil.NoSuchProcess:
         return False
 
-def mostrar_conteudo_pem(pem_path):
-    puts("🔍 Conteúdo de scTunnel.pem:")
-    puts("═════════════════════════════════════")
-    try:
-        with open(pem_path, "r", encoding="utf-8") as f:
-            for linha in f:
-                print(linha.strip())
-    except Exception as e:
-        p_red(f"❌ Erro ao ler PEM: {e}")
-    puts("═════════════════════════════════════")
-
-
-
 def abrir_tunel(config, dispositivo):
     device_id = dispositivo.get('id')
     host_local = dispositivo['host']
@@ -420,11 +426,6 @@ def abrir_tunel(config, dispositivo):
         '-R', f'{porta_remota}:{host_local}:{porta_local}',
         f'{tunnel_user}@{tunnel_host}'
     ]
-
-    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    puts("PEM_FILE")
-    mostrar_conteudo_pem(PEM_FILE)
-    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
     proc = subprocess.Popen(
