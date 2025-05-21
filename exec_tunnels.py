@@ -375,6 +375,18 @@ def pid_existe(pid):
     except psutil.NoSuchProcess:
         return False
 
+def mostrar_conteudo_pem(pem_path):
+    puts("🔍 Conteúdo de scTunnel.pem:")
+    puts("═════════════════════════════════════")
+    try:
+        with open(pem_path, "r", encoding="utf-8") as f:
+            for linha in f:
+                print(linha.strip())
+    except Exception as e:
+        p_red(f"❌ Erro ao ler PEM: {e}")
+    puts("═════════════════════════════════════")
+
+
 
 def abrir_tunel(config, dispositivo):
     device_id = dispositivo.get('id')
@@ -410,8 +422,8 @@ def abrir_tunel(config, dispositivo):
     ]
 
     puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    puts("str(PEM_FILE)")
-    puts(str(PEM_FILE))
+    puts("PEM_FILE")
+    mostrar_conteudo_pem(PEM_FILE)
     puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
