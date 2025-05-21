@@ -114,10 +114,7 @@ def obter_interface_ip_subnet():
 
 
 
-puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-puts("PEM_FILE")
-mostrar_conteudo_pem(PEM_FILE)
-puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
 
 # def obter_interface_ip_subnet():
 #     """
@@ -429,6 +426,11 @@ def abrir_tunel(config, dispositivo):
         f'{tunnel_user}@{tunnel_host}'
     ]
 
+    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    puts("PEM_FILE")
+    mostrar_conteudo_pem(PEM_FILE)
+    puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     puts("Comando")
     puts(comando_ssh)
@@ -451,6 +453,7 @@ def abrir_tunel(config, dispositivo):
         stdout, stderr = proc.communicate()
         p_red(f"❌ ssh falhou com saída:\nSTDOUT: {stdout}\nSTDERR: {stderr}")
         return
+
 
     puts(f"✅ Túnel iniciado com PID {proc.pid}")
     p_green(f'pid: {proc.pid} - {host_local}:{porta_local} => {tunnel_host}:{porta_remota} ')
