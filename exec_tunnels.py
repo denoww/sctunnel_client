@@ -8,6 +8,7 @@ from pathlib import Path
 import platform
 import ipaddress
 import sys
+import signal
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -222,7 +223,10 @@ def desconectar_tunel_antigo(device_id):
             if f'device_id:{device_id}' in linha:
                 pid = int(linha.split('pid:')[1].split('§§§§')[0])
                 try:
-                    os.kill(pid, 9)
+                    if platform.system() == "Windows":
+                        os.kill(pid, signal.SIGTERM)  # Equivalente seguro no Windows
+                    else:
+                        os.kill(pid, signal.SIGKILL)  # Funciona no Linux
                     puts(f"✅ Processo PID {pid} finalizado.")
                 except ProcessLookupError:
                     p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
