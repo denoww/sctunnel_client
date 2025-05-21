@@ -88,6 +88,7 @@ def fixar_permissoes_pem_windows(pem_path):
             pem_path,
             "/inheritance:r",
             f"/grant:r", f"{username}:R"
+
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         print("🔐 icacls output:\n", result.stdout)
@@ -448,6 +449,11 @@ def abrir_tunel(config, dispositivo):
         '-R', f'{porta_remota}:{host_local}:{porta_local}',
         f'{tunnel_user}@{tunnel_host}'
     ]
+
+    comando_para_exibir = " ".join(comando_ssh)
+
+    print("O comando SSH que será executado é:")
+    print(comando_para_exibir)
 
     # Execução do processo
     proc = subprocess.Popen(
