@@ -440,20 +440,31 @@ def abrir_tunel(config, dispositivo):
     user_known_hosts = "NUL" if platform.system() == "Windows" else "/tmp/ssh_known_hosts_temp"
 
     # Comando SSH
+    # comando_ssh = [
+    #     'ssh', '-N',
+    #     '-o', 'ServerAliveInterval=20',
+    #     '-i', PEM_FILE,
+    #     '-o', 'StrictHostKeyChecking=no',
+    #     '-o', f'UserKnownHostsFile={user_known_hosts}',
+    #     '-R', f'{porta_remota}:{host_local}:{porta_local}',
+    #     f'{tunnel_user}@{tunnel_host}'
+    # ]
+
+    # comando_para_exibir = " ".join(comando_ssh)
+
+    pem_file_str = str(PEM_FILE)
+
     comando_ssh = [
         'ssh', '-N',
         '-o', 'ServerAliveInterval=20',
-        '-i', PEM_FILE,
+        '-i', pem_file_str,  # <--- Make sure this is a string!
         '-o', 'StrictHostKeyChecking=no',
         '-o', f'UserKnownHostsFile={user_known_hosts}',
         '-R', f'{porta_remota}:{host_local}:{porta_local}',
         f'{tunnel_user}@{tunnel_host}'
     ]
 
-    comando_para_exibir = " ".join(comando_ssh)
 
-    print("O comando SSH que será executado é:")
-    print(comando_para_exibir)
 
     # Execução do processo
     proc = subprocess.Popen(
@@ -471,8 +482,9 @@ def abrir_tunel(config, dispositivo):
     puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    puts("Comando")
-    puts(comando_ssh)
+    comando_para_exibir = " ".join(comando_ssh)
+    print("O comando SSH que foi executado é:")
+    print(comando_para_exibir)
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
