@@ -79,22 +79,22 @@ def p_yellow(txt):
 puts(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
 
-def fixar_permissoes_pem_windows(pem_path):
-    if platform.system() == "Windows":
-        username = getpass.getuser()
-        cmd = [
-            "icacls",
-            pem_path,
-            "/inheritance:r",
-            f"/grant:r", f"{username}:R"
+# def fixar_permissoes_pem_windows(pem_path):
+#     if platform.system() == "Windows":
+#         username = getpass.getuser()
+#         cmd = [
+#             "icacls",
+#             pem_path,
+#             "/inheritance:r",
+#             f"/grant:r", f"{username}:R"
 
-        ]
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        puts(f"🔐 icacls output:\n{result.stdout}")
-        if result.returncode != 0:
-            puts(f"❌ Erro ao ajustar permissões com icacls: {result.stderr}")
+#         ]
+#         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+#         puts(f"🔐 icacls output:\n{result.stdout}")
+#         if result.returncode != 0:
+#             puts(f"❌ Erro ao ajustar permissões com icacls: {result.stderr}")
 
-fixar_permissoes_pem_windows(PEM_FILE)
+# fixar_permissoes_pem_windows(PEM_FILE)
 
 
 def mostrar_conteudo_pem(pem_path):
