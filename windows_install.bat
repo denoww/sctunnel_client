@@ -5,9 +5,9 @@ setlocal
 
 
 :: Define o diretório do script
-set "SCRIPT_DIR=%~dp0"
-set "EXEC_PATH=%SCRIPT_DIR%exec.exe"
-set "VBS_PATH=%SCRIPT_DIR%executar_oculto.vbs"
+set "APP_DIR=%~dp0"
+set "EXEC_PATH=%APP_DIR%exec.exe"
+set "VBS_PATH=%APP_DIR%executar_oculto.vbs"
 set "TAREFA_NOME=sc_tunnel"
 
 :: Verifica se o executável existe
@@ -17,15 +17,21 @@ if not exist "%EXEC_PATH%" (
     exit /b 1
 )
 
-:: Cria o script VBScript para execução oculta
-echo Set WshShell = CreateObject("WScript.Shell") > "%VBS_PATH%"
-echo WshShell.CurrentDirectory = "%SCRIPT_DIR%" >> "%VBS_PATH%"
-echo WshShell.Run "exec.exe", 0, False >> "%VBS_PATH%"
 
 :: Remove a tarefa existente, se houver
 schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
 
+schtasks /create ^
+  /tn "%TAREFA_NOME%" ^
+  /xml "%APP_DIR%windows_permissao_agendador_tarefas.xml" ^
+  /ru SYSTEM ^
+  /f
+
 :: Cria a nova tarefa agendada que executa o script VBS
+rem :: Cria o script VBScript para execução oculta
+rem echo Set WshShell = CreateObject("WScript.Shell") > "%VBS_PATH%"
+rem echo WshShell.CurrentDirectory = "%APP_DIR%" >> "%VBS_PATH%"
+rem echo WshShell.Run "exec.exe", 0, False >> "%VBS_PATH%"
 rem schtasks /create ^
 rem   /tn "%TAREFA_NOME%" ^
 rem   /tr "wscript.exe \"%VBS_PATH%\"" ^
@@ -34,13 +40,14 @@ rem   /mo 1 ^
 rem   /ru SYSTEM ^
 rem   /f
 
-schtasks /create ^
-  /tn "%TAREFA_NOME%" ^
-  /tr "\"%SCRIPT_DIR%exec.exe\"" ^
-  /sc minute ^
-  /mo 1 ^
-  /ru SYSTEM ^
-  /f
+rem schtasks /create ^
+rem   /tn "%TAREFA_NOME%" ^
+rem   /tr "\"%APP_DIR%exec.exe\"" ^
+rem   /sc minute ^
+rem   /mo 1 ^
+rem   /ru SYSTEM ^
+rem   /f
+
 
 
 if %errorlevel% equ 0 (
@@ -97,7 +104,7 @@ rem )
 
 
 rem permissão pem
-set PEM_PATH=%~dp0scTunnel.pem
+set PEM_PATH=%APP_DIR%scTunnel.pem
 
 echo [INFO] Aplicando permissões seguras ao PEM...
 icacls "%PEM_PATH%" /inheritance:r /grant:r "%USERNAME%:R" >nul
