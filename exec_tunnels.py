@@ -50,6 +50,11 @@ from network_scanner import varredura_arp, verificar_cap_net_raw
 # Caminho para o arquivo de log na raiz do projeto
 log_file = os.path.join(os.path.dirname(__file__), "logs.log")
 
+print(f"📄 Arquivo de log: {log_file}")
+# logging.info("✅ Teste de log - deve aparecer no terminal e no arquivo.")
+
+
+
 # Configuração de logging com RotatingFileHandler (limita tamanho do arquivo)
 logging.basicConfig(
     level=logging.INFO,
@@ -60,7 +65,6 @@ logging.basicConfig(
     ]
 )
 
-logging.info(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
 
 
@@ -110,6 +114,23 @@ def obter_interface_ip_subnet():
     return None, None, None
 
 
+def puts(txt):
+    logging.info(txt)
+def p_color(txt, color_code):
+    puts(txt)
+    print(f"\033[{color_code}m{txt}\033[0m")
+
+def p_green(txt):
+    p_color(txt, "0;32")
+
+def p_red(txt):
+    p_color(txt, "0;31")
+
+def p_yellow(txt):
+    p_color(txt, "0;33")
+puts(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
+
+
 # def obter_interface_ip_subnet():
 #     """
 #     Retorna a interface de rede ativa com IP IPv4 válido e a subnet /24 correspondente.
@@ -141,15 +162,15 @@ def obter_interface_ip_subnet():
 #     return None, None, None
 
 # def varredura_arp(interface, subnet):
-#     logging.info(f"Escaneando rede {subnet} via {interface} usando Scapy...")
+#     puts(f"Escaneando rede {subnet} via {interface} usando Scapy...")
 #     pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
 #     ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
 
-#     logging.info(f"{len(ans)} respostas recebidas de ARP")
+#     puts(f"{len(ans)} respostas recebidas de ARP")
 
 #     resultados = []
 #     for snd, rcv in ans:
-#         logging.info(f"Recebido: IP={rcv.psrc} MAC={rcv.hwsrc}")
+#         puts(f"Recebido: IP={rcv.psrc} MAC={rcv.hwsrc}")
 #         resultados.append({"ip": rcv.psrc, "mac": rcv.hwsrc})
 
 #     return resultados
@@ -211,7 +232,7 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
         "cliente_id": cliente_id
     }
 
-    logging.info(f"📡 Atualizando ERP: {url}")
+    puts(f"📡 Atualizando ERP: {url}")
     logging.debug(f"Payload: {json.dumps(payload)}")
 
     try:
@@ -225,7 +246,7 @@ def desconectar_tunel_antigo(device_id):
     """
     Desconecta túneis antigos associados ao device_id.
     """
-    logging.info(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
+    puts(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
     if not CONEXOES_FILE.exists():
         logging.warning("Arquivo de conexões não encontrado.")
         return
@@ -236,7 +257,7 @@ def desconectar_tunel_antigo(device_id):
                 pid = int(linha.split('pid:')[1].split('§§§§')[0])
                 try:
                     os.kill(pid, 9)
-                    logging.info(f"✅ Processo PID {pid} finalizado.")
+                    puts(f"✅ Processo PID {pid} finalizado.")
                 except ProcessLookupError:
                     logging.warning(f"⚠️ Processo PID {pid} não encontrado.")
             else:
@@ -245,6 +266,7 @@ def desconectar_tunel_antigo(device_id):
         f.writelines(linhas_restantes)
 
 def garantir_conexao_do_device(config, dispositivo):
+    puts("entrou em garantir_conexao_do_device")
     """
     Garante que o dispositivo esteja conectado. Se não estiver, tenta reconectar.
     """
@@ -256,7 +278,7 @@ def garantir_conexao_do_device(config, dispositivo):
         logging.warning(f"❌ Dispositivo #{dispositivo.get('codigo')} sem IP/host definido.")
         return
     if not CONEXOES_FILE.exists():
-        logging.info(f"🔄 Nenhuma conexão existente para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
+        puts(f"🔄 Nenhuma conexão existente para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
         abrir_tunel(config, dispositivo)
         return
     with open(CONEXOES_FILE, 'r') as f:
@@ -265,14 +287,14 @@ def garantir_conexao_do_device(config, dispositivo):
         if f'device_id:{device_id}' in linha:
             pid = int(linha.split('pid:')[1].split('§§§§')[0])
             if psutil.pid_exists(pid):
-                logging.info(f"🔄 Conexão existente para o dispositivo ID {device_id} com PID {pid}.")
+                puts(f"🔄 Conexão existente para o dispositivo ID {device_id} com PID {pid}.")
                 return
             else:
                 logging.warning(f"⚠️ PID {pid} não está ativo. Reconectando.")
                 desconectar_tunel_antigo(device_id)
                 abrir_tunel(config, dispositivo)
                 return
-    logging.info(f"🔄 Nenhuma conexão registrada para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
+    puts(f"🔄 Nenhuma conexão registrada para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
     abrir_tunel(config, dispositivo)
 
 
@@ -344,20 +366,6 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
     puts("##################################################################")
 
 
-def puts(txt):
-    logging.info(txt)
-def p_color(txt, color_code):
-    logging.info(txt)
-    print(f"\033[{color_code}m{txt}\033[0m")
-
-def p_green(txt):
-    p_color(txt, "0;32")
-
-def p_red(txt):
-    p_color(txt, "0;31")
-
-def p_yellow(txt):
-    p_color(txt, "0;33")
 
 
 def abrir_tunel(config, dispositivo):
@@ -377,10 +385,10 @@ def abrir_tunel(config, dispositivo):
                 if f'device_id:{device_id}' in linha:
                     pid_existente = int(linha.split('pid:')[1].split('§§§§')[0])
                     if psutil.pid_exists(pid_existente):
-                        logging.info(f"🔁 PID {pid_existente} já ativo para device_id {device_id}. Reutilizando conexão.")
+                        puts(f"🔁 PID {pid_existente} já ativo para device_id {device_id}. Reutilizando conexão.")
                         return
                     else:
-                        logging.info(f"💀 PID {pid_existente} morto. Limpando entrada.")
+                        puts(f"💀 PID {pid_existente} morto. Limpando entrada.")
                         desconectar_tunel_antigo(device_id)
 
     cmd = [
@@ -402,7 +410,7 @@ def abrir_tunel(config, dispositivo):
         start_new_session=True
     )
 
-    logging.info(f"✅ Túnel iniciado com PID {proc.pid}")
+    puts(f"✅ Túnel iniciado com PID {proc.pid}")
     salvar_conexao(proc.pid, device_id, host_local, porta_remota)
     atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
@@ -425,31 +433,31 @@ def get_cliente_id():
 
 
 def main():
-    logging.info("🚀 Iniciando execução do túnel reverso")
+    puts("🚀 Iniciando execução do túnel reverso")
 
     if not PEM_FILE.exists():
         logging.error("❌ Arquivo scTunnel.pem não encontrado.")
         return
 
-    logging.info("📥 Carregando configurações do arquivo config.json")
+    puts("📥 Carregando configurações do arquivo config.json")
     config = carregar_config()
     puts(json.dumps(config, indent=2, ensure_ascii=False))  # para imprimir bonito
 
 
 
-    logging.info("🌐 Descobrindo interface de rede ativa...")
+    puts("🌐 Descobrindo interface de rede ativa...")
     interface, ip_local, subnet = obter_interface_ip_subnet()
     if not interface:
         logging.error("❌ Interface de rede não encontrada.")
         return
-    logging.info(f"✅ Interface ativa: {interface}, IP local: {ip_local}, Subnet: {subnet}/24")
+    puts(f"✅ Interface ativa: {interface}, IP local: {ip_local}, Subnet: {subnet}/24")
 
     abrir_ssh_do_tunnel(ip_local, config)
     ssh_cmd_exemplo = gerar_ssh_cmd(config)
 
     dispositivos_rede = []
     if os.getenv("TESTE_GIT_ACTION") == "true":
-        logging.info("🔧 Modo TESTE_GIT_ACTION ativado. Usando dados simulados.")
+        puts("🔧 Modo TESTE_GIT_ACTION ativado. Usando dados simulados.")
         dispositivos_rede = [
             {"ip": "192.168.15.179", "mac": "08:54:11:2A:FA:BC"},
             {"ip": "192.168.15.189", "mac": "08:54:11:2A:FA:00"},
@@ -458,10 +466,10 @@ def main():
         if not verificar_cap_net_raw():
             logging.error("❌ Python atual não possui cap_net_raw. Use '/usr/bin/python3.10' com setcap.")
             return
-        logging.info("🛰️ Iniciando varredura ARP com Scapy...")
+        puts("🛰️ Iniciando varredura ARP com Scapy...")
         dispositivos_rede = varredura_arp(interface, subnet)
 
-    logging.info(f"🔍 {len(dispositivos_rede)} dispositivos encontrados na rede.")
+    puts(f"🔍 {len(dispositivos_rede)} dispositivos encontrados na rede.")
     if not dispositivos_rede:
         logging.warning("⚠️ Nenhum dispositivo encontrado. Finalizando.")
         return
@@ -481,12 +489,12 @@ def main():
         "codigos": config['sc_server'].get('equipamento_codigos', [])
     }
 
-    logging.info("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
+    puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
     try:
         res = requests.post(url, json=payload)
         res.raise_for_status()
         dispositivos = res.json().get('devices', [])
-        logging.info(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
+        puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
     except Exception as e:
         logging.error(f"❌ Erro ao consultar ERP: {e}")
         return
@@ -509,16 +517,16 @@ def main():
         dispositivo['host'] = ip
 
         if tunnel_me is False:
-            logging.info(f"🔌 Dispositivo #{codigo} marcado para desconexão.")
+            puts(f"🔌 Dispositivo #{codigo} marcado para desconexão.")
             desconectar_tunel_antigo(device_id)
         elif tunnel_me is not None:
-            logging.info(f"🔗 Dispositivo #{codigo} marcado para conexão.")
+            puts(f"🔗 Dispositivo #{codigo} marcado para conexão.")
             abrir_tunel(config, dispositivo)
             tunnel_host = config['sc_tunnel_server']['host']
 
             atualizar_erp(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
         else:
-            logging.info(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
+            puts(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
 
     puts("---------------------------------------")
@@ -527,7 +535,7 @@ def main():
 
     # for dispositivo in dispositivos:
     #     if dispositivo.get('tunnel_me') is not True:
-    #         logging.info(f"⏭️ Dispositivo #{dispositivo.get('codigo')} não está marcado como 'tunnel_me'. Ignorando.")
+    #         puts(f"⏭️ Dispositivo #{dispositivo.get('codigo')} não está marcado como 'tunnel_me'. Ignorando.")
     #         continue
 
     #     mac1 = dispositivo.get('mac_address')
@@ -539,7 +547,7 @@ def main():
     #         continue
 
     #     dispositivo['host'] = ip
-    #     logging.info(f"🔐 Abrindo túnel para dispositivo #{dispositivo.get('codigo')} no IP {ip}")
+    #     puts(f"🔐 Abrindo túnel para dispositivo #{dispositivo.get('codigo')} no IP {ip}")
     #     abrir_tunel(config, dispositivo)
 
     logging.info("✅ Execução finalizada com sucesso.")
