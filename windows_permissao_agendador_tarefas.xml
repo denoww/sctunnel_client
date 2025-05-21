@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Túnel reverso sc_tunnel</Description>
-    <Author>sc_tunnel</Author>
+    <Description>Túnel reverso sctunnel</Description>
+    <Author>sctunnel</Author>
   </RegistrationInfo>
   <Triggers>
     <TimeTrigger>
@@ -16,7 +16,7 @@
   </Triggers>
   <Principals>
     <Principal id="Author">
-      <UserId>S-1-5-18</UserId> <!-- SYSTEM -->
+      <UserId>S-1-5-18</UserId>
       <LogonType>ServiceAccount</LogonType>
       <RunLevel>HighestAvailable</RunLevel>
     </Principal>
@@ -38,7 +38,7 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>CAMINHO_COMPLETO_DO_EXEC</Command>
+      <Command>C:\Program Files (x86)\sc_tunnel\exec.exe</Command>
     </Exec>
   </Actions>
 </Task>
