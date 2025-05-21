@@ -60,6 +60,24 @@ logging.info("✅ Logging inicializado.")
 print(f"📄 Log salvo em: {LOG_FILE}")
 
 
+def puts(txt):
+    logging.info(txt)
+def p_color(txt, color_code):
+    puts(txt)
+    print(f"\033[{color_code}m{txt}\033[0m")
+
+def p_green(txt):
+    p_color(txt, "0;32")
+
+def p_red(txt):
+    p_color(txt, "0;31")
+
+def p_yellow(txt):
+    p_color(txt, "0;33")
+puts(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
+
+
+
 def mostrar_conteudo_pem(pem_path):
     puts("🔍 Conteúdo de scTunnel.pem:")
     puts("═════════════════════════════════════")
@@ -71,13 +89,6 @@ def mostrar_conteudo_pem(pem_path):
         p_red(f"❌ Erro ao ler PEM: {e}")
     puts("═════════════════════════════════════")
 
-
-
-
-puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-puts("PEM_FILE")
-mostrar_conteudo_pem(PEM_FILE)
-puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
 
@@ -100,22 +111,13 @@ def obter_interface_ip_subnet():
     return None, None, None
 
 
-def puts(txt):
-    logging.info(txt)
-def p_color(txt, color_code):
-    puts(txt)
-    print(f"\033[{color_code}m{txt}\033[0m")
 
-def p_green(txt):
-    p_color(txt, "0;32")
 
-def p_red(txt):
-    p_color(txt, "0;31")
 
-def p_yellow(txt):
-    p_color(txt, "0;33")
-puts(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
-
+puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+puts("PEM_FILE")
+mostrar_conteudo_pem(PEM_FILE)
+puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 # def obter_interface_ip_subnet():
 #     """
