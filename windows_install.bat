@@ -26,13 +26,22 @@ echo WshShell.Run "exec.exe", 0, False >> "%VBS_PATH%"
 schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
 
 :: Cria a nova tarefa agendada que executa o script VBS
+rem schtasks /create ^
+rem   /tn "%TAREFA_NOME%" ^
+rem   /tr "wscript.exe \"%VBS_PATH%\"" ^
+rem   /sc minute ^
+rem   /mo 1 ^
+rem   /ru SYSTEM ^
+rem   /f
+
 schtasks /create ^
   /tn "%TAREFA_NOME%" ^
-  /tr "wscript.exe \"%VBS_PATH%\"" ^
+  /tr "\"%SCRIPT_DIR%exec.exe\"" ^
   /sc minute ^
   /mo 1 ^
   /ru SYSTEM ^
   /f
+
 
 if %errorlevel% equ 0 (
     echo Tarefa agendada com sucesso para: %EXEC_PATH%
