@@ -338,12 +338,14 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
     # Gera o comando SSH que o usuário usará para acessar
     ssh_cmd = gerar_ssh_cmd(config)
 
-    print("##################################################################")
+    puts("##################################################################")
     p_green("Acesse essa máquina com")
     p_green(ssh_cmd)
-    print("##################################################################")
+    puts("##################################################################")
 
 
+def puts(txt):
+    logging.info(txt)
 def p_color(txt, color_code):
     logging.info(txt)
     print(f"\033[{color_code}m{txt}\033[0m")
@@ -431,7 +433,7 @@ def main():
 
     logging.info("📥 Carregando configurações do arquivo config.json")
     config = carregar_config()
-    print(json.dumps(config, indent=2, ensure_ascii=False))  # para imprimir bonito
+    puts(json.dumps(config, indent=2, ensure_ascii=False))  # para imprimir bonito
 
 
 
@@ -489,9 +491,9 @@ def main():
         logging.error(f"❌ Erro ao consultar ERP: {e}")
         return
 
-    print("---------------------------------------")
+    puts("---------------------------------------")
     p_green("Fazendo tunnels...")
-    print("---------------------------------------")
+    puts("---------------------------------------")
     for dispositivo in dispositivos:
         device_id = dispositivo['id']
         codigo = dispositivo.get('codigo')
@@ -519,8 +521,8 @@ def main():
             logging.info(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
 
-    print("---------------------------------------")
-    print("---------------------------------------")
+    puts("---------------------------------------")
+    puts("---------------------------------------")
 
 
     # for dispositivo in dispositivos:
