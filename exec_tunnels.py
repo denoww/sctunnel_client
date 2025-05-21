@@ -17,16 +17,34 @@ from logging.handlers import RotatingFileHandler
 from network_scanner import varredura_arp, verificar_cap_net_raw
 
 
-if getattr(sys, 'frozen', False):
-    BASE_DIR = Path(sys.executable).parent  # ← pega a pasta do .exe
+# if getattr(sys, 'frozen', False):
+#     BASE_DIR = Path(sys.executable).parent  # ← pega a pasta do .exe
+# else:
+#     BASE_DIR = Path(__file__).resolve().parent
+
+# CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
+# CONFIG_PATH = Path(sys._MEIPASS) / 'config.json'
+# PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else BASE_DIR / 'scTunnel.pem'
+# LOG_FILE = BASE_DIR / 'logs.log'
+
+# Detecta se está rodando como .exe (PyInstaller)
+FROZEN = getattr(sys, 'frozen', False)
+IS_WINDOWS = platform.system() == "Windows"
+
+# Diretório onde o script ou executável está
+BASE_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).resolve().parent
+
+# Se for Windows e estiver empacotado (.exe), usa _MEIPASS para arquivos embutidos
+if FROZEN and IS_WINDOWS:
+    RESOURCE_DIR = Path(sys._MEIPASS)
 else:
-    BASE_DIR = Path(__file__).resolve().parent
+    RESOURCE_DIR = BASE_DIR
 
-CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
-CONFIG_PATH = Path(sys._MEIPASS) / 'config.json'
-PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else BASE_DIR / 'scTunnel.pem'
-LOG_FILE = BASE_DIR / 'logs.log'
-
+# Caminhos dos arquivos
+CONEXOES_FILE = BASE_DIR / 'conexoes.txt'         # Sempre no diretório de execução
+LOG_FILE = BASE_DIR / 'logs.log'                  # Sempre no diretório de execução
+CONFIG_PATH = RESOURCE_DIR / 'config.json'        # Embutido no exe ou lado a lado no Linux
+PEM_FILE = RESOURCE_DIR / 'scTunnel.pem'          # Idem
 
 logging.basicConfig(
     level=logging.INFO,
@@ -170,7 +188,7 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
         p_yellow("⚠️  Ignorando update: device_id é 0")
         return
 
-    cliente_id = get_cliente_id()
+    cliente_id = get_cliente_id(config)
 
 
     url = f"{config['sc_server']['host']}/portarias/update_tunnel_devices.json"
@@ -363,11 +381,14 @@ def abrir_tunel(config, dispositivo):
     atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
 
-def get_cliente_id():
+def get_cliente_id(config):
     cliente_path = BASE_DIR / "cliente.txt"
     if not cliente_path.exists():
-        p_red("❌ cliente.txt não encontrado. Instalação inválida.")
-        raise FileNotFoundError("cliente.txt não encontrado.")
+        if config['sc_server']['cliente_id']:
+          return config['sc_server']['cliente_id']
+        else:
+          p_red("❌ cliente.txt não encontrado. Instalação inválida.")
+          raise FileNotFoundError("cliente.txt não encontrado.")
 
     try:
         with open(cliente_path, "r", encoding="utf-8") as f:
@@ -427,7 +448,7 @@ def main():
 
     varredura = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
-    cliente_id = get_cliente_id()
+    cliente_id = get_cliente_id(config)
     puts("----------------------------------------------------------------")
     puts("----------------------------------------------------------------")
     puts(f"Cliente Ativado {cliente_id}")
