@@ -1,7 +1,7 @@
 [Setup]
 AppName=SeuCondominio Tunnel
 AppVersion=1.0
-DefaultDirName={pf}\SeuCondominioTunnel
+DefaultDirName={pf}\sc_tunnel
 DefaultGroupName=SeuCondominio
 OutputBaseFilename=setup
 Compression=lzma
@@ -21,7 +21,7 @@ Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall 
 
 
 [UninstallRun]
-Filename: "schtasks"; Parameters: "/Delete /TN ""SeuCondominioTunnel"" /F"; Flags: runhidden
+Filename: "schtasks"; Parameters: "/Delete /TN ""sc_tunnel"" /F"; Flags: runhidden
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
