@@ -87,6 +87,18 @@ rem )
 
 
 
+rem permissão pem
+set PEM_PATH=%~dp0scTunnel.pem
+
+echo [INFO] Aplicando permissões seguras ao PEM...
+icacls "%PEM_PATH%" /inheritance:r /grant:r "%USERNAME%:R" >nul
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao aplicar permissões no PEM!
+    pause
+    exit /b 1
+)
+
+echo [INFO] Permissão ajustada com sucesso: %PEM_PATH%
 
 
 
