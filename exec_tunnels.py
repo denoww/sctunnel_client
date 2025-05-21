@@ -344,8 +344,18 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
     print("##################################################################")
 
 
+def p_color(txt, color_code):
+    logging.info(txt)
+    print(f"\033[{color_code}m{txt}\033[0m")
+
 def p_green(txt):
-    print(f"\033[0;32m{txt}\033[0m")
+    p_color(txt, "0;32")
+
+def p_red(txt):
+    p_color(txt, "0;31")
+
+def p_yellow(txt):
+    p_color(txt, "0;33")
 
 
 def abrir_tunel(config, dispositivo):
