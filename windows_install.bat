@@ -8,7 +8,7 @@ setlocal
 set "SCRIPT_DIR=%~dp0"
 set "EXEC_PATH=%SCRIPT_DIR%exec.exe"
 set "VBS_PATH=%SCRIPT_DIR%executar_oculto.vbs"
-set "TAREFA_NOME=SeuCondominioTunnel"
+set "TAREFA_NOME=sc_tunnel"
 
 :: Verifica se o executável existe
 if not exist "%EXEC_PATH%" (
