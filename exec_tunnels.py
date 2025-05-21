@@ -61,9 +61,6 @@ logging.basicConfig(
     ]
 )
 
-logging.info("✅ Logging inicializado.")
-print(f"📄 Log salvo em: {LOG_FILE}")
-
 
 def puts(txt):
     logging.info(txt)
@@ -93,9 +90,9 @@ def fixar_permissoes_pem_windows(pem_path):
 
         ]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        print("🔐 icacls output:\n", result.stdout)
+        puts("🔐 icacls output:\n", result.stdout)
         if result.returncode != 0:
-            print("❌ Erro ao ajustar permissões com icacls:", result.stderr)
+            puts("❌ Erro ao ajustar permissões com icacls:", result.stderr)
 
 fixar_permissoes_pem_windows(PEM_FILE)
 
@@ -106,7 +103,7 @@ def mostrar_conteudo_pem(pem_path):
     try:
         with open(pem_path, "r", encoding="utf-8") as f:
             for linha in f:
-                print(linha.strip())
+                puts(linha.strip())
     except Exception as e:
         p_red(f"❌ Erro ao ler PEM: {e}")
     puts("═════════════════════════════════════")
@@ -485,8 +482,8 @@ def abrir_tunel(config, dispositivo):
 
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     comando_para_exibir = " ".join(comando_ssh)
-    print("O comando SSH que foi executado é:")
-    print(comando_para_exibir)
+    puts("O comando SSH que foi executado é:")
+    puts(comando_para_exibir)
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
