@@ -417,7 +417,7 @@ def abrir_tunel(config, dispositivo):
                         puts(f"💀 PID {pid} morto. Limpando entrada.")
                         desconectar_tunel_antigo(device_id)
 
-    cmd = [
+    comando_ssh = [
         'ssh', '-N',
         '-o', 'ServerAliveInterval=20',
         '-i', str(PEM_FILE),
@@ -429,12 +429,12 @@ def abrir_tunel(config, dispositivo):
 
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     puts("Comando")
-    puts(cmd)
+    puts(comando_ssh)
     puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 
     proc = subprocess.Popen(
-        cmd,
+        comando_ssh,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
