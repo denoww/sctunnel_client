@@ -65,6 +65,13 @@ jobs:
       - name: Upload do executável e arquivos necessários
         uses: actions/upload-artifact@v4
         with:
-          name: pacote-tunnel-windows
-          path: |
-            setup.exe
+          name: setup.exe
+          path: setup.exe
+          compression-level: 0  # 👈 desativa compactação ZIP
+
+      # - name: Upload do executável e arquivos necessários
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: sc_tunnel
+      #     path: |
+      #       setup.exe
