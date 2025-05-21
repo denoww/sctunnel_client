@@ -1,8 +1,8 @@
 [Setup]
-AppName=SeuCondominio Tunnel
+AppName=sc_tunnel
 AppVersion=1.0
 DefaultDirName={pf}\sc_tunnel
-DefaultGroupName=SeuCondominio
+DefaultGroupName=sc_tunnel
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
