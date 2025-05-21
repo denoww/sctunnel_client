@@ -7,6 +7,9 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 
+[Icons]
+Name: "{group}\Desinstalar"; Filename: "{uninstallexe}"
+
 [Files]
 Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
