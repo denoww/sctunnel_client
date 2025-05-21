@@ -252,7 +252,7 @@ def garantir_conexao_do_device(config, dispositivo):
     for linha in conexoes:
         if f'device_id:{device_id}' in linha:
             pid = int(linha.split('pid:')[1].split('§§§§')[0])
-            if psutil.pid_exists(pid):
+            if pid_existe(pid):
                 puts(f"🔄 Conexão existente para o dispositivo ID {device_id} com PID {pid}.")
                 return
             else:
@@ -333,6 +333,19 @@ def abrir_ssh_do_tunnel(ip_tunnel, config):
 
 
 
+def pid_existe(pid):
+    try:
+        processo = psutil.Process(pid)
+        nome_processo = processo.name().lower()
+        p_red(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        p_red(f"nome do processo {nome_processo}")
+        if platform.system() == "Windows":
+            return nome_processo == "exec.exe"
+        else:
+            return processo.is_running()
+    except psutil.NoSuchProcess:
+        return False
+
 
 def abrir_tunel(config, dispositivo):
     device_id = dispositivo.get('id')
@@ -349,12 +362,12 @@ def abrir_tunel(config, dispositivo):
         with open(CONEXOES_FILE, 'r') as f:
             for linha in f:
                 if f'device_id:{device_id}' in linha:
-                    pid_existente = int(linha.split('pid:')[1].split('§§§§')[0])
-                    if psutil.pid_exists(pid_existente):
-                        puts(f"🔁 PID {pid_existente} já ativo para device_id {device_id}. Reutilizando conexão.")
+                    pid = int(linha.split('pid:')[1].split('§§§§')[0])
+                    if pid_existe(pid):
+                        puts(f"🔁 PID {pid} já ativo para device_id {device_id}. Reutilizando conexão.")
                         return
                     else:
-                        puts(f"💀 PID {pid_existente} morto. Limpando entrada.")
+                        puts(f"💀 PID {pid} morto. Limpando entrada.")
                         desconectar_tunel_antigo(device_id)
 
     cmd = [
