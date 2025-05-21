@@ -215,6 +215,16 @@ def update_tunnel_devices(config, dispositivo, endereco_tunel):
         p_red(f"❌ Falha ao atualizar ERP: {e}")
 
 
+def kill_process(pid):
+    try:
+        if platform.system() == "Windows":
+            subprocess.run(["taskkill", "/PID", str(pid), "/F"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            os.kill(pid, signal.SIGKILL)
+        return True
+    except Exception as e:
+        p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
+        return False
 
 def desconectar_tunel_antigo(device_id):
     """
@@ -230,10 +240,7 @@ def desconectar_tunel_antigo(device_id):
             if f'device_id:{device_id}' in linha:
                 pid = int(linha.split('pid:')[1].split('§§§§')[0])
                 try:
-                    if platform.system() == "Windows":
-                        os.kill(pid, signal.SIGTERM)  # Equivalente seguro no Windows
-                    else:
-                        os.kill(pid, signal.SIGKILL)  # Funciona no Linux
+                    kill_process(pid)
                     puts(f"✅ Processo PID {pid} finalizado.")
                 except ProcessLookupError:
                     p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
@@ -349,8 +356,8 @@ def pid_existe(pid):
     try:
         processo = psutil.Process(pid)
         nome_processo = processo.name().lower()
-        p_red(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        p_red(f"nome do processo {nome_processo}")
+        # p_red(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        # p_red(f"nome do processo {nome_processo}")
 
         if platform.system() == "Windows":
             return nome_processo == "ssh.exe"
