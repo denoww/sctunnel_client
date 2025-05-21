@@ -428,6 +428,11 @@ def main():
     varredura = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
     cliente_id = get_cliente_id()
+    puts("----------------------------------------------------------------")
+    puts("----------------------------------------------------------------")
+    puts(f"Cliente Ativado {cliente_id}")
+    puts("----------------------------------------------------------------")
+    puts("----------------------------------------------------------------")
     url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={config['sc_server']['token']}&cliente_id={cliente_id}"
 
     payload = {
