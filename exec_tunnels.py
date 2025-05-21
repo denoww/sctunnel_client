@@ -427,6 +427,11 @@ def abrir_tunel(config, dispositivo):
         f'{tunnel_user}@{tunnel_host}'
     ]
 
+    puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    puts("Comando")
+    puts(cmd)
+    puts("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
 
     proc = subprocess.Popen(
         cmd,
