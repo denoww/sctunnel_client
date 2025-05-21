@@ -179,7 +179,7 @@ def salvar_conexao(pid, device_id, host, port):
         f.writelines(linhas_novas)
 
 
-def atualizar_erp(config, dispositivo, endereco_tunel):
+def update_tunnel_devices(config, dispositivo, endereco_tunel):
     """
     Atualiza o endereço do túnel no ERP, usando cliente_id de cliente.txt.
     Gera erro se cliente.txt não existir ou estiver vazio.
@@ -191,12 +191,14 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
 
     cliente_id = get_cliente_id(config)
 
+    token = config['sc_server']['token']
 
     url = f"{config['sc_server']['host']}/portarias/update_tunnel_devices.json"
     payload = {
         "id": device_id,
         "tunnel_address": endereco_tunel,
-        "cliente_id": cliente_id
+        "cliente_id": cliente_id,
+        "token": token
     }
 
     puts(f"📡 Atualizando ERP: {url}")
@@ -402,7 +404,7 @@ def abrir_tunel(config, dispositivo):
     puts(f"✅ Túnel iniciado com PID {proc.pid}")
     p_green(f'pid: {proc.pid} - {host_local}:{porta_local} => {tunnel_host}:{porta_remota} ')
     salvar_conexao(proc.pid, device_id, host_local, porta_remota)
-    atualizar_erp(config, dispositivo, f'{tunnel_host}:{porta_remota}')
+    update_tunnel_devices(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
 
 def get_cliente_id(config):
@@ -478,7 +480,8 @@ def main():
     puts(f"Cliente Ativado {cliente_id}")
     puts("----------------------------------------------------------------")
     puts("----------------------------------------------------------------")
-    url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={config['sc_server']['token']}&cliente_id={cliente_id}"
+    token = config['sc_server']['token']
+    url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
 
     payload = {
         "tunnel_macaddres": mac_str,
@@ -522,7 +525,7 @@ def main():
             abrir_tunel(config, dispositivo)
             tunnel_host = config['sc_tunnel_server']['host']
 
-            atualizar_erp(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
+            update_tunnel_devices(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
         else:
             puts(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
