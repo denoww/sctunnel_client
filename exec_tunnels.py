@@ -238,13 +238,14 @@ def garantir_conexao_do_device(config, dispositivo):
     """
     device_id = dispositivo['id']
     host = dispositivo.get('host')
+    codigo = dispositivo.get('codigo')
     tunnel_host = config['sc_tunnel_server']['host']
     dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
     if not host:
-        p_yellow(f"❌ Dispositivo #{dispositivo.get('codigo')} sem IP/host definido.")
+        p_yellow(f"❌ Dispositivo #{codigo} sem IP/host definido.")
         return
     if not CONEXOES_FILE.exists():
-        puts(f"🔄 Nenhuma conexão existente para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
+        puts(f"🔄 Nenhuma conexão existente para o dispositivo #{codigo}. Estabelecendo nova conexão.")
         abrir_tunel(config, dispositivo)
         return
     with open(CONEXOES_FILE, 'r') as f:
@@ -253,14 +254,14 @@ def garantir_conexao_do_device(config, dispositivo):
         if f'device_id:{device_id}' in linha:
             pid = int(linha.split('pid:')[1].split('§§§§')[0])
             if pid_existe(pid):
-                puts(f"🔄 Conexão existente para o dispositivo ID {device_id} com PID {pid}.")
+                puts(f"🔄 Conexão existente para o dispositivo #{codigo} com PID {pid}.")
                 return
             else:
                 p_yellow(f"⚠️ PID {pid} não está ativo. Reconectando.")
                 desconectar_tunel_antigo(device_id)
                 abrir_tunel(config, dispositivo)
                 return
-    puts(f"🔄 Nenhuma conexão registrada para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
+    puts(f"🔄 Nenhuma conexão registrada para o dispositivo #{codigo}. Estabelecendo nova conexão.")
     abrir_tunel(config, dispositivo)
 
 
