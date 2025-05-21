@@ -3,12 +3,14 @@ import json
 import subprocess
 import psutil
 import requests
-import logging
 import socket
 from pathlib import Path
 import platform
 import ipaddress
 import sys
+
+import logging
+from logging.handlers import RotatingFileHandler
 
 # from scapy.all import ARP, Ether, srp
 
@@ -44,21 +46,19 @@ from network_scanner import varredura_arp, verificar_cap_net_raw
 
 
 # Caminho de log opcional, respeitando sistema operacional
-log_dir = os.path.join(os.getcwd(), "logs")
-os.makedirs(log_dir, exist_ok=True)
 
-log_file = os.path.join(log_dir, "app.log")
+# Caminho para o arquivo de log na raiz do projeto
+log_file = os.path.join(os.path.dirname(__file__), "logs.log")
 
-# Configuração de logging
+# Configuração de logging com RotatingFileHandler (limita tamanho do arquivo)
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(message)s',
     handlers=[
         logging.StreamHandler(),  # Saída no console
-        logging.FileHandler(log_file, mode='w', encoding='utf-8')  # Arquivo de log
+        RotatingFileHandler(log_file, maxBytes=100_000, backupCount=0, encoding='utf-8')  # ~1000 linhas
     ]
 )
-
 
 logging.info(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
