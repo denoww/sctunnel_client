@@ -9,6 +9,8 @@ import platform
 import ipaddress
 import sys
 import signal
+import getpass
+
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -47,6 +49,7 @@ LOG_FILE = BASE_DIR / 'logs.log'                  # Sempre no diretório de exec
 CONFIG_PATH = RESOURCE_DIR / 'config.json'        # Embutido no exe ou lado a lado no Linux
 PEM_FILE = RESOURCE_DIR / 'scTunnel.pem'          # Idem
 
+
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(message)s',
@@ -76,6 +79,22 @@ def p_yellow(txt):
     p_color(txt, "0;33")
 puts(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
+
+def fixar_permissoes_pem_windows(pem_path):
+    if platform.system() == "Windows":
+        username = getpass.getuser()
+        cmd = [
+            "icacls",
+            pem_path,
+            "/inheritance:r",
+            f"/grant:r", f"{username}:R"
+        ]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print("🔐 icacls output:\n", result.stdout)
+        if result.returncode != 0:
+            print("❌ Erro ao ajustar permissões com icacls:", result.stderr)
+
+fixar_permissoes_pem_windows(PEM_FILE)
 
 
 def mostrar_conteudo_pem(pem_path):
