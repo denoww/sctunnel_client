@@ -28,8 +28,12 @@ jobs:
       - name: Criar config.json com conteúdo secreto
         run: echo '${{ secrets.CONFIG_JSON }}' > config.json
 
-      - name: Criar scTunnel.pem com conteúdo secreto
-        run: echo "${{ secrets.SC_TUNNEL_WINDOWS_PEM }}" > scTunnel.pem
+      - name: Criar chave .pem com quebras de linha reais
+        run: |
+          echo "${{ secrets.SC_TUNNEL_WINDOWS_PEM }}" | sed 's/\\n/\n/g' > scTunnel.pem
+
+      # - name: Criar scTunnel.pem com conteúdo secreto
+      #   run: echo "${{ secrets.SC_TUNNEL_WINDOWS_PEM }}" > scTunnel.pem
 
       - name: Compilar EXE
         run: pyinstaller --onefile --name exec --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;."  --add-data "config.json;." exec_tunnels.py
