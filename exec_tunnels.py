@@ -25,7 +25,7 @@ from network_scanner import varredura_arp, verificar_cap_net_raw
 #     from scapy.all import ARP, Ether, srp
 #     SCAPY_OK = True
 # except ImportError:
-#     logging.warning("Scapy não disponível. Usando fallback com ping.")
+#     p_yellow("Scapy não disponível. Usando fallback com ping.")
 #     SCAPY_OK = False
 
 
@@ -219,7 +219,7 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
     """
     device_id = dispositivo.get("id")
     if device_id in (0, "0"):
-        logging.warning("⚠️  Ignorando update: device_id é 0")
+        p_yellow("⚠️  Ignorando update: device_id é 0")
         return
 
     cliente_id = get_cliente_id()
@@ -233,12 +233,12 @@ def atualizar_erp(config, dispositivo, endereco_tunel):
     }
 
     puts(f"📡 Atualizando ERP: {url}")
-    logging.debug(f"Payload: {json.dumps(payload)}")
+    puts(f"Payload: {json.dumps(payload)}")
 
     try:
         requests.post(url, json=payload)
     except Exception as e:
-        logging.error(f"❌ Falha ao atualizar ERP: {e}")
+        p_red(f"❌ Falha ao atualizar ERP: {e}")
 
 
 
@@ -248,7 +248,7 @@ def desconectar_tunel_antigo(device_id):
     """
     puts(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
     if not CONEXOES_FILE.exists():
-        logging.warning("Arquivo de conexões não encontrado.")
+        p_yellow("Arquivo de conexões não encontrado.")
         return
     linhas_restantes = []
     with open(CONEXOES_FILE, 'r') as f:
@@ -259,7 +259,7 @@ def desconectar_tunel_antigo(device_id):
                     os.kill(pid, 9)
                     puts(f"✅ Processo PID {pid} finalizado.")
                 except ProcessLookupError:
-                    logging.warning(f"⚠️ Processo PID {pid} não encontrado.")
+                    p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
             else:
                 linhas_restantes.append(linha)
     with open(CONEXOES_FILE, 'w') as f:
@@ -275,7 +275,7 @@ def garantir_conexao_do_device(config, dispositivo):
     tunnel_host = config['sc_tunnel_server']['host']
     dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
     if not host:
-        logging.warning(f"❌ Dispositivo #{dispositivo.get('codigo')} sem IP/host definido.")
+        p_yellow(f"❌ Dispositivo #{dispositivo.get('codigo')} sem IP/host definido.")
         return
     if not CONEXOES_FILE.exists():
         puts(f"🔄 Nenhuma conexão existente para o dispositivo ID {device_id}. Estabelecendo nova conexão.")
@@ -290,7 +290,7 @@ def garantir_conexao_do_device(config, dispositivo):
                 puts(f"🔄 Conexão existente para o dispositivo ID {device_id} com PID {pid}.")
                 return
             else:
-                logging.warning(f"⚠️ PID {pid} não está ativo. Reconectando.")
+                p_yellow(f"⚠️ PID {pid} não está ativo. Reconectando.")
                 desconectar_tunel_antigo(device_id)
                 abrir_tunel(config, dispositivo)
                 return
@@ -302,7 +302,7 @@ def gerar_ssh_cmd(config):
     device_id = 0
     ssh_port = extrair_campo_conexao(device_id, "tunnel_porta")
     if not ssh_port:
-        logging.error("❌ Porta SSH do túnel não encontrada para device_id: 0.")
+        p_red("❌ Porta SSH do túnel não encontrada para device_id: 0.")
         return "Erro: porta não encontrada."
 
     ssh_host = config['sc_tunnel_server']['host']
@@ -321,7 +321,7 @@ def extrair_campo_conexao(device_id, campo):
     Extrai o valor de um campo específico da conexão salva em conexoes.txt.
     """
     if not CONEXOES_FILE.exists():
-        logging.warning("Arquivo conexoes.txt não encontrado.")
+        p_yellow("Arquivo conexoes.txt não encontrado.")
         return None
 
     with open(CONEXOES_FILE, 'r') as f:
@@ -418,7 +418,7 @@ def abrir_tunel(config, dispositivo):
 def get_cliente_id():
     cliente_path = BASE_DIR / "cliente.txt"
     if not cliente_path.exists():
-        logging.error("❌ cliente.txt não encontrado. Instalação inválida.")
+        p_red("❌ cliente.txt não encontrado. Instalação inválida.")
         raise FileNotFoundError("cliente.txt não encontrado.")
 
     try:
@@ -428,7 +428,7 @@ def get_cliente_id():
                 raise ValueError("cliente.txt está vazio.")
             return cliente_id
     except Exception as e:
-        logging.error(f"❌ Falha ao ler cliente.txt: {e}")
+        p_red(f"❌ Falha ao ler cliente.txt: {e}")
         raise
 
 
@@ -436,7 +436,7 @@ def main():
     puts("🚀 Iniciando execução do túnel reverso")
 
     if not PEM_FILE.exists():
-        logging.error("❌ Arquivo scTunnel.pem não encontrado.")
+        p_red("❌ Arquivo scTunnel.pem não encontrado.")
         return
 
     puts("📥 Carregando configurações do arquivo config.json")
@@ -448,7 +448,7 @@ def main():
     puts("🌐 Descobrindo interface de rede ativa...")
     interface, ip_local, subnet = obter_interface_ip_subnet()
     if not interface:
-        logging.error("❌ Interface de rede não encontrada.")
+        p_red("❌ Interface de rede não encontrada.")
         return
     puts(f"✅ Interface ativa: {interface}, IP local: {ip_local}, Subnet: {subnet}/24")
 
@@ -464,14 +464,14 @@ def main():
         ]
     else:
         if not verificar_cap_net_raw():
-            logging.error("❌ Python atual não possui cap_net_raw. Use '/usr/bin/python3.10' com setcap.")
+            p_red("❌ Python atual não possui cap_net_raw. Use '/usr/bin/python3.10' com setcap.")
             return
         puts("🛰️ Iniciando varredura ARP com Scapy...")
         dispositivos_rede = varredura_arp(interface, subnet)
 
     puts(f"🔍 {len(dispositivos_rede)} dispositivos encontrados na rede.")
     if not dispositivos_rede:
-        logging.warning("⚠️ Nenhum dispositivo encontrado. Finalizando.")
+        p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
         return
 
     macs = sorted({d['mac'] for d in dispositivos_rede})
@@ -496,7 +496,7 @@ def main():
         dispositivos = res.json().get('devices', [])
         puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
     except Exception as e:
-        logging.error(f"❌ Erro ao consultar ERP: {e}")
+        p_red(f"❌ Erro ao consultar ERP: {e}")
         return
 
     puts("---------------------------------------")
@@ -511,7 +511,7 @@ def main():
         ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
 
         if not ip:
-            logging.warning(f"❌ Dispositivo #{codigo} sem IP conhecido.")
+            p_yellow(f"❌ Dispositivo #{codigo} sem IP conhecido.")
             continue
 
         dispositivo['host'] = ip
@@ -543,14 +543,14 @@ def main():
     #     ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
 
     #     if not ip:
-    #         logging.warning(f"⚠️ Dispositivo #{dispositivo.get('codigo')} sem IP conhecido. Pulando.")
+    #         p_yellow(f"⚠️ Dispositivo #{dispositivo.get('codigo')} sem IP conhecido. Pulando.")
     #         continue
 
     #     dispositivo['host'] = ip
     #     puts(f"🔐 Abrindo túnel para dispositivo #{dispositivo.get('codigo')} no IP {ip}")
     #     abrir_tunel(config, dispositivo)
 
-    logging.info("✅ Execução finalizada com sucesso.")
+    puts("✅ Execução finalizada com sucesso.")
 
 
 if __name__ == '__main__':
