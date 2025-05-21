@@ -17,80 +17,30 @@ from logging.handlers import RotatingFileHandler
 from network_scanner import varredura_arp, verificar_cap_net_raw
 
 
-
-
-
-# # Tenta importar scapy, mas permite fallback
-# try:
-#     from scapy.all import ARP, Ether, srp
-#     SCAPY_OK = True
-# except ImportError:
-#     p_yellow("Scapy não disponível. Usando fallback com ping.")
-#     SCAPY_OK = False
-
-
-
-
-# def verificar_permissoes():
-#     if platform.system().lower() == "linux":
-#         try:
-#             with open("/proc/sys/net/ipv4/ip_forward") as f:
-#                 return os.geteuid() == 0 or "cap_net_raw" in os.popen(f"getcap {os.readlink('/proc/self/exe')}").read()
-#         except:
-#             return False
-#     elif platform.system().lower() == "windows":
-#         return True  # Assumimos Npcap instalado
-#     return False
-
-
-
-
-# Caminho de log opcional, respeitando sistema operacional
-
-# Caminho para o arquivo de log na raiz do projeto
-base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(sys.argv[0])))
-log_file = os.path.join(base_dir, "logs.log")
-
-# Configuração do logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        RotatingFileHandler(log_file, maxBytes=100_000, backupCount=0, encoding='utf-8')
-    ]
-)
-
-logging.info("✅ Logging inicializado.")
-print(f"📄 Log em: {log_file}")
-
-
-
-# BASE_DIR = Path(__file__).resolve().parent
-# CONFIG_PATH = BASE_DIR / 'config.json'
-# PEM_FILE = BASE_DIR / 'scTunnel.pem'
-
-
-
-# if getattr(sys, 'frozen', False):
-#     BASE_DIR = Path(sys._MEIPASS)
-# else:
-#     BASE_DIR = Path(__file__).resolve().parent
-
-# CONFIG_PATH = BASE_DIR / 'config.json'
-# PEM_FILE = BASE_DIR / 'scTunnel.pem'
-# CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
-
-
 if getattr(sys, 'frozen', False):
     BASE_DIR = Path(sys.executable).parent  # ← pega a pasta do .exe
 else:
     BASE_DIR = Path(__file__).resolve().parent
 
 CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
-
 CONFIG_PATH = Path(sys._MEIPASS) / 'config.json'
 PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else BASE_DIR / 'scTunnel.pem'
+LOG_FILE = BASE_DIR / 'logs.log'
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        RotatingFileHandler(LOG_FILE, maxBytes=100_000, backupCount=0, encoding='utf-8')
+    ]
+)
+
+logging.info("✅ Logging inicializado.")
+print(f"📄 Log salvo em: {LOG_FILE}")
+
+
 
 
 def carregar_config():
