@@ -218,13 +218,22 @@ def update_tunnel_devices(config, dispositivo, endereco_tunel):
 def kill_process(pid):
     try:
         if platform.system() == "Windows":
-            subprocess.run(["taskkill", "/PID", str(pid), "/F"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            result = subprocess.run(
+                ["taskkill", "/PID", str(pid), "/F"],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
         else:
             os.kill(pid, signal.SIGKILL)
         return True
+    except subprocess.CalledProcessError as e:
+        p_yellow(f"⚠️ taskkill falhou para PID {pid}: {e}")
+        return False
     except Exception as e:
         p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
         return False
+
 
 def desconectar_tunel_antigo(device_id):
     """
@@ -240,8 +249,8 @@ def desconectar_tunel_antigo(device_id):
             if f'device_id:{device_id}' in linha:
                 pid = int(linha.split('pid:')[1].split('§§§§')[0])
                 try:
-                    kill_process(pid)
-                    puts(f"✅ Processo PID {pid} finalizado.")
+                    if kill_process(pid):
+                        puts(f"✅ Processo PID {pid} finalizado.")
                 except ProcessLookupError:
                     p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
             else:
@@ -403,10 +412,20 @@ def abrir_tunel(config, dispositivo):
 
     proc = subprocess.Popen(
         cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
         start_new_session=True
     )
+
+    # Aguarde 2 segundos para ver se ele falha logo
+    import time
+    time.sleep(2)
+
+    if proc.poll() is not None:
+        stdout, stderr = proc.communicate()
+        p_red(f"❌ ssh falhou com saída:\nSTDOUT: {stdout}\nSTDERR: {stderr}")
+        return
 
     puts(f"✅ Túnel iniciado com PID {proc.pid}")
     p_green(f'pid: {proc.pid} - {host_local}:{porta_local} => {tunnel_host}:{porta_remota} ')
