@@ -3,10 +3,16 @@ setlocal enabledelayedexpansion
 
 :: Configura caminhos
 set "APP_DIR=%~dp0"
-set "VBS_PATH=%APP_DIR%executar_oculto.vbs"
+set "EXEC_PATH=%APP_DIR%exec.exe"
 set "TAREFA_NOME=sc_tunnel"
 set "XML_PATH=%TEMP%\tarefa_sc_tunnel.xml"
 
+:: Verifica se o executável existe
+if not exist "%EXEC_PATH%" (
+    echo [ERRO] Executável não encontrado"
+    pause
+    exit /b 1
+)
 
 
 
@@ -25,10 +31,8 @@ echo [INFO] Permissão ajustada com sucesso: %PEM_PATH%
 
 
 
-rem agendador de tarefas
-
 :: Escapa & do caminho para uso seguro no echo
-set "CMD_ESC_EXEC_PATH=%VBS_PATH:&=^&%"
+set "CMD_ESC_EXEC_PATH=%EXEC_PATH:&=^&%"
 
 :: Gera o XML da tarefa agendada (grupo: Administradores)
 > "%XML_PATH%" echo ^<?xml version="1.0" encoding="UTF-16"?^>
@@ -73,13 +77,12 @@ schtasks /create /tn "%TAREFA_NOME%" /xml "%XML_PATH%" /f
 
 if %errorlevel% equ 0 (
     echo.
-    echo ✅ Tarefa criada com sucesso com execução oculta.
-    echo 🔄 A execução ocorrerá a cada 1 minuto.
+    echo ✅ Tarefa criada com sucesso usando grupo 'Administradores'.
+    echo 🔄 A execução ocorrerá a cada 1 minuto. Verifique o log em log.logs
 ) else (
     echo.
     echo ❌ [ERRO] Falha ao criar a tarefa. Código: %errorlevel%
 )
-
 
 
 endlocal
