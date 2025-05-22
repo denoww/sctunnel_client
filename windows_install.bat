@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 :: Configura caminhos
 set "APP_DIR=%~dp0"
-set "VBS_PATH=%APP_DIR%executar_oculto.vbs"
+set "VBS_PATH=%APP_DIR%windows_exec_oculto.vbs"
 set "TAREFA_NOME=sc_tunnel"
 set "XML_PATH=%TEMP%\tarefa_sc_tunnel.xml"
 
