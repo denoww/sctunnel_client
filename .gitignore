@@ -8,5 +8,6 @@ __pycache__/
 ARP_SCAN_INSTALADO.txt
 /build
 
+# Ignorar arquivos .log em qualquer lugar do projeto
 /logs
-logs.log
+*.log

@@ -60,10 +60,12 @@ set "CMD_ESC_EXEC_PATH=%VBS_PATH:&=^&%"
 >> "%XML_PATH%" echo   ^</Settings^>
 >> "%XML_PATH%" echo   ^<Actions Context="Author"^>
 >> "%XML_PATH%" echo     ^<Exec^>
->> "%XML_PATH%" echo       ^<Command^>^&quot;!CMD_ESC_EXEC_PATH!^&quot;^</Command^>
+>> "%XML_PATH%" echo       ^<Command^>wscript.exe^</Command^>
+>> "%XML_PATH%" echo       ^<Arguments^>"!CMD_ESC_EXEC_PATH!"^</Arguments^>
 >> "%XML_PATH%" echo     ^</Exec^>
 >> "%XML_PATH%" echo   ^</Actions^>
 >> "%XML_PATH%" echo ^</Task^>
+
 
 :: Remove tarefa antiga se existir
 schtasks /delete /tn "%TAREFA_NOME%" /f >nul 2>&1
