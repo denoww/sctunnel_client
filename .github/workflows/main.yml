@@ -69,15 +69,16 @@ jobs:
           path: setup.exe
           compression-level: 0  # 👈 desativa compactação ZIP
       # release
-      - name: Criar Release e subir setup.exe
+      - name: Criar ou atualizar Release "latest"
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: release-${{ github.run_number }}
-          name: Build automático ${{ github.run_number }}
+          tag_name: latest
+          name: Build Automático (último)
           files: setup.exe
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
       # - name: Upload do executável e arquivos necessários
       #   uses: actions/upload-artifact@v4
