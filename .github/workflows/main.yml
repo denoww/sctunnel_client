@@ -69,14 +69,14 @@ jobs:
           path: setup.exe
           compression-level: 0  # 👈 desativa compactação ZIP
       # release
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: latest
-          name: Build Automático
-          files: setup.exe
-          draft: false
-          prerelease: false
+      with:
+        tag_name: latest
+        name: Build Automático
+        files: setup.exe
+        draft: false
+        prerelease: false
+        token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}  # ❌ inválido aqui
+
 
 
 
