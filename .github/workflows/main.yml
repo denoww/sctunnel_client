@@ -77,7 +77,7 @@ jobs:
           files: setup.exe
           draft: false
           prerelease: false
-          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+
 
 
 
