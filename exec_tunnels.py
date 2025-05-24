@@ -455,13 +455,19 @@ def abrir_tunel(config, dispositivo):
 
     pem_file_str = str(PEM_FILE)
 
+    # Verifica se host_local já contém ':', ou seja, já tem uma porta embutida
+    if ':' in host_local:
+        destino = host_local  # já está no formato IP:porta
+    else:
+        destino = f"{host_local}:{porta_local}"
+
     comando_ssh = [
         'ssh', '-N',
         '-o', 'ServerAliveInterval=20',
-        '-i', f"{pem_file_str}",  # <--- Make sure this is a string!
+        '-i', f"{pem_file_str}",
         '-o', 'StrictHostKeyChecking=no',
         '-o', f'UserKnownHostsFile={user_known_hosts}',
-        '-R', f'{porta_remota}:{host_local}:{porta_local}',
+        '-R', f'{porta_remota}:{destino}',
         f'{tunnel_user}@{tunnel_host}'
     ]
 
@@ -683,37 +689,68 @@ def main():
 
 
 
+# def obter_todas_interfaces():
+#     """Retorna interfaces com IPs válidos, ativas e externas."""
+#     interfaces_validas = []
+#     stats = psutil.net_if_stats()
+#     addrs = psutil.net_if_addrs()
+
+#     puts("🔎 Verificando interfaces disponíveis...")
+#     for iface in stats:
+#         status = stats[iface]
+#         ip = None
+
+#         try:
+#             ip = get_if_addr(iface)
+#         except Exception as e:
+#             p_yellow(f"⚠️ {iface}: erro ao obter IP ({e})")
+#             continue
+
+#         if not status.isup:
+#             p_yellow(f"⚠️ {iface}: interface DOWN, ignorando.")
+#             continue
+
+#         if not ip or ip == "0.0.0.0" or ip.startswith("127.") or ip.startswith("169.254"):
+#             p_yellow(f"⚠️ {iface}: IP inválido ({ip}), ignorando.")
+#             continue
+
+#         puts(f"✅ {iface}: IP={ip}, status=UP, adicionando para varredura.")
+#         # interfaces_validas.append((iface, ip, "24"))
+#         from ipaddress import IPv4Interface
+
+#         subnet = str(IPv4Interface(f"{ip}/24").network)  # → ex: 192.168.15.0
+#         interfaces_validas.append((iface, ip, subnet))
+
+#     return interfaces_validas
+
+import psutil
+from ipaddress import IPv4Address, IPv4Interface
+
 def obter_todas_interfaces():
     """Retorna interfaces com IPs válidos, ativas e externas."""
     interfaces_validas = []
     stats = psutil.net_if_stats()
     addrs = psutil.net_if_addrs()
 
-    puts("🔎 Verificando interfaces disponíveis...")
+    print("🔎 Verificando interfaces disponíveis...")
     for iface in stats:
         status = stats[iface]
-        ip = None
-
-        try:
-            ip = get_if_addr(iface)
-        except Exception as e:
-            p_yellow(f"⚠️ {iface}: erro ao obter IP ({e})")
-            continue
-
         if not status.isup:
-            p_yellow(f"⚠️ {iface}: interface DOWN, ignorando.")
+            print(f"⚠️ {iface}: interface DOWN, ignorando.")
             continue
 
-        if not ip or ip == "0.0.0.0" or ip.startswith("127.") or ip.startswith("169.254"):
-            p_yellow(f"⚠️ {iface}: IP inválido ({ip}), ignorando.")
-            continue
+        for addr in addrs.get(iface, []):
+            if addr.family.name != 'AF_INET':  # IPv4 apenas
+                continue
 
-        puts(f"✅ {iface}: IP={ip}, status=UP, adicionando para varredura.")
-        # interfaces_validas.append((iface, ip, "24"))
-        from ipaddress import IPv4Interface
+            ip = addr.address
+            if ip.startswith("127.") or ip.startswith("169.254") or ip == "0.0.0.0":
+                print(f"⚠️ {iface}: IP inválido ({ip}), ignorando.")
+                continue
 
-        subnet = str(IPv4Interface(f"{ip}/24").network)  # → ex: 192.168.15.0
-        interfaces_validas.append((iface, ip, subnet))
+            subnet = str(IPv4Interface(f"{ip}/24").network)
+            print(f"✅ {iface}: IP={ip}, status=UP, adicionando para varredura.")
+            interfaces_validas.append((iface, ip, subnet))
 
     return interfaces_validas
 
@@ -779,6 +816,8 @@ def processar_dispositivos(dispositivos, dispositivos_rede, config):
         tunnel_me = dispositivo.get('tunnel_me')
         mac1 = dispositivo.get('mac_address')
         mac2 = dispositivo.get('mac_address_2')
+
+
 
         ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
         if not ip:

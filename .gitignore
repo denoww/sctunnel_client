@@ -3,10 +3,14 @@ config.json
 scTunnel.pem
 scTunnel_windows.pem
 
-conexoes.txt
+# python
 __pycache__/
+venv/
+
+conexoes.txt
 ARP_SCAN_INSTALADO.txt
 /build
+
 
 # Ignorar arquivos .log em qualquer lugar do projeto
 /logs
