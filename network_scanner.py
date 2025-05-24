@@ -14,7 +14,8 @@ def verificar_cap_net_raw():
 
 def varredura_arp(interface, subnet):
     logging.info(f"Escaneando rede {subnet} via {interface} usando Scapy...")
-    pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
+    pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}")
+    # pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=f"{subnet}/24")
     try:
         ans, _ = srp(pkt, timeout=2, iface=interface, verbose=False)
         logging.info(f"resposta ARP: {ans} ")
