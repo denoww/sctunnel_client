@@ -12,6 +12,7 @@ Name: "{group}\Desinstalar"; Filename: "{uninstallexe}"
 
 [Files]
 Source: "windows_exec_oculto.vbs"; DestDir: "{app}"; Flags: ignoreversion
+Source: "reset.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "windows_install.bat"; DestDir: "{app}"; Flags: ignoreversion
