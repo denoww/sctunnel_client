@@ -62,23 +62,16 @@ jobs:
         run: |
           move Output\setup.exe setup.exe
 
-      - name: Upload do executável e arquivos necessários
-        uses: actions/upload-artifact@v4
+      - name: Criar Release pública com setup.exe
+        uses: softprops/action-gh-release@v2
         with:
-          name: setup.exe
-          path: setup.exe
-          compression-level: 0  # 👈 desativa compactação ZIP
-          # release
-          with:
-            tag_name: latest
-            name: Build Automático
-            files: setup.exe
-            draft: false
-            prerelease: false
-            token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}  # ❌ inválido aqui
-
-
-
+          tag_name: latest
+          name: Build Automático
+          files: setup.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
       # - name: Upload do executável e arquivos necessários
       #   uses: actions/upload-artifact@v4
