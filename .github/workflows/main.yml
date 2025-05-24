@@ -68,14 +68,14 @@ jobs:
           name: setup.exe
           path: setup.exe
           compression-level: 0  # 👈 desativa compactação ZIP
-      # release
-      with:
-        tag_name: latest
-        name: Build Automático
-        files: setup.exe
-        draft: false
-        prerelease: false
-        token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}  # ❌ inválido aqui
+          # release
+          with:
+            tag_name: latest
+            name: Build Automático
+            files: setup.exe
+            draft: false
+            prerelease: false
+            token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}  # ❌ inválido aqui
 
 
 
