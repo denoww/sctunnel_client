@@ -513,7 +513,7 @@ def abrir_tunel(config, dispositivo):
 
 
     puts(f"✅ Túnel iniciado com PID {proc.pid}")
-    p_green(f'pid: {proc.pid} - {host_local}:{porta_local} => {tunnel_host}:{porta_remota} ')
+    p_green(f'pid: {proc.pid} - {destino} => {tunnel_host}:{porta_remota} ')
     salvar_conexao(proc.pid, device_id, host_local, porta_remota)
     update_tunnel_devices(config, dispositivo, f'{tunnel_host}:{porta_remota}')
 
