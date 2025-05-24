@@ -69,7 +69,7 @@ jobs:
           path: setup.exe
           compression-level: 0  # 👈 desativa compactação ZIP
       # release
-      - name: Criar ou atualizar Release "latest"
+      - name: Criar ou atualizar release "latest"
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
@@ -79,6 +79,7 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       # - name: Upload do executável e arquivos necessários
       #   uses: actions/upload-artifact@v4
