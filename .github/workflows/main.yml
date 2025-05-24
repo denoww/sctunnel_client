@@ -72,4 +72,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
-
