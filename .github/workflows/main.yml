@@ -73,9 +73,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
-      # - name: Upload do executável e arquivos necessários
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: sc_tunnel
-      #     path: |
-      #       setup.exe
