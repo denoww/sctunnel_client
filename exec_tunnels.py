@@ -218,12 +218,18 @@ def salvar_conexao(pid, device_id, host, port):
         f.writelines(linhas_novas)
 
 
-def update_tunnel_devices(config, dispositivo, endereco_tunel):
+def update_tunnel_devices(config, dispositivo):
     """
     Atualiza o endereço do túnel no ERP, usando cliente_id de cliente.txt.
     Gera erro se cliente.txt não existir ou estiver vazio.
     """
+
     device_id = dispositivo.get("id")
+
+    tunnel_host = config['sc_tunnel_server']['host']
+    porta_remota = extrair_campo_conexao(device_id, "tunnel_porta")
+    endereco_tunel = f'{tunnel_host}:{porta_remota}'
+
     if device_id in (0, "0"):
         p_yellow("⚠️  Ignorando update: device_id é 0")
         return
@@ -321,6 +327,8 @@ def garantir_conexao_do_device(config, dispositivo):
             pid = int(linha.split('pid:')[1].split('§§§§')[0])
             if pid_existe(pid):
                 puts(f"🔄 Conexão existente para o dispositivo #{codigo} com PID {pid}.")
+                update_tunnel_devices(config, dispositivo)
+
                 return
             else:
                 p_yellow(f"⚠️ PID {pid} não está ativo. Reconectando.")
@@ -332,6 +340,8 @@ def garantir_conexao_do_device(config, dispositivo):
 
 
 def gerar_ssh_cmd(config):
+    if IS_WINDOWS:
+      return "windows não tem..."
     device_id = 0
     ssh_port = extrair_campo_conexao(device_id, "tunnel_porta")
     if not ssh_port:
@@ -366,37 +376,6 @@ def extrair_campo_conexao(device_id, campo):
                         return parte.split(f'{campo}:', 1)[1]
     return None
 
-
-def abrir_ssh_do_tunnel(ip_tunnel, config):
-    """
-    Abre um túnel SSH reverso para o IP fornecido e exibe o comando SSH para acesso.
-    """
-    host = ip_tunnel
-    porta_local = 22
-    tunnel_host = config['sc_tunnel_server']['host']
-    p_green(f"Abrindo túnel SSH na porta 22 para o device em {host}")
-
-    dispositivo = {
-        "id": 0,
-        "codigo": "0",
-        "host": host,
-        "port": porta_local,
-        "tunnel_me": True
-    }
-
-    # Obtém a porta remota do túnel
-    dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
-
-    # Usa a função normal de abertura com override de porta
-    abrir_tunel(config, dispositivo)
-
-    # Gera o comando SSH que o usuário usará para acessar
-    ssh_cmd = gerar_ssh_cmd(config)
-
-    puts("##################################################################")
-    p_green("Acesse essa máquina com")
-    p_green(ssh_cmd)
-    puts("##################################################################")
 
 
 
@@ -515,7 +494,8 @@ def abrir_tunel(config, dispositivo):
     puts(f"✅ Túnel iniciado com PID {proc.pid}")
     p_green(f'pid: {proc.pid} - {destino} => {tunnel_host}:{porta_remota} ')
     salvar_conexao(proc.pid, device_id, host_local, porta_remota)
-    update_tunnel_devices(config, dispositivo, f'{tunnel_host}:{porta_remota}')
+    # update_tunnel_devices(config, dispositivo, f'{tunnel_host}:{porta_remota}')
+    update_tunnel_devices(config, dispositivo)
 
 
 def get_cliente_id(config):
@@ -538,129 +518,6 @@ def get_cliente_id(config):
         raise
 
 
-# def main():
-#     puts("🚀 Iniciando execução do túnel reverso")
-
-#     if not PEM_FILE.exists():
-#         p_red("❌ Arquivo scTunnel.pem não encontrado.")
-#         return
-
-#     puts("📥 Carregando configurações do arquivo config.json")
-#     config = carregar_config()
-#     puts(json.dumps(config, indent=2, ensure_ascii=False))  # para imprimir bonito
-
-
-
-#     puts("🌐 Descobrindo interface de rede ativa...")
-#     interface, ip_local, subnet = obter_interface_ip_subnet()
-#     if not interface:
-#         p_red("❌ Interface de rede não encontrada.")
-#         return
-#     puts(f"✅ Interface ativa: {interface}, IP local: {ip_local}, Subnet: {subnet}/24")
-
-#     abrir_ssh_do_tunnel(ip_local, config)
-#     ssh_cmd_exemplo = gerar_ssh_cmd(config)
-
-#     dispositivos_rede = []
-
-#     if not verificar_cap_net_raw():
-#         p_red("❌ Python atual não possui cap_net_raw. Use '/usr/bin/python3.10' com setcap.")
-#         return
-#     puts("🛰️ Iniciando varredura ARP com Scapy...")
-#     dispositivos_rede = varredura_arp(interface, subnet)
-
-#     puts(f"🔍 {len(dispositivos_rede)} dispositivos encontrados na rede.")
-#     if not dispositivos_rede:
-#         p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
-#         return
-
-#     macs = sorted({d['mac'] for d in dispositivos_rede})
-#     mac_str = ','.join(macs)
-
-#     varredura = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
-
-#     cliente_id = get_cliente_id(config)
-#     puts("----------------------------------------------------------------")
-#     puts("----------------------------------------------------------------")
-#     puts(f"Cliente Ativado {cliente_id}")
-#     puts("----------------------------------------------------------------")
-#     puts("----------------------------------------------------------------")
-#     token = config['sc_server']['token']
-#     url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
-
-#     payload = {
-#         "tunnel_macaddres": mac_str,
-#         "ssh_cmd": ssh_cmd_exemplo,
-#         "varredura_rede": varredura,
-#         "codigos": config['sc_server'].get('equipamento_codigos', [])
-#     }
-
-#     puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
-#     try:
-#         res = requests.post(url, json=payload)
-#         res.raise_for_status()
-#         dispositivos = res.json().get('devices', [])
-#         puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
-#     except Exception as e:
-#         p_red(f"❌ Erro ao consultar ERP: {e}")
-#         return
-
-#     puts("---------------------------------------")
-#     p_green("Fazendo tunnels...")
-#     puts("---------------------------------------")
-#     for dispositivo in dispositivos:
-#         device_id = dispositivo['id']
-#         codigo = dispositivo.get('codigo')
-#         tunnel_me = dispositivo.get('tunnel_me')
-#         mac1 = dispositivo.get('mac_address')
-#         mac2 = dispositivo.get('mac_address_2')
-#         ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
-
-#         if not ip:
-#             p_yellow(f"❌ Dispositivo #{codigo} sem IP conhecido.")
-#             continue
-
-#         dispositivo['host'] = ip
-
-#         if tunnel_me is False:
-#             puts(f"🔌 Dispositivo #{codigo} marcado para desconexão.")
-#             desconectar_tunel_antigo(device_id)
-#         elif tunnel_me is not None:
-#             puts(f"🔗 Dispositivo #{codigo} marcado para conexão.")
-#             abrir_tunel(config, dispositivo)
-#             tunnel_host = config['sc_tunnel_server']['host']
-
-#             update_tunnel_devices(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
-#         else:
-#             puts(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
-#             garantir_conexao_do_device(config, dispositivo)
-
-#     puts("---------------------------------------")
-#     puts("---------------------------------------")
-
-
-#     # for dispositivo in dispositivos:
-#     #     if dispositivo.get('tunnel_me') is not True:
-#     #         puts(f"⏭️ Dispositivo #{dispositivo.get('codigo')} não está marcado como 'tunnel_me'. Ignorando.")
-#     #         continue
-
-#     #     mac1 = dispositivo.get('mac_address')
-#     #     mac2 = dispositivo.get('mac_address_2')
-#     #     ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
-
-#     #     if not ip:
-#     #         p_yellow(f"⚠️ Dispositivo #{dispositivo.get('codigo')} sem IP conhecido. Pulando.")
-#     #         continue
-
-#     #     dispositivo['host'] = ip
-#     #     puts(f"🔐 Abrindo túnel para dispositivo #{dispositivo.get('codigo')} no IP {ip}")
-#     #     abrir_tunel(config, dispositivo)
-
-#     puts("✅ Execução finalizada com sucesso.")
-
-
-# VARRER_TODAS_INTERFACES = False  # ➡️ Altere para True para varrer todas as interfaces
-VARRER_TODAS_INTERFACES = True  # ➡️ Altere para True para varrer todas as interfaces
 
 def main():
     puts("🚀 Iniciando execução do túnel reverso")
@@ -832,8 +689,8 @@ def processar_dispositivos(dispositivos, dispositivos_rede, config):
         elif tunnel_me is not None:
             puts(f"🔗 Dispositivo #{codigo} marcado para conexão.")
             abrir_tunel(config, dispositivo)
-            tunnel_host = config['sc_tunnel_server']['host']
-            update_tunnel_devices(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
+            # tunnel_host = config['sc_tunnel_server']['host']
+            # update_tunnel_devices(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
         else:
             puts(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
