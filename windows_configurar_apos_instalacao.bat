@@ -10,18 +10,18 @@ set "XML_PATH=%TEMP%\tarefa_sc_tunnel.xml"
 
 
 
-rem permissão pem
-set PEM_PATH=%APP_DIR%scTunnel.pem
+rem rem permissão pem
+rem set PEM_PATH=%APP_DIR%scTunnel.pem
 
-echo [INFO] Aplicando permissões seguras ao PEM...
-icacls "%PEM_PATH%" /inheritance:r /grant:r "%USERNAME%:R" >nul
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao aplicar permissões no PEM!
-    pause
-    exit /b 1
-)
+rem echo [INFO] Aplicando permissões seguras ao PEM...
+rem icacls "%PEM_PATH%" /inheritance:r /grant:r "%USERNAME%:R" >nul
+rem if %errorlevel% neq 0 (
+rem     echo [ERRO] Falha ao aplicar permissões no PEM!
+rem     pause
+rem     exit /b 1
+rem )
 
-echo [INFO] Permissão ajustada com sucesso: %PEM_PATH%
+rem echo [INFO] Permissão ajustada com sucesso: %PEM_PATH%
 
 
 

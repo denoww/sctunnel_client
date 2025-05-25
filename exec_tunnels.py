@@ -61,23 +61,42 @@ RESET_BAT = PROJECT_DIR / 'reset.bat'         # Idem
 # PEM_FILE = PROJECT_DIR / 'scTunnel.pem'          # Idem
 
 
-def garantir_permissoes_modificavel_por_todos(path):
+# def garantir_permissoes_modificavel_por_todos(path):
+#     if not path.exists():
+#         path.touch()
+
+#     sistema = platform.system().lower()
+
+#     if sistema == 'windows':
+#         # No Windows, o ideal é não usar ACL diretamente em Python, mas garantir que o arquivo esteja em pasta pública
+#         # ou evitar que seja só de admins. Para garantir permissões básicas:
+#         # os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+#         # Dá controle total a todos os usuários (Everyone)
+#         subprocess.run([
+#             "icacls", str(path),
+#             "/grant", "Everyone:F"
+#         ], check=True)
+#     else:
+#         # Linux: permissão 666 = leitura/escrita para todos
+#         os.chmod(path, 0o666)
+
+def garantir_permissoes_para_todos(path):
+    path = Path(path)
+
     if not path.exists():
         path.touch()
 
-    sistema = platform.system().lower()
-
-    if sistema == 'windows':
-        # No Windows, o ideal é não usar ACL diretamente em Python, mas garantir que o arquivo esteja em pasta pública
-        # ou evitar que seja só de admins. Para garantir permissões básicas:
+    if os.name == 'nt':  # Windows
         # os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
-        # Dá controle total a todos os usuários (Everyone)
-        subprocess.run([
-            "icacls", str(path),
-            "/grant", "Everyone:F"
-        ], check=True)
+
+        # Tenta com "Todos" (PT) e, se falhar, tenta com "Everyone" (EN)
+        for nome in ["Todos", "Everyone"]:
+            try:
+                subprocess.run(["icacls", str(path), "/grant", f"{nome}:F"], check=True)
+                break
+            except subprocess.CalledProcessError:
+                continue
     else:
-        # Linux: permissão 666 = leitura/escrita para todos
         os.chmod(path, 0o666)
 
 garantir_permissoes_modificavel_por_todos(CONEXOES_FILE)
