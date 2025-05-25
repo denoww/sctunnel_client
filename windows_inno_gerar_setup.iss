@@ -13,7 +13,7 @@ Name: "{group}\Desinstalar"; Filename: "{uninstallexe}"
 [Files]
 Source: "windows_agendador_tarefas_exec_oculto.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "reset.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
+; Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "windows_configurar_apos_instalacao.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "install_npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall

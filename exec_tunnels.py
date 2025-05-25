@@ -57,6 +57,7 @@ LOG_FILE = PROJECT_DIR / 'logs.log'                  # Sempre no diretório de e
 CONFIG_PATH = DIR_MERGER_WITH_EXE / 'config.json'        # Embutido no exe ou lado a lado no Linux
 PEM_FILE_ORIGINAL = DIR_MERGER_WITH_EXE / 'scTunnel.pem'          # Idem
 CLIENTE_TXT = PROJECT_DIR / 'cliente.txt'         # Idem
+RESET_BAT = PROJECT_DIR / 'reset.bat'         # Idem
 # PEM_FILE = PROJECT_DIR / 'scTunnel.pem'          # Idem
 
 
@@ -69,13 +70,19 @@ def garantir_permissoes_modificavel_por_todos(path):
     if sistema == 'windows':
         # No Windows, o ideal é não usar ACL diretamente em Python, mas garantir que o arquivo esteja em pasta pública
         # ou evitar que seja só de admins. Para garantir permissões básicas:
-        os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+        # os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+        # Dá controle total a todos os usuários (Everyone)
+        subprocess.run([
+            "icacls", str(path),
+            "/grant", "Everyone:F"
+        ], check=True)
     else:
         # Linux: permissão 666 = leitura/escrita para todos
         os.chmod(path, 0o666)
 
 garantir_permissoes_modificavel_por_todos(CONEXOES_FILE)
 garantir_permissoes_modificavel_por_todos(CLIENTE_TXT)
+garantir_permissoes_modificavel_por_todos(RESET_BAT)
 
 
 
@@ -109,6 +116,14 @@ def ajustar_permissoes_windows(caminho_arquivo: Path):
 PEM_FILE = preparar_pem_temp(Path(PEM_FILE_ORIGINAL))
 print(f"🔐 PEM pronto: {PEM_FILE}")
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s: %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_FILE, encoding='utf-8'),
+        logging.StreamHandler()  # Opcional: imprime também no terminal
+    ]
+)
 
 
 def gerar_log(txt):
