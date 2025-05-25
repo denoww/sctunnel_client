@@ -1,5 +1,15 @@
 # 📡 sctunnel_client
 
+
+## testar com python + linux
+
+```bash
+cd ~/workspace/sctunnel_client
+pip install -r requirements.txt
+python exec_tunnels.py
+```
+
+
 ## 💾 INSTALAR NO ORANGE PI
 
 - Gravar do cartão SD para ORANGEPI 3B
