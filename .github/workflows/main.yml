@@ -60,14 +60,14 @@ jobs:
 
       - name: Mover setup.exe
         run: |
-          move Output\setup.exe 2_sctunnel_setup.exe
+          move Output\setup.exe sctunnel_setup.exe
 
       - name: Criar Release pública com sctunnel_setup.exe
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: Instalador
-          files: 2_sctunnel_setup.exe
+          files: sctunnel_setup.exe
           draft: false
           prerelease: false
         env:
