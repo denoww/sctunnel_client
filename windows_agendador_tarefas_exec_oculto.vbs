@@ -5,18 +5,18 @@ scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
 WshShell.CurrentDirectory = scriptDir
 
 exePath = scriptDir & "\exec.exe"
-logPath = scriptDir & "\windows_agendador_tarefas_exec_oculto.log"
 
 ' Cria log de execução
-If fso.FileExists(logPath) Then
-    Set logFileObj = fso.OpenTextFile(logPath, 8, True) ' Append
-Else
-    Set logFileObj = fso.CreateTextFile(logPath, True)
-End If
+' logPath = scriptDir & "\windows_agendador_tarefas_exec_oculto.log"
+' If fso.FileExists(logPath) Then
+'     Set logFileObj = fso.OpenTextFile(logPath, 8, True) ' Append
+' Else
+'     Set logFileObj = fso.CreateTextFile(logPath, True)
+' End If
+' logFileObj.WriteLine Now & " - Tentando rodar: " & exePath
+' logFileObj.Close
+' Set logFileObj = Nothing
 
-logFileObj.WriteLine Now & " - Tentando rodar: " & exePath
-logFileObj.Close
-Set logFileObj = Nothing
 
 ' Executa o exe
 WshShell.Run Chr(34) & exePath & Chr(34), 0
