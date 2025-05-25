@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Instalar dependências
+      - name: Instalar dependências python
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
@@ -35,7 +35,7 @@ jobs:
       # - name: Criar scTunnel.pem com conteúdo secreto
       #   run: echo "${{ secrets.SC_TUNNEL_WINDOWS_PEM }}" > scTunnel.pem
 
-      - name: Compilar EXE
+      - name: pyinstaller - exec_tunnels.py virar exec.exe
         run: pyinstaller --onefile --name exec --hidden-import=cryptography.hazmat.bindings._rust --add-data "scTunnel.pem;."  --add-data "config.json;." exec_tunnels.py
 
 
@@ -52,22 +52,22 @@ jobs:
         run: |
           move dist\exec.exe exec.exe
 
-      - name: Compilar Inno Setup
+      - name: Inno - Gerar setup.exe
         shell: cmd
         run: |
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" inno_installer.iss
+          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" windows_inno_gerar_setup.iss
 
 
       - name: Mover setup.exe
         run: |
-          move Output\setup.exe sctunnel_setup.exe
+          move Output\setup.exe 2_sctunnel_setup.exe
 
       - name: Criar Release pública com sctunnel_setup.exe
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: Instalador
-          files: sctunnel_setup.exe
+          files: 2_sctunnel_setup.exe
           draft: false
           prerelease: false
         env:

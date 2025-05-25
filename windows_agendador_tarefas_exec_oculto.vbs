@@ -5,7 +5,7 @@ scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
 WshShell.CurrentDirectory = scriptDir
 
 exePath = scriptDir & "\exec.exe"
-logPath = scriptDir & "\windows_exec_oculto.log"
+logPath = scriptDir & "\windows_agendador_tarefas_exec_oculto.log"
 
 ' Cria log de execução
 If fso.FileExists(logPath) Then
