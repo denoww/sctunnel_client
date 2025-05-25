@@ -87,17 +87,22 @@ def garantir_permissoes_para_todos(path):
         path.touch()
 
     if os.name == 'nt':  # Windows
-        # os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
-
-        # Tenta com "Todos" (PT) e, se falhar, tenta com "Everyone" (EN)
         for nome in ["Todos", "Everyone"]:
             try:
-                subprocess.run(["icacls", str(path), "/grant", f"{nome}:F"], check=True)
+                subprocess.run(
+                    ["icacls", str(path), "/grant", f"{nome}:F"],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
                 break
             except subprocess.CalledProcessError:
-                continue
+                pass  # Falha ao aplicar permissões, mas seguimos o script
     else:
-        os.chmod(path, 0o666)
+        try:
+            os.chmod(path, 0o666)
+        except Exception:
+            pass  # Ignora erro de permissão no Linux também
 
 garantir_permissoes_modificavel_por_todos(CONEXOES_FILE)
 garantir_permissoes_modificavel_por_todos(CLIENTE_TXT)
