@@ -13,6 +13,7 @@ import getpass
 import time
 import tempfile
 import shutil
+import stat
 
 from ipaddress import IPv4Address, IPv4Interface
 
