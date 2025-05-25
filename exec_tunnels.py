@@ -11,6 +11,10 @@ import sys
 import signal
 import getpass
 import time
+import tempfile
+import shutil
+
+from ipaddress import IPv4Address, IPv4Interface
 
 
 import logging
@@ -23,51 +27,97 @@ from scapy.all import get_if_addr
 
 
 # if getattr(sys, 'frozen', False):
-#     BASE_DIR = Path(sys.executable).parent  # ← pega a pasta do .exe
+#     PROJECT_DIR = Path(sys.executable).parent  # ← pega a pasta do .exe
 # else:
-#     BASE_DIR = Path(__file__).resolve().parent
+#     PROJECT_DIR = Path(__file__).resolve().parent
 
-# CONEXOES_FILE = BASE_DIR / 'conexoes.txt'
+# CONEXOES_FILE = PROJECT_DIR / 'conexoes.txt'
 # CONFIG_PATH = Path(sys._MEIPASS) / 'config.json'
-# PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else BASE_DIR / 'scTunnel.pem'
-# LOG_FILE = BASE_DIR / 'logs.log'
+# PEM_FILE = Path(sys._MEIPASS) / 'scTunnel.pem' if getattr(sys, 'frozen', False) else PROJECT_DIR / 'scTunnel.pem'
+# LOG_FILE = PROJECT_DIR / 'logs.log'
 
 # Detecta se está rodando como .exe (PyInstaller)
 FROZEN = getattr(sys, 'frozen', False)
 IS_WINDOWS = platform.system() == "Windows"
 
 # Diretório onde o script ou executável está
-BASE_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).resolve().parent
+PROJECT_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).resolve().parent
 
 # Se for Windows e estiver empacotado (.exe), usa _MEIPASS para arquivos embutidos
 if FROZEN and IS_WINDOWS:
     # quando o arquivo foi mergiado junto com o exec.exe  pelo pyinstaller
-    RESOURCE_DIR = Path(sys._MEIPASS)
+    DIR_MERGER_WITH_EXE = Path(sys._MEIPASS)
 else:
-    RESOURCE_DIR = BASE_DIR
+    DIR_MERGER_WITH_EXE = PROJECT_DIR
 
 # Caminhos dos arquivos
-CONEXOES_FILE = BASE_DIR / 'conexoes.txt'         # Sempre no diretório de execução
-LOG_FILE = BASE_DIR / 'logs.log'                  # Sempre no diretório de execução
-CONFIG_PATH = RESOURCE_DIR / 'config.json'        # Embutido no exe ou lado a lado no Linux
-PEM_FILE = RESOURCE_DIR / 'scTunnel.pem'          # Idem
-# PEM_FILE = BASE_DIR / 'scTunnel.pem'          # Idem
+CONEXOES_FILE = PROJECT_DIR / 'conexoes.txt'         # Sempre no diretório de execução
+LOG_FILE = PROJECT_DIR / 'logs.log'                  # Sempre no diretório de execução
+CONFIG_PATH = DIR_MERGER_WITH_EXE / 'config.json'        # Embutido no exe ou lado a lado no Linux
+PEM_FILE_ORIGINAL = DIR_MERGER_WITH_EXE / 'scTunnel.pem'          # Idem
+CLIENTE_TXT = PROJECT_DIR / 'cliente.txt'         # Idem
+# PEM_FILE = PROJECT_DIR / 'scTunnel.pem'          # Idem
 
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        RotatingFileHandler(LOG_FILE, maxBytes=100_000, backupCount=0, encoding='utf-8')
+def garantir_permissoes_modificavel_por_todos(path):
+    if not path.exists():
+        path.touch()
+
+    sistema = platform.system().lower()
+
+    if sistema == 'windows':
+        # No Windows, o ideal é não usar ACL diretamente em Python, mas garantir que o arquivo esteja em pasta pública
+        # ou evitar que seja só de admins. Para garantir permissões básicas:
+        os.chmod(path, stat.S_IWRITE | stat.S_IREAD)
+    else:
+        # Linux: permissão 666 = leitura/escrita para todos
+        os.chmod(path, 0o666)
+
+garantir_permissoes_modificavel_por_todos(CONEXOES_FILE)
+garantir_permissoes_modificavel_por_todos(CLIENTE_TXT)
+
+
+
+def preparar_pem_temp(pem_origem: Path) -> Path:
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pem') as tmp:
+        pem_temp_path = Path(tmp.name)
+
+    shutil.copy(pem_origem, pem_temp_path)
+
+    if IS_WINDOWS:
+        ajustar_permissoes_windows(pem_temp_path)
+    else:
+        os.chmod(pem_temp_path, 0o600)  # rw------- no Linux
+
+    return pem_temp_path
+
+def ajustar_permissoes_windows(caminho_arquivo: Path):
+    username = getpass.getuser()
+    cmd = [
+        "icacls",
+        str(caminho_arquivo),
+        "/inheritance:r",
+        f"/grant:r", f"{username}:R"
     ]
-)
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(f"[icacls] STDOUT:\n{result.stdout}")
+    if result.returncode != 0:
+        print(f"[icacls] ERRO: {result.stderr}")
 
+# Exemplo de uso:
+PEM_FILE = preparar_pem_temp(Path(PEM_FILE_ORIGINAL))
+print(f"🔐 PEM pronto: {PEM_FILE}")
+
+
+
+def gerar_log(txt):
+    logging.info(txt)
 
 def puts(txt):
-    logging.info(txt)
+    gerar_log(txt)
+    print(txt)
 def p_color(txt, color_code):
-    puts(txt)
+    gerar_log(txt)
     print(f"\033[{color_code}m{txt}\033[0m")
 
 def p_green(txt):
@@ -81,22 +131,7 @@ def p_yellow(txt):
 puts(f"TESTE_GIT_ACTION={os.getenv('TESTE_GIT_ACTION')}")
 
 
-# def fixar_permissoes_pem_windows(pem_path):
-#     if platform.system() == "Windows":
-#         username = getpass.getuser()
-#         cmd = [
-#             "icacls",
-#             pem_path,
-#             "/inheritance:r",
-#             f"/grant:r", f"{username}:R"
 
-#         ]
-#         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-#         puts(f"🔐 icacls output:\n{result.stdout}")
-#         if result.returncode != 0:
-#             puts(f"❌ Erro ao ajustar permissões com icacls: {result.stderr}")
-
-# fixar_permissoes_pem_windows(PEM_FILE)
 
 
 def mostrar_conteudo_pem(pem_path):
@@ -499,49 +534,35 @@ def abrir_tunel(config, dispositivo):
 
 
 def get_cliente_id(config):
-    cliente_path = BASE_DIR / "cliente.txt"
-    if not cliente_path.exists():
-        if config['sc_server']['cliente_id']:
-          return config['sc_server']['cliente_id']
-        else:
-          p_red("❌ cliente.txt não encontrado. Instalação inválida.")
-          raise FileNotFoundError("cliente.txt não encontrado.")
+    cliente_path = CLIENTE_TXT
+    with open(cliente_path, "r", encoding="utf-8") as f:
+        cliente_id = f.read().strip()
+        if not cliente_id:
+            # raise ValueError("cliente.txt está vazio.")
+             cliente_id = config['sc_server']['cliente_id']
+        if not cliente_id:
+          p_red("❌ cliente_id não encontrado em cliente.txt nem em config.json. Instalação inválida.")
+          raise
+        return cliente_id
 
-    try:
-        with open(cliente_path, "r", encoding="utf-8") as f:
-            cliente_id = f.read().strip()
-            if not cliente_id:
-                raise ValueError("cliente.txt está vazio.")
-            return cliente_id
-    except Exception as e:
-        p_red(f"❌ Falha ao ler cliente.txt: {e}")
-        raise
+    # cliente_path = PROJECT_DIR / "cliente.txt"
+    # if not cliente_path.exists():
+    #     if config['sc_server']['cliente_id']:
+    #       return config['sc_server']['cliente_id']
+    #     else:
+    #       p_red("❌ cliente.txt não encontrado. Instalação inválida.")
+    #       raise FileNotFoundError("cliente.txt não encontrado.")
 
+    # try:
+    #     with open(cliente_path, "r", encoding="utf-8") as f:
+    #         cliente_id = f.read().strip()
+    #         if not cliente_id:
+    #             raise ValueError("cliente.txt está vazio.")
+    #         return cliente_id
+    # except Exception as e:
+    #     p_red(f"❌ Falha ao ler cliente.txt: {e}")
+    #     raise
 
-
-def main():
-    puts("🚀 Iniciando execução do túnel reverso")
-
-    if not PEM_FILE.exists():
-        p_red("❌ Arquivo scTunnel.pem não encontrado.")
-        return
-
-    puts("📥 Carregando configurações do arquivo config.json")
-    config = carregar_config()
-    puts(json.dumps(config, indent=2, ensure_ascii=False))
-
-    dispositivos_rede = executar_varredura()
-
-    if not dispositivos_rede:
-        p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
-        return
-
-    dispositivos = consultar_erp(dispositivos_rede, config)
-    if dispositivos is None:
-        return
-
-    processar_dispositivos(dispositivos, dispositivos_rede, config)
-    puts("✅ Execução finalizada com sucesso.")
 
 
 
@@ -580,8 +601,7 @@ def main():
 
 #     return interfaces_validas
 
-import psutil
-from ipaddress import IPv4Address, IPv4Interface
+
 
 def obter_todas_interfaces():
     """Retorna interfaces com IPs válidos, ativas e externas."""
@@ -633,6 +653,7 @@ def executar_varredura():
     return dispositivos
 
 def consultar_erp(dispositivos_rede, config):
+    puts("consultar_erp...")
     macs = sorted({d['mac'] for d in dispositivos_rede})
     mac_str = ','.join(macs)
     varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
@@ -694,6 +715,31 @@ def processar_dispositivos(dispositivos, dispositivos_rede, config):
         else:
             puts(f"🔍 Verificando conexão para o dispositivo #{codigo}.")
             garantir_conexao_do_device(config, dispositivo)
+
+
+def main():
+    puts("🚀 Iniciando execução do túnel reverso")
+
+    if not PEM_FILE.exists():
+        p_red("❌ Arquivo scTunnel.pem não encontrado.")
+        return
+
+    puts("📥 Carregando configurações do arquivo config.json")
+    config = carregar_config()
+    puts(json.dumps(config, indent=2, ensure_ascii=False))
+
+    dispositivos_rede = executar_varredura()
+
+    if not dispositivos_rede:
+        p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
+        return
+
+    dispositivos = consultar_erp(dispositivos_rede, config)
+    if dispositivos is None:
+        return
+
+    processar_dispositivos(dispositivos, dispositivos_rede, config)
+    puts("✅ Execução finalizada com sucesso.")
 
 
 
