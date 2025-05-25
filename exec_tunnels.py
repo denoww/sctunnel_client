@@ -140,15 +140,30 @@ def ajustar_permissoes_windows(caminho_arquivo: Path):
 PEM_FILE = preparar_pem_temp(Path(PEM_FILE_ORIGINAL))
 print(f"🔐 PEM pronto: {PEM_FILE}")
 
+def cortar_ultimas_linhas_logs(path, max_linhas):
+    try:
+        linhas = path.read_text(encoding='utf-8').splitlines()
+        if len(linhas) > max_linhas:
+            path.write_text('\n'.join(linhas[-max_linhas:]) + '\n', encoding='utf-8')
+    except Exception as e:
+        print(f"[AVISO] Falha ao cortar log: {e}")
+
+# Configura o logging
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s: %(message)s',
     handlers=[
         logging.FileHandler(LOG_FILE, encoding='utf-8'),
-        logging.StreamHandler()  # Opcional: imprime também no terminal
+        logging.StreamHandler()
     ]
 )
 
+# Exemplo de uso
+cortar_ultimas_linhas_logs(LOG_FILE, 1000)
+
+# Gera muitos logs até estourar o tamanho
+for i in range(20):
+    logging.info(f"Log número {i}")
 
 def gerar_log(txt):
     logging.info(txt)
