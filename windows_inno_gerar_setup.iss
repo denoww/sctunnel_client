@@ -11,17 +11,17 @@ SolidCompression=yes
 Name: "{group}\Desinstalar"; Filename: "{uninstallexe}"
 
 [Files]
-Source: "windows_exec_oculto.vbs"; DestDir: "{app}"; Flags: ignoreversion
+Source: "windows_agendador_tarefas_exec_oculto.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "reset.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "scTunnel.pem"; DestDir: "{app}"; Flags: ignoreversion
 Source: "exec.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "windows_install.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "windows_configurar_apos_instalacao.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "install_npcap.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 
 [Run]
 Filename: "{tmp}\install_npcap.exe"; StatusMsg: "Instalando Npcap..."; Flags: waituntilterminated
-Filename: "{app}\windows_install.bat"; Flags: runascurrentuser shellexec waituntilterminated
+Filename: "{app}\windows_configurar_apos_instalacao.bat"; Flags: runascurrentuser shellexec waituntilterminated
 Filename: "{app}\exec.exe"; Description: "Iniciar serviço"; Flags: postinstall nowait skipifsilent
 
 

@@ -41,7 +41,7 @@ BASE_DIR = Path(sys.executable).parent if FROZEN else Path(__file__).resolve().p
 
 # Se for Windows e estiver empacotado (.exe), usa _MEIPASS para arquivos embutidos
 if FROZEN and IS_WINDOWS:
-    # quando o arquivo foi mergiado junto com o .exe
+    # quando o arquivo foi mergiado junto com o exec.exe  pelo pyinstaller
     RESOURCE_DIR = Path(sys._MEIPASS)
 else:
     RESOURCE_DIR = BASE_DIR
@@ -50,8 +50,8 @@ else:
 CONEXOES_FILE = BASE_DIR / 'conexoes.txt'         # Sempre no diretório de execução
 LOG_FILE = BASE_DIR / 'logs.log'                  # Sempre no diretório de execução
 CONFIG_PATH = RESOURCE_DIR / 'config.json'        # Embutido no exe ou lado a lado no Linux
-# PEM_FILE = RESOURCE_DIR / 'scTunnel.pem'          # Idem
-PEM_FILE = BASE_DIR / 'scTunnel.pem'          # Idem
+PEM_FILE = RESOURCE_DIR / 'scTunnel.pem'          # Idem
+# PEM_FILE = BASE_DIR / 'scTunnel.pem'          # Idem
 
 
 logging.basicConfig(
