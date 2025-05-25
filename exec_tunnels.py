@@ -61,7 +61,7 @@ RESET_BAT = PROJECT_DIR / 'reset.bat'         # Idem
 # PEM_FILE = PROJECT_DIR / 'scTunnel.pem'          # Idem
 
 
-# def garantir_permissoes_modificavel_por_todos(path):
+# def garantir_permissoes_para_todos(path):
 #     if not path.exists():
 #         path.touch()
 
@@ -104,9 +104,9 @@ def garantir_permissoes_para_todos(path):
         except Exception:
             pass  # Ignora erro de permissão no Linux também
 
-garantir_permissoes_modificavel_por_todos(CONEXOES_FILE)
-garantir_permissoes_modificavel_por_todos(CLIENTE_TXT)
-garantir_permissoes_modificavel_por_todos(RESET_BAT)
+garantir_permissoes_para_todos(CONEXOES_FILE)
+garantir_permissoes_para_todos(CLIENTE_TXT)
+garantir_permissoes_para_todos(RESET_BAT)
 
 
 
