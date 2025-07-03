@@ -45,7 +45,9 @@ set_cliente 51
 🛠️ Caso não funcione
 
 ```bash
-bash /var/lib/sctunnel_client/install.sh --install_crons
+cd /var/lib/sctunnel_client
+git pull
+bash install.sh --install_crons
 set_cliente 51
 ```
 
