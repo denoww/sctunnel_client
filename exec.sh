@@ -12,7 +12,7 @@ bash "${DIR_LIB}/update_firmware.sh"
 
 # Escolhe qual tunnels rodar
 if [ "$tipo_script" = "python" ]; then
-  python "${DIR_LIB}/exec_tunnels.py"
+  python3 "${DIR_LIB}/exec_tunnels.py"
 else
   bash "${DIR_LIB}/exec_tunnels.sh"
 fi
