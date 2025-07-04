@@ -589,16 +589,20 @@ def abrir_tunel(config, dispositivo):
 
 
 def get_cliente_id(config):
-    cliente_path = CLIENTE_TXT
-    with open(cliente_path, "r", encoding="utf-8") as f:
-        cliente_id = f.read().strip()
-        if not cliente_id:
-            # raise ValueError("cliente.txt está vazio.")
-             cliente_id = config['sc_server']['cliente_id']
-        if not cliente_id:
-          p_red("❌ cliente_id não encontrado em cliente.txt nem em config.json. Instalação inválida.")
-          raise
-        return cliente_id
+    if IS_WINDOWS:
+
+      cliente_path = CLIENTE_TXT
+      with open(cliente_path, "r", encoding="utf-8") as f:
+          cliente_id = f.read().strip()
+          if not cliente_id:
+              # raise ValueError("cliente.txt está vazio.")
+               cliente_id = config['sc_server']['cliente_id']
+          if not cliente_id:
+            p_red("❌ cliente_id não encontrado em cliente.txt nem em config.json. Instalação inválida.")
+            raise
+          return cliente_id
+    else:
+      return config['sc_server']['cliente_id']
 
     # cliente_path = PROJECT_DIR / "cliente.txt"
     # if not cliente_path.exists():

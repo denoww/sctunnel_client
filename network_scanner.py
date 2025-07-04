@@ -9,6 +9,8 @@ def verificar_cap_net_raw():
         import os
         bin_path = os.readlink("/proc/self/exe")
         caps = os.popen(f"getcap {bin_path}").read()
+        logging.info('caps')
+        logging.info(caps)
         return "cap_net_raw" in caps
     return True  # Assume que no Windows funciona com Npcap
 
