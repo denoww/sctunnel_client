@@ -174,9 +174,7 @@ bash set_config_json.sh "prod" "51" 'PORTARIA_SERVER_SALT' 'python'
 sudo apt update
 sudo apt install python3-dev build-essential
 pip install -r requirements.txt
-sudo setcap cap_net_raw+ep /usr/bin/python3.10
-sudo setcap cap_net_raw+ep /usr/bin/python3
-sudo setcap cap_net_raw+ep /usr/bin/python
+exec_install_python_version.sh
 bash exec.sh
 ```
 
