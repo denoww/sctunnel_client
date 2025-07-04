@@ -3,7 +3,8 @@
     "host": "https://www.seucondominio.com.br",
     "token": "xxxxxxxxxxxxxxxxxxx",
     "cliente_id": 51,
-    "equipamento_codigos": []
+    "equipamento_codigos": [],
+    "tipo_script": "python"
   },
   "sc_tunnel_server": {
     "host": "sctunnel1.seucondominio.com.br",

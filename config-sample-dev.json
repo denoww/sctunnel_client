@@ -3,7 +3,8 @@
     "host": "http://localhost:3000",
     "token": "T7jLk8A4Baor2FFb8mZL9",
     "cliente_id": 2,
-    "equipamento_codigos": []
+    "equipamento_codigos": [],
+    "tipo_script": "python"
   },
   "sc_tunnel_server": {
     "host": "sctunnel1.seucondominio.com.br",
