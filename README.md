@@ -171,6 +171,7 @@ sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.
 ```bash
 bash set_config_json.sh "prod" "51" 'PORTARIA_SERVER_SALT' 'python'
 # bash set_config_json.sh "prod" "51" 'xxxxxxx' 'shell'
+sudo apt install python3-pip
 pip install -r requirements.txt
 bash exec.sh
 ```
