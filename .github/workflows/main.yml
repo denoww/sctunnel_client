@@ -71,6 +71,12 @@ jobs:
           draft: false
           prerelease: false
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+        # with:
+        #   tag_name: latest
+        #   name: Instalador
+        #   files: sctunnel_setup.exe
+        #   draft: false
+        #   prerelease: false
         # env:
         #   GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
