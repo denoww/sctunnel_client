@@ -169,7 +169,7 @@ sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.
 #### 💻 Acesse a máquina com ssh para facilitar sua vida
 
 ```bash
-bash set_config_json.sh "prod" "51" 'xxxxxxx' 'python'
+bash set_config_json.sh "prod" "51" 'PORTARIA_SERVER_SALT' 'python'
 # bash set_config_json.sh "prod" "51" 'xxxxxxx' 'shell'
 bash exec.sh
 ```
