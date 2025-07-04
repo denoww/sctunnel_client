@@ -70,6 +70,7 @@ jobs:
           files: sctunnel_setup.exe
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
