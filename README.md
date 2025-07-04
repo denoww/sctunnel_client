@@ -72,6 +72,16 @@ bash /var/lib/sctunnel_client/install.sh --remove_crons
 
 ## 🛠️ INSTALAR AMBIENTE DE DESENVOLVIMENTO
 
+
+Ajustes no python
+
+```
+sudo setcap cap_net_raw+ep /usr/bin/python3.10
+sudo setcap cap_net_raw+ep /usr/bin/python3.10
+sudo setcap cap_net_raw+ep /usr/bin/python
+```
+
+
 ```bash
 cd /var/lib
 sudo git clone https://github.com/denoww/sctunnel_client.git
@@ -91,7 +101,8 @@ sudo chown -R "$(whoami)" .
 ```bash
 cd /var/lib/sctunnel_client
 # Define ambiente, cliente e token
-bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT'
+bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT' 'python'
+# bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT' 'shell'
 ```
 
 🟢 Executando
@@ -156,7 +167,8 @@ sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.
 #### 💻 Acesse a máquina com ssh para facilitar sua vida
 
 ```bash
-bash set_config_json.sh "prod" "51" 'xxxxxxx'
+bash set_config_json.sh "prod" "51" 'xxxxxxx' 'python'
+# bash set_config_json.sh "prod" "51" 'xxxxxxx' 'shell'
 bash exec.sh
 ```
 
@@ -173,7 +185,8 @@ Descubra o PORTARIA_SERVER_SALT e coloque ali embaixo:
 
 ```bash
 cd /var/lib/sctunnel_client
-bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT"
+bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT" 'python'
+# bash set_config_json.sh "prod" "51" "PORTARIA_SERVER_SALT" 'shell'
 ```
 
 #### 🚀 Finalize o cartão SD com a instalação

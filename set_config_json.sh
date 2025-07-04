@@ -3,14 +3,15 @@
 
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 ENVIROM=$1
-CLIENTE_ID="$2"
-PORTARIA_SERVER_SALT="$3"
+cliente_id="$2"
+token="$3"
+tipo_script="$4"
 
 config_json_path="$DIR_LIB/config.json"
 
 # Verifica se argumentos foram passados
-if [ -z "$ENVIROM" ] || [ -z "$PORTARIA_SERVER_SALT" ] || [ -z "$CLIENTE_ID" ]; then
-  echo "❗ Uso: $0 <ENV> <TOKEN> <CLIENTE_ID>"
+if [ -z "$ENVIROM" ] || [ -z "$token" ] || [ -z "$cliente_id" ] || [ -z "$tipo_script" ]; then
+  echo "❗ Uso: $0 <ENV> <TOKEN> <cliente_id>"
   exit 1
 fi
 
@@ -27,11 +28,35 @@ fi
 
 
 
-# Atualiza o token
-sed -i "s/\"token\": *\"[^\"]*\"/\"token\": \"$PORTARIA_SERVER_SALT\"/" "$config_json_path"
+declare -a keys=("token" "tipo_script" "cliente_id")
+declare -a values=("$token" "$tipo_script" "$cliente_id")
 
-# Atualiza cliente_id
-sed -i "s/\"cliente_id\": *[0-9]\+/\"cliente_id\": $CLIENTE_ID/" "$config_json_path"
+# ======================================
+# Loop geral
+# ======================================
+
+for i in "${!keys[@]}"; do
+  key="${keys[$i]}"
+  value="${values[$i]}"
+
+  echo "🔧 Atualizando $key => $value"
+
+  if grep -q "\"$key\":" "$config_json_path"; then
+    if [[ "$value" =~ ^[0-9]+$ ]]; then
+      sed -i "/\"sc_server\": {/,/}/s/\"$key\": *[0-9]\+/\"$key\": $value/" "$config_json_path"
+    else
+      sed -i "/\"sc_server\": {/,/}/s/\"$key\": *\"[^\"]*\"/\"$key\": \"$value\"/" "$config_json_path"
+    fi
+  else
+    if [[ "$value" =~ ^[0-9]+$ ]]; then
+      sed -i "/\"sc_server\": {/,/}/s/}/  , \"$key\": $value\n  }/" "$config_json_path"
+    else
+      sed -i "/\"sc_server\": {/,/}/s/}/  , \"$key\": \"$value\"\n  }/" "$config_json_path"
+    fi
+  fi
+done
+
+
 
 # Exibe config (se tiver jq)
 echo "✅ Configuração atualizada:"

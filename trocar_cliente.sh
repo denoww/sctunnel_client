@@ -1,5 +1,8 @@
 #!/bin/bash
 
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
+
+
 # Verifica se foi passado um argumento
 if [ -z "$1" ]; then
   echo "Uso: bash trocar_cliente.sh <novo_cliente_id>"
@@ -20,12 +23,25 @@ if [ ! -f "$CONFIG_FILE" ]; then
   exit 1
 fi
 
-
 # Faz a substituição do cliente_id no JSON usando jq
-# jq --argjson id "$NOVO_CLIENTE_ID" '.sc_server.cliente_id = $id' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
 jq --argjson id "$NOVO_CLIENTE_ID" '.sc_server.cliente_id = $id' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv -f "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
-
 
 echo "cliente_id atualizado para $NOVO_CLIENTE_ID em $CONFIG_FILE"
 
-bash /var/lib/sctunnel_client/exec.sh
+
+
+# # Define o caminho completo do cliente.txt
+# CLIENTE_TXT="$SCRIPT_DIR/cliente.txt"
+# # Remove o cliente.txt se existir
+# if [ -f "$CLIENTE_TXT" ]; then
+#   rm -f "$CLIENTE_TXT"
+# fi
+# # Cria o cliente.txt com o novo cliente_id
+# echo "$NOVO_CLIENTE_ID" > "$CLIENTE_TXT"
+# echo "Arquivo cliente.txt criado com cliente_id $NOVO_CLIENTE_ID"
+
+
+
+
+# Executa o script exec.sh
+bash $DIR_LIB/exec.sh
