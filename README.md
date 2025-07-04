@@ -7,6 +7,7 @@
 ```bash
 cd ~/workspace/sctunnel_client
 pip install -r requirements.txt
+bash exec_install_python_version.sh
 python exec_tunnels.py
 ```
 
@@ -174,7 +175,7 @@ bash set_config_json.sh "prod" "51" 'PORTARIA_SERVER_SALT' 'python'
 sudo apt update
 sudo apt install python3-dev build-essential
 pip install -r requirements.txt
-exec_install_python_version.sh
+bash exec_install_python_version.sh
 bash exec.sh
 ```
 
