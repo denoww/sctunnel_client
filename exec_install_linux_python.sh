@@ -3,7 +3,7 @@
 set -e
 
 
-PYTHON_REAL="/usr/bin/python3.10"
+PYTHON_REAL="/usr/bin/python3.8"
 
 
 
