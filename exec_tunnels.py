@@ -467,16 +467,42 @@ def extrair_campo_conexao(device_id, campo):
     return None
 
 
-def abrir_ssh_do_tunnel(config):
-    ip_tunnel = config['sc_tunnel_server']['host']
-    host = f"{ip_tunnel}:22"
+def descobrir_meu_ip():
+    """
+    Retorna o primeiro IP IPv4 válido da máquina (não 127.x, nem 169.x, nem 0.0.0.0).
+    Exemplo de retorno: '192.168.15.115'
+    """
+    stats = psutil.net_if_stats()
+    addrs = psutil.net_if_addrs()
+
+    for iface in stats:
+        if not stats[iface].isup:
+            continue
+
+        for addr in addrs.get(iface, []):
+            if addr.family.name == 'AF_INET':
+                ip = addr.address
+                if ip and not ip.startswith("127.") and not ip.startswith("169.254") and ip != "0.0.0.0":
+                    return ip
+
+    return None  # Nenhum IP válido encontrado
+
+
+def abrir_ssh_desse_device(config):
+    ip_local = descobrir_meu_ip()
+    if ip_local:
+        puts(f"📡 IP local detectado: {ip_local}")
+    else:
+        p_red("❌ Não foi possível detectar um IP IPv4 válido.")
+
+    host = f"{ip_local}:22"
     puts(f"🔐 Abrindo túnel SSH na porta 22 para o device em {host}")
 
     # monta objeto como no shell
     device = {
         "id": 0,
         "codigo": "0",
-        "host": host
+        "host": ip_local
     }
 
     abrir_tunel(config, device)
@@ -809,7 +835,7 @@ def main():
 
 
     puts("Abrir ssh pra esse próprio device")
-    abrir_ssh_do_tunnel(config)
+    abrir_ssh_desse_device(config)
 
     dispositivos_rede = executar_varredura()
 

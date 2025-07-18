@@ -283,7 +283,7 @@ buscar_ip_na_lista_de_macs() {
 }
 
 
-abrir_ssh_do_tunnel(){
+abrir_ssh_desse_device(){
   host="${IP_TUNNEL}:22"
   echo "🔐 Abrindo túnel SSH na porta 22 para o device em $host"
   device="{\"id\":0,\"codigo\":\"0\",\"host\":\"$host\"}"
@@ -306,7 +306,7 @@ updateDevices() {
   # echo "EQUIPAMENTO_CODIGOS"
   # echo $EQUIPAMENTO_CODIGOS
 
-  abrir_ssh_do_tunnel
+  abrir_ssh_desse_device
 
 
 
