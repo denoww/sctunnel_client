@@ -3,7 +3,7 @@
 set -e
 
 echo "[INFO] Atualizando pip..."
-python -m pip install --upgrade pip
+# python -m pip install --upgrade pip
 python3 -m pip install --upgrade pip
 
 # Linux: instala dependências e permite uso de raw socket sem sudo

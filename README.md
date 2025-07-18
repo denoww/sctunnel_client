@@ -8,9 +8,17 @@
 cd ~/workspace/sctunnel_client
 pip install -r requirements.txt
 bash exec_install_python_version.sh
+bash install.sh --install_crons
+```
+
+Produção
+```bash
+bash set_config_json.sh prod 51 'PORTARIA_SERVER_SALT' 'python'
+```
+
+Dev
+```bash
 bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT' 'python'
-bash exec.sh
-# python exec_tunnels.py
 ```
 
 

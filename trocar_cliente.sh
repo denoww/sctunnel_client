@@ -30,15 +30,15 @@ echo "cliente_id atualizado para $NOVO_CLIENTE_ID em $CONFIG_FILE"
 
 
 
-# # Define o caminho completo do cliente.txt
-# CLIENTE_TXT="$SCRIPT_DIR/cliente.txt"
-# # Remove o cliente.txt se existir
-# if [ -f "$CLIENTE_TXT" ]; then
-#   rm -f "$CLIENTE_TXT"
-# fi
-# # Cria o cliente.txt com o novo cliente_id
-# echo "$NOVO_CLIENTE_ID" > "$CLIENTE_TXT"
-# echo "Arquivo cliente.txt criado com cliente_id $NOVO_CLIENTE_ID"
+# Define o caminho completo do cliente.txt
+CLIENTE_TXT="$SCRIPT_DIR/cliente.txt"
+# Remove o cliente.txt se existir
+if [ -f "$CLIENTE_TXT" ]; then
+  rm -f "$CLIENTE_TXT"
+fi
+# Cria o cliente.txt com o novo cliente_id
+echo "$NOVO_CLIENTE_ID" > "$CLIENTE_TXT"
+echo "Arquivo cliente.txt criado com cliente_id $NOVO_CLIENTE_ID"
 
 
 
