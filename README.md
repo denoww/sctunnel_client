@@ -184,8 +184,7 @@ sudo cp /mnt/usb/____CAMINHO____/config.json /var/lib/sctunnel_client/config.jso
 # bash set_config_json.sh "prod" "51" 'PORTARIA_SERVER_SALT' 'python'
 # bash set_config_json.sh "prod" "51" 'xxxxxxx' 'shell'
 sudo apt update
-sudo apt install python3-dev build-essential
-sudo apt install python3-pip -y
+sudo apt install python3-dev build-essential python3-pip
 bash exec_install_python_version.sh
 bash install.sh --install_crons
 set_cliente 51
