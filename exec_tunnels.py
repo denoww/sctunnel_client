@@ -834,21 +834,21 @@ def main():
     puts(json.dumps(config, indent=2, ensure_ascii=False))
 
 
-    puts("Abrir ssh pra esse próprio device")
-    abrir_ssh_desse_device(config)
+    # puts("Abrir ssh pra esse próprio device")
+    # abrir_ssh_desse_device(config)
 
-    dispositivos_rede = executar_varredura()
+    # dispositivos_rede = executar_varredura()
 
-    if not dispositivos_rede:
-        p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
-        return
+    # if not dispositivos_rede:
+    #     p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
+    #     return
 
-    dispositivos = consultar_erp(dispositivos_rede, config)
-    if dispositivos is None:
-        return
+    # dispositivos = consultar_erp(dispositivos_rede, config)
+    # if dispositivos is None:
+    #     return
 
-    processar_dispositivos(dispositivos, dispositivos_rede, config)
-    puts("✅ Execução finalizada com sucesso.")
+    # processar_dispositivos(dispositivos, dispositivos_rede, config)
+    # puts("✅ Execução finalizada com sucesso.")
 
 
 
