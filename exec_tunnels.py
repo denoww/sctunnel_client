@@ -495,14 +495,17 @@ def abrir_ssh_desse_device(config):
     else:
         p_red("❌ Não foi possível detectar um IP IPv4 válido.")
 
-    host = f"{ip_local}:22"
-    puts(f"🔐 Abrindo túnel SSH na porta 22 para o device em {host}")
+    porta = "22"
+
+    host = f"{ip_local}"
+    puts(f"🔐 Abrindo túnel SSH na porta {porta} para o device em {host}")
 
     # monta objeto como no shell
     device = {
         "id": 0,
         "codigo": "0",
-        "host": ip_local
+        "host": ip_local,
+        "port": porta
     }
 
     abrir_tunel(config, device)
@@ -837,18 +840,18 @@ def main():
     puts("Abrir ssh pra esse próprio device")
     abrir_ssh_desse_device(config)
 
-    # dispositivos_rede = executar_varredura()
+    dispositivos_rede = executar_varredura()
 
-    # if not dispositivos_rede:
-    #     p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
-    #     return
+    if not dispositivos_rede:
+        p_yellow("⚠️ Nenhum dispositivo encontrado. Finalizando.")
+        return
 
-    # dispositivos = consultar_erp(dispositivos_rede, config)
-    # if dispositivos is None:
-    #     return
+    dispositivos = consultar_erp(dispositivos_rede, config)
+    if dispositivos is None:
+        return
 
-    # processar_dispositivos(dispositivos, dispositivos_rede, config)
-    # puts("✅ Execução finalizada com sucesso.")
+    processar_dispositivos(dispositivos, dispositivos_rede, config)
+    puts("✅ Execução finalizada com sucesso.")
 
 
 
