@@ -834,8 +834,8 @@ def main():
     puts(json.dumps(config, indent=2, ensure_ascii=False))
 
 
-    # puts("Abrir ssh pra esse próprio device")
-    # abrir_ssh_desse_device(config)
+    puts("Abrir ssh pra esse próprio device")
+    abrir_ssh_desse_device(config)
 
     # dispositivos_rede = executar_varredura()
 
