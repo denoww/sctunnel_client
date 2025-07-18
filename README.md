@@ -175,6 +175,7 @@ sudo mount /dev/sda1 /mnt/usb
 
 ```bash
 sudo cp /mnt/usb/____CAMINHO____/scTunnel.pem /var/lib/sctunnel_client/scTunnel.pem
+sudo cp /mnt/usb/____CAMINHO____/config.json /var/lib/sctunnel_client/config.json
 ```
 
 #### 💻 Acesse a máquina com ssh para facilitar sua vida
