@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PYTHON_REAL="/usr/bin/python3.8"
+PYTHON_REAL="/usr/bin/python3.10"
 
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 
