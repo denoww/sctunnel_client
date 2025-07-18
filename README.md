@@ -6,7 +6,6 @@
 
 ```bash
 cd ~/workspace/sctunnel_client
-pip install -r requirements.txt
 bash exec_install_python_version.sh
 bash install.sh --install_crons
 ```
