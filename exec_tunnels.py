@@ -467,6 +467,25 @@ def extrair_campo_conexao(device_id, campo):
     return None
 
 
+def abrir_ssh_do_tunnel(config):
+    ip_tunnel = config['sc_tunnel_server']['host']
+    host = f"{ip_tunnel}:22"
+    puts(f"🔐 Abrindo túnel SSH na porta 22 para o device em {host}")
+
+    # monta objeto como no shell
+    device = {
+        "id": 0,
+        "codigo": "0",
+        "host": host
+    }
+
+    abrir_tunel(config, device)
+
+    ssh_cmd = gerar_ssh_cmd(config)
+    print("##################################################################")
+    p_green("Acesse essa máquina com")
+    p_green(ssh_cmd)
+    print("##################################################################")
 
 
 def pid_existe(pid):
@@ -783,9 +802,14 @@ def main():
         p_red("❌ Arquivo scTunnel.pem não encontrado.")
         return
 
+
     puts("📥 Carregando configurações do arquivo config.json")
     config = carregar_config()
     puts(json.dumps(config, indent=2, ensure_ascii=False))
+
+
+    puts("Abrir ssh pra esse próprio device")
+    abrir_ssh_do_tunnel(config)
 
     dispositivos_rede = executar_varredura()
 
