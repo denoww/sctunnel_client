@@ -65,3 +65,5 @@ if command -v jq >/dev/null; then
 else
   cat "$config_json_path"
 fi
+
+bash "$DIR_LIB/trocar_cliente.sh" "$cliente_id"
