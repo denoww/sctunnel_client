@@ -12,7 +12,19 @@ bash "${DIR_LIB}/update_firmware.sh"
 
 # Escolhe qual tunnels rodar
 if [ "$tipo_script" = "python" ]; then
-  python3 "${DIR_LIB}/exec_tunnels.py"
+  # python3 "${DIR_LIB}/exec_tunnels.py"
+  # python "${DIR_LIB}/exec_tunnels.py"
+  if command -v python3 &>/dev/null; then
+    echo "rodando com $ python3"
+    python3 "${DIR_LIB}/exec_tunnels.py"
+  elif command -v python &>/dev/null; then
+    echo "rodando com $ python"
+    python "${DIR_LIB}/exec_tunnels.py"
+  else
+    echo "Erro: Python não encontrado." >&2
+    exit 1
+  fi
+
 else
   bash "${DIR_LIB}/exec_tunnels.sh"
 fi
