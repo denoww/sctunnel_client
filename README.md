@@ -6,7 +6,7 @@
 
 ```bash
 cd ~/workspace/sctunnel_client
-bash exec_install_python_version.sh
+bash install_python_version.sh
 bash install.sh --install_crons
 # bash install.sh --remove_crons
 ```
@@ -187,7 +187,7 @@ sudo apt update
 sudo apt install python3-dev build-essential python3-pip
 cd /var/lib/sctunnel_client
 
-bash exec_install_python_version.sh
+bash install_python_version.sh
 bash install.sh --install_crons
 set_cliente 51
 bash exec.sh
