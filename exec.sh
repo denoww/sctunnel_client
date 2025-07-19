@@ -1,7 +1,11 @@
 #!/bin/bash
 
-PYTHON_REAL="/usr/bin/python3.10"
+# exec.sh
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
+
+source "$DIR_LIB/env.sh"
+
+
 
 source "$DIR_LIB/get_config.sh"
 
@@ -12,6 +16,8 @@ echo "tipo_script: $tipo_script"
 bash "${DIR_LIB}/update_firmware.sh"
 
 
+#!/bin/bash
+
 garantir_cap_net_raw() {
   echo "[INFO] Verificando permissões de cap_net_raw para $PYTHON_REAL..."
 
@@ -20,8 +26,14 @@ garantir_cap_net_raw() {
     exit 1
   fi
 
-  echo "[INFO] Aplicando cap_net_raw com sudo..."
-  sudo setcap cap_net_raw+eip "$PYTHON_REAL"
+  # Detecta se está rodando via cron (sem TTY)
+  if [ -z "$PS1" ] && ! tty -s; then
+    echo "[INFO] Executando via cron (sem TTY), aplicando setcap direto (sem sudo)..."
+    setcap cap_net_raw+eip "$PYTHON_REAL"
+  else
+    echo "[INFO] Executando em terminal interativo, aplicando com sudo..."
+    sudo setcap cap_net_raw+eip "$PYTHON_REAL"
+  fi
 
   if getcap "$PYTHON_REAL" | grep -q cap_net_raw; then
     echo "[OK] Permissão cap_net_raw aplicada com sucesso em $PYTHON_REAL"
@@ -33,8 +45,10 @@ garantir_cap_net_raw() {
 }
 
 
+
 # Escolhe qual tunnels rodar
 if [ "$tipo_script" = "python" ]; then
+  # garantir_cap_net_raw
   garantir_cap_net_raw
 
   echo "[INFO] Usando Python: $PYTHON_REAL"

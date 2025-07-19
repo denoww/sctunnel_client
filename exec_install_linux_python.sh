@@ -1,9 +1,12 @@
 #!/bin/bash
 
+# exec_install_linux_python.sh
+
 set -e
+DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 
 
-PYTHON_REAL="/usr/bin/python3.10"
+source "$DIR_LIB/env.sh"
 
 
 
