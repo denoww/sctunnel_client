@@ -166,16 +166,47 @@ fi
 
 ################################################################
 # PERMISSOES
-print_header "ADICONANDO PERMISSOES"
+print_header "ADICIONANDO PERMISSÕES"
+
+# Garante que diretório de logs existe
 sudo mkdir -p "$DIR_LIB/logs"
+
+# Cria arquivos de log se não existirem
 sudo touch "$DIR_LIB/logs/cron.txt"
-sudo chmod 666 "$DIR_LIB/logs/cron.txt"
+sudo touch "$DIR_LIB/logs/rede.txt"  # opcional
+
+# Permissões para arquivos que precisam ser editados por qualquer processo (ex: cron)
+sudo chmod 664 "$DIR_LIB/logs/cron.txt"
+sudo chmod 664 "$DIR_LIB/logs/rede.txt"
+
+# Permissões seguras para chave privada
 sudo chmod 400 "$DIR_LIB/scTunnel.pem"
-sudo chmod 777 "$DIR_LIB/logs"
-sudo chmod 777 "$DIR_LIB/config.json"
+
+# Permissões adequadas para scripts executáveis
 sudo chmod +x "$DIR_LIB/exec.sh"
 sudo chmod +x "$DIR_LIB/exec_tunnels.sh"
-sudo chown -R $(whoami):$(whoami) "$DIR_LIB/.git"
+
+# Permissão mais restrita e suficiente para config.json
+sudo chmod 644 "$DIR_LIB/config.json"
+
+# Ajusta ownership para o usuário atual
+CURRENT_USER=$(whoami)
+sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/logs"
+sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/.git"
+
+
+# print_header "ADICONANDO PERMISSOES"
+# sudo mkdir -p "$DIR_LIB/logs"
+# sudo touch "$DIR_LIB/logs/cron.txt"
+# sudo chmod 666 "$DIR_LIB/logs/cron.txt"
+# sudo chmod 400 "$DIR_LIB/scTunnel.pem"
+# sudo chmod 777 "$DIR_LIB/logs"
+# sudo chmod 777 "$DIR_LIB/config.json"
+# sudo chmod +x "$DIR_LIB/exec.sh"
+# sudo chmod +x "$DIR_LIB/exec_tunnels.sh"
+# sudo chown -R $(whoami):$(whoami) "$DIR_LIB/.git"
+# sudo chown -R $(whoami):$(whoami) "$DIR_LI/logs"
+
 # sudo chown -R "$USER":"$USER" "$DIR_LIB/.git"
 
 
