@@ -186,8 +186,6 @@ sudo cp /mnt/usb/config.json /var/lib/sctunnel_client/config.json
 sudo apt update
 sudo apt install python3-dev build-essential python3-pip
 cd /var/lib/sctunnel_client
-sudo chown -R $(whoami):$(whoami) .git
-sudo chmod 400 scTunnel.pem
 
 bash exec_install_python_version.sh
 bash install.sh --install_crons

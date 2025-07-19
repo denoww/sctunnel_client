@@ -191,6 +191,7 @@ sudo chmod 644 "$DIR_LIB/config.json"
 
 # Ajusta ownership para o usuário atual
 CURRENT_USER=$(whoami)
+sudo chown -R "$CURRENT_USER:$CURRENT_USER" .git
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/logs"
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/.git"
 
