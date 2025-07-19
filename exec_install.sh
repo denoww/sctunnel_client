@@ -196,7 +196,7 @@ echo "=========================="
 echo "Usuário $CURRENT_USER"
 echo "=========================="
 
-sudo chown -R "$CURRENT_USER:$CURRENT_USER" /var/lib/sctunnel_client
+sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB"
 
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" .git
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/logs"
