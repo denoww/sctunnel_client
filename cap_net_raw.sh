@@ -5,7 +5,7 @@
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
 source "$DIR_LIB/env.sh"
 
-set_capt_net_raw() {
+cap_net_raw() {
   echo "[INFO] Verificando permissões de cap_net_raw para $PYTHON_REAL..."
 
   if ! command -v setcap >/dev/null; then
@@ -32,4 +32,4 @@ set_capt_net_raw() {
 }
 
 
-set_capt_net_raw
+cap_net_raw
