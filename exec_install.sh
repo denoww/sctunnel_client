@@ -191,6 +191,13 @@ sudo chmod 644 "$DIR_LIB/config.json"
 
 # Ajusta ownership para o usuário atual
 CURRENT_USER=$(whoami)
+
+echo "=========================="
+echo "Usuário $CURRENT_USER"
+echo "=========================="
+
+sudo chown -R "$CURRENT_USER:$CURRENT_USER" /var/lib/sctunnel_client
+
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" .git
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/logs"
 sudo chown -R "$CURRENT_USER:$CURRENT_USER" "$DIR_LIB/.git"
