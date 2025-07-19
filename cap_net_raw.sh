@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#################################
+# Objetivo: python sem sudo
+#################################
+
 
 # exec.sh
 DIR_LIB="$(cd "$(dirname "$0")" && pwd)"
