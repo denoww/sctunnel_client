@@ -7,6 +7,7 @@
 ```bash
 cd ~/workspace/sctunnel_client
 bash install_python_version.sh
+bash set_capt_net_raw.sh
 bash install.sh --install_crons
 # bash install.sh --remove_crons
 ```
@@ -37,6 +38,8 @@ sudo nand-sata-install
 
 🚀 Após ligar
 ```bash
+cd ~/workspace/sctunnel_client
+bash set_capt_net_raw.sh
 set_cliente 51
 ```
 
@@ -188,6 +191,7 @@ sudo apt install python3-dev build-essential python3-pip
 cd /var/lib/sctunnel_client
 
 bash install_python_version.sh
+bash set_capt_net_raw.sh
 bash install.sh --install_crons
 set_cliente 51
 bash exec.sh
