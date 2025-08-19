@@ -38,7 +38,7 @@ sudo nand-sata-install
 
 🚀 Após ligar
 ```bash
-cd ~/workspace/sctunnel_client
+cd /var/lib/sctunnel_client/
 bash cap_net_raw.sh
 set_cliente 51
 ```
