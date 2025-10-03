@@ -30,6 +30,9 @@ bash set_config_json.sh dev 2 'PORTARIA_SERVER_SALT' 'python'
 ```bash
 sudo nand-sata-install
 -> boot from eMMC - system on eMMC
+se modelo for ORANGEPI 3LTS
+-> filesystem -> ext4
+se modelo for ORANGEPI 3B
 -> filesystem -> btrfs
 ```
 
