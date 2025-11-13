@@ -816,6 +816,7 @@ def processar_dispositivos(dispositivos, dispositivos_rede, config):
             desconectar_tunel_antigo(device_id)
         elif tunnel_me is not None:
             puts(f"🔗 Dispositivo #{codigo} marcado para conexão.")
+            desconectar_tunel_antigo(device_id)
             abrir_tunel(config, dispositivo)
             # tunnel_host = config['sc_tunnel_server']['host']
             # update_tunnel_devices(config, dispositivo, f"{tunnel_host}:{obter_porta_remota(tunnel_host)}")
