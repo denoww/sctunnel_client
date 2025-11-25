@@ -11,6 +11,7 @@ conexoes.txt
 ARP_SCAN_INSTALADO.txt
 /build
 
+log_cron.txt
 
 # Ignorar arquivos .log em qualquer lugar do projeto
 /logs
