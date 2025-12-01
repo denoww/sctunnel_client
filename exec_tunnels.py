@@ -804,21 +804,12 @@ def processar_dispositivos(dispositivos, dispositivos_rede, config):
 
 
 
+        ip = dispositivo.get('ip') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
+
         # ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
         # ip =  buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede) or dispositivo.get('ip')
         # ip =  buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede) or dispositivo.get('host')
 
-        # prioriza o IP do próprio dispositivo
-        ip_cadastrado = dispositivo.get('ip')
-
-        if ip_cadastrado:
-            ip = ip_cadastrado
-        else:
-            ip = (
-                buscar_ip_por_mac(mac1, dispositivos_rede)
-                or buscar_ip_por_mac(mac2, dispositivos_rede)
-                or None
-            )
 
 
         if not ip:
