@@ -373,25 +373,69 @@ def kill_process(pid):
 def desconectar_tunel_antigo(device_id):
     """
     Desconecta túneis antigos associados ao device_id.
+    Ignora linhas malformadas em conexoes.txt para evitar IndexError.
     """
     puts(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
+
     if not CONEXOES_FILE.exists():
         p_yellow("Arquivo de conexões não encontrado.")
         return
+
     linhas_restantes = []
+
     with open(CONEXOES_FILE, 'r') as f:
         for linha in f:
-            if f'device_id:{device_id}' in linha:
-                pid = int(linha.split('pid:')[1].split('§§§§')[0])
-                try:
-                    if kill_process(pid):
-                        puts(f"✅ Processo PID {pid} finalizado.")
-                except ProcessLookupError:
-                    p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
-            else:
-                linhas_restantes.append(linha)
+            linha_stripped = linha.strip()
+
+            # Se a linha não tem esse device_id, só mantém a linha
+            if f"device_id:{device_id}" not in linha_stripped:
+                if linha_stripped:
+                    linhas_restantes.append(linha)
+                continue
+
+            # Tenta extrair o PID de forma segura
+            try:
+                pid_str = linha_stripped.split("pid:", 1)[1].split("§§§§", 1)[0].strip()
+                pid = int(pid_str)
+            except (IndexError, ValueError):
+                p_yellow(f"⚠️ Linha inválida em conexoes.txt (device_id {device_id}): {linha_stripped!r}")
+                # não regrava essa linha, só descarta
+                continue
+
+            try:
+                if kill_process(pid):
+                    puts(f"✅ Processo PID {pid} finalizado.")
+            except ProcessLookupError:
+                p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
+            except Exception as e:
+                p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
+
+    # Regrava apenas as linhas que sobraram (sem esse device_id)
     with open(CONEXOES_FILE, 'w') as f:
         f.writelines(linhas_restantes)
+
+# def desconectar_tunel_antigo(device_id):
+#     """
+#     Desconecta túneis antigos associados ao device_id.
+#     """
+#     puts(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
+#     if not CONEXOES_FILE.exists():
+#         p_yellow("Arquivo de conexões não encontrado.")
+#         return
+#     linhas_restantes = []
+#     with open(CONEXOES_FILE, 'r') as f:
+#         for linha in f:
+#             if f'device_id:{device_id}' in linha:
+#                 pid = int(linha.split('pid:')[1].split('§§§§')[0])
+#                 try:
+#                     if kill_process(pid):
+#                         puts(f"✅ Processo PID {pid} finalizado.")
+#                 except ProcessLookupError:
+#                     p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
+#             else:
+#                 linhas_restantes.append(linha)
+#     with open(CONEXOES_FILE, 'w') as f:
+#         f.writelines(linhas_restantes)
 
 def garantir_conexao_do_device(config, dispositivo):
     puts("entrou em garantir_conexao_do_device")
