@@ -353,21 +353,50 @@ def update_tunnel_devices(config, dispositivo):
 def kill_process(pid):
     try:
         if platform.system() == "Windows":
-            result = subprocess.run(
+            subprocess.run(
                 ["taskkill", "/PID", str(pid), "/F"],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
         else:
-            os.kill(pid, signal.SIGKILL)
+            try:
+                # mata o grupo de processos (caso ssh tenha filhos)
+                os.killpg(os.getpgid(pid), signal.SIGKILL)
+            except Exception:
+                # fallback: tenta matar só o PID
+                os.kill(pid, signal.SIGKILL)
         return True
+
     except subprocess.CalledProcessError as e:
         p_yellow(f"⚠️ taskkill falhou para PID {pid}: {e}")
+        return False
+    except ProcessLookupError:
+        p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
         return False
     except Exception as e:
         p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
         return False
+
+
+# def kill_process(pid):
+#     try:
+#         if platform.system() == "Windows":
+#             result = subprocess.run(
+#                 ["taskkill", "/PID", str(pid), "/F"],
+#                 check=True,
+#                 stdout=subprocess.DEVNULL,
+#                 stderr=subprocess.DEVNULL
+#             )
+#         else:
+#             os.kill(pid, signal.SIGKILL)
+#         return True
+#     except subprocess.CalledProcessError as e:
+#         p_yellow(f"⚠️ taskkill falhou para PID {pid}: {e}")
+#         return False
+#     except Exception as e:
+#         p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
+#         return False
 
 
 def desconectar_tunel_antigo(device_id):
@@ -633,15 +662,6 @@ def abrir_tunel(config, dispositivo):
     ]
 
 
-
-    # Execução do processo
-    proc = subprocess.Popen(
-        comando_ssh,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        start_new_session=True  # funciona em Linux; no Windows é ignorado com segurança
-    )
 
     # puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     # puts("PEM_FILE")
