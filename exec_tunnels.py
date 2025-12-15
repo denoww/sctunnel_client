@@ -296,12 +296,16 @@ def buscar_ip_por_mac(mac, lista):
 
 def obter_porta_remota(host, timeout=5):
     t0 = time.time()
+
+    url = f'http://{host}:3020/unused_ports?qtd=1'
+    puts(f"🌐 GET {url}")
+
     try:
-        res = requests.get(f'http://{host}:3020/unused_ports?qtd=1', timeout=timeout)
+        res = requests.get(url, timeout=timeout)
         res.raise_for_status()
         return res.json()['portas'][0]
     finally:
-        puts(f"⏱️ obter_porta_remota levou {time.time()-t0:.2f}s (host={host})")
+        puts(f"⏱️ obter_porta_remota levou {time.time() - t0:.2f}s (host={host})")
 
 
 # def obter_porta_remota(host):
