@@ -298,6 +298,7 @@ def obter_porta_remota(host, timeout=5):
     t0 = time.time()
 
     url = f'http://{host}:3020/unused_ports?qtd=1'
+    puts(f"obter_porta_remota")
     puts(f"🌐 GET {url}")
 
     try:
