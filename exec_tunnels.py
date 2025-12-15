@@ -294,9 +294,19 @@ def buscar_ip_por_mac(mac, lista):
     return None
 
 
-def obter_porta_remota(host):
-    res = requests.get(f'http://{host}:3020/unused_ports?qtd=1')
-    return res.json()['portas'][0]
+def obter_porta_remota(host, timeout=5):
+    t0 = time.time()
+    try:
+        res = requests.get(f'http://{host}:3020/unused_ports?qtd=1', timeout=timeout)
+        res.raise_for_status()
+        return res.json()['portas'][0]
+    finally:
+        puts(f"⏱️ obter_porta_remota levou {time.time()-t0:.2f}s (host={host})")
+
+
+# def obter_porta_remota(host):
+#     res = requests.get(f'http://{host}:3020/unused_ports?qtd=1')
+#     return res.json()['portas'][0]
 
 def salvar_conexao(pid, device_id, host, port):
     linhas_novas = []
