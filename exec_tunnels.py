@@ -83,8 +83,13 @@ RESET_BAT = PROJECT_DIR / 'reset.bat'         # Idem
 def garantir_permissoes_para_todos(path):
     path = Path(path)
 
-    if not path.exists():
-        path.touch()
+    try:
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)  # ajuda no Linux
+            path.touch()
+    except Exception:
+        # sem permissão pra criar/encostar no arquivo -> não explode
+        return
 
     if os.name == 'nt':  # Windows
         for nome in ["Todos", "Everyone"]:
@@ -107,6 +112,7 @@ def garantir_permissoes_para_todos(path):
 garantir_permissoes_para_todos(CONEXOES_FILE)
 garantir_permissoes_para_todos(CLIENTE_TXT)
 garantir_permissoes_para_todos(RESET_BAT)
+garantir_permissoes_para_todos(LOG_FILE)
 
 
 
@@ -149,15 +155,38 @@ def cortar_ultimas_linhas_logs(path, max_linhas):
         print(f"[AVISO] Falha ao cortar log: {e}")
 
 # Configura o logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s: %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='[%(asctime)s] %(levelname)s: %(message)s',
+#     handlers=[
+#         logging.FileHandler(LOG_FILE, encoding='utf-8'),
+#         logging.StreamHandler()
+#     ]
+# )
 
+def configurar_logging(log_path: Path):
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    # limpa handlers antigos
+    for h in list(logger.handlers):
+        logger.removeHandler(h)
+
+    handlers = [logging.StreamHandler()]
+
+    try:
+        fh = logging.FileHandler(log_path, encoding='utf-8')
+        handlers.append(fh)
+    except Exception as e:
+        print(f"⚠️  WARNING: sem permissão para escrever em {log_path}: {e}")
+
+    fmt = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s')
+    for h in handlers:
+        h.setFormatter(fmt)
+        logger.addHandler(h)
+
+
+configurar_logging(LOG_FILE)
 # Exemplo de uso
 cortar_ultimas_linhas_logs(LOG_FILE, 1000)
 
