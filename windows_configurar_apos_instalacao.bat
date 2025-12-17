@@ -9,7 +9,6 @@ if %errorlevel% neq 0 (
 )
 
 
-
 :: Configura caminhos
 set "APP_DIR=%~dp0"
 set "VBS_PATH=%APP_DIR%windows_agendador_tarefas_exec_oculto.vbs"
@@ -55,8 +54,7 @@ set "CMD_ESC_EXEC_PATH=%VBS_PATH:&=^&%"
 >> "%XML_PATH%" echo   ^</Triggers^>
 >> "%XML_PATH%" echo   ^<Principals^>
 >> "%XML_PATH%" echo     ^<Principal id="Author"^>
->> "%XML_PATH%" echo       ^<UserId^>S-1-5-18^</UserId^>
->> "%XML_PATH%" echo       ^<LogonType^>ServiceAccount^</LogonType^>
+>> "%XML_PATH%" echo       ^<GroupId^>S-1-5-32-544^</GroupId^>
 >> "%XML_PATH%" echo       ^<RunLevel^>HighestAvailable^</RunLevel^>
 >> "%XML_PATH%" echo     ^</Principal^>
 >> "%XML_PATH%" echo   ^</Principals^>
@@ -68,7 +66,7 @@ set "CMD_ESC_EXEC_PATH=%VBS_PATH:&=^&%"
 >> "%XML_PATH%" echo     ^<Hidden^>false^</Hidden^>
 >> "%XML_PATH%" echo     ^<ExecutionTimeLimit^>PT0S^</ExecutionTimeLimit^>
 >> "%XML_PATH%" echo   ^</Settings^>
->> "%XML_PATH%" echo   ^<Actions Context="System"^>
+>> "%XML_PATH%" echo   ^<Actions Context="Author"^>
 >> "%XML_PATH%" echo     ^<Exec^>
 >> "%XML_PATH%" echo       ^<Command^>wscript.exe^</Command^>
 >> "%XML_PATH%" echo       ^<Arguments^>"!CMD_ESC_EXEC_PATH!"^</Arguments^>
