@@ -634,7 +634,7 @@ def descobrir_meu_ip():
 
 def ligar_acesso_remoto_dessa_maquina(config):
     device_id = 0
-    refazer_conexao_em = 2 * 60 * 60  # 2 horas
+    refazer_conexao_em = 1 * 60 * 60  # 1 horas
 
     ip_local = descobrir_meu_ip()
     if ip_local:
