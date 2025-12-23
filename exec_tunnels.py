@@ -345,11 +345,36 @@ def obter_porta_remota(host, timeout=5):
 def salvar_conexao(pid, device_id, host, port):
     linhas_novas = []
     if CONEXOES_FILE.exists():
-        with open(CONEXOES_FILE, 'r') as f:
+        with open(CONEXOES_FILE, 'r', encoding='utf-8') as f:
             linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
-    linhas_novas.append(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
-    with open(CONEXOES_FILE, 'w') as f:
+
+    ts = int(time.time())  # epoch seconds
+    linhas_novas.append(
+        f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}§§§§data_hora_conexao:{ts}\n'
+    )
+
+    with open(CONEXOES_FILE, 'w', encoding='utf-8') as f:
         f.writelines(linhas_novas)
+
+def extrair_data_hora_conexao(device_id) -> int | None:
+    v = extrair_campo_conexao(device_id, "data_hora_conexao")
+    if not v:
+        return None
+    try:
+        return int(v)
+    except Exception:
+        return None
+
+
+
+# def salvar_conexao(pid, device_id, host, port):
+#     linhas_novas = []
+#     if CONEXOES_FILE.exists():
+#         with open(CONEXOES_FILE, 'r') as f:
+#             linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
+#     linhas_novas.append(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
+#     with open(CONEXOES_FILE, 'w') as f:
+#         f.writelines(linhas_novas)
 
 
 def update_tunnel_devices(config, dispositivo):
@@ -607,33 +632,97 @@ def descobrir_meu_ip():
     return None  # Nenhum IP válido encontrado
 
 
-def abrir_ssh_desse_device(config):
+def ligar_acesso_remoto_dessa_maquina(config):
+    device_id = 0
+    ttl_sec = 10 * 60  # 10 minutos
+
     ip_local = descobrir_meu_ip()
     if ip_local:
         puts(f"📡 IP local detectado: {ip_local}")
     else:
         p_red("❌ Não foi possível detectar um IP IPv4 válido.")
+        return
 
     porta = "22"
+    puts(f"🔐 Acesso remoto: preparando túnel SSH para {ip_local}:{porta}")
 
-    host = f"{ip_local}"
-    puts(f"🔐 Abrindo túnel SSH na porta {porta} para o device em {host}")
-
-    # monta objeto como no shell
+    # objeto do device (igual você já faz)
     device = {
-        "id": 0,
-        "codigo": "0",
+        "id": device_id,
+        "codigo": str(device_id),
         "host": ip_local,
         "port": porta
     }
 
-    abrir_tunel(config, device)
+    # 1) Verifica se existe PID ativo
+    pid_str = extrair_campo_conexao(device_id, "pid")
+    pid_ok = False
+    pid = None
+    if pid_str:
+        try:
+            pid = int(pid_str)
+            pid_ok = pid_existe(pid)
+        except Exception:
+            pid_ok = False
 
+    # 2) Verifica idade_conexao do túnel salvo
+    data_hora_conexao = extrair_data_hora_conexao(device_id)
+    now = int(time.time())
+    idade_conexao = (now - data_hora_conexao) if data_hora_conexao else None
+
+    # 3) Decide o que fazer
+    if not pid_ok:
+        # não tem PID válido rodando -> limpa e abre
+        puts("🔄 Sem túnel ativo (ou PID inválido). Reconectando acesso remoto…")
+        desconectar_tunel_antigo(device_id)
+        abrir_tunel(config, device)
+
+    else:
+        # PID ok rodando. Agora checa TTL
+        if idade_conexao is None:
+            puts("⚠️ Túnel ativo mas sem data_hora_conexao salvo. Mantendo por agora (próxima grava data_hora_conexao).")
+        elif idade_conexao >= ttl_sec:
+            puts(f"⏱️ Túnel com {idade_conexao}s (>= {ttl_sec}s). Reabrindo (rotacionar a cada 10 min)…")
+            desconectar_tunel_antigo(device_id)
+            abrir_tunel(config, device)
+        else:
+            puts(f"✅ Túnel ativo (PID {pid}) há {idade_conexao}s. Não precisa reconectar.")
+
+    # sempre imprime o comando (se você quiser só quando reconectar, dá pra ajustar)
     ssh_cmd = gerar_ssh_cmd(config)
     print("##################################################################")
     p_green("Acesse essa máquina com")
     p_green(ssh_cmd)
     print("##################################################################")
+
+
+# def ligar_acesso_remoto_dessa_maquina(config):
+#     ip_local = descobrir_meu_ip()
+#     if ip_local:
+#         puts(f"📡 IP local detectado: {ip_local}")
+#     else:
+#         p_red("❌ Não foi possível detectar um IP IPv4 válido.")
+
+#     porta = "22"
+
+#     host = f"{ip_local}"
+#     puts(f"🔐 Abrindo túnel SSH na porta {porta} para o device em {host}")
+
+#     # monta objeto como no shell
+#     device = {
+#         "id": 0,
+#         "codigo": "0",
+#         "host": ip_local,
+#         "port": porta
+#     }
+
+#     abrir_tunel(config, device)
+
+#     ssh_cmd = gerar_ssh_cmd(config)
+#     print("##################################################################")
+#     p_green("Acesse essa máquina com")
+#     p_green(ssh_cmd)
+#     print("##################################################################")
 
 
 def pid_existe(pid):
@@ -956,7 +1045,7 @@ def main():
 
 
     puts("Abrir ssh pra esse próprio device")
-    abrir_ssh_desse_device(config)
+    ligar_acesso_remoto_dessa_maquina(config)
 
     dispositivos_rede = executar_varredura()
 
