@@ -634,7 +634,7 @@ def descobrir_meu_ip():
 
 def ligar_acesso_remoto_dessa_maquina(config):
     device_id = 0
-    ttl_sec = 10 * 60  # 10 minutos
+    refazer_conexao_em = 2 * 60 * 60  # 2 horas
 
     ip_local = descobrir_meu_ip()
     if ip_local:
@@ -681,8 +681,8 @@ def ligar_acesso_remoto_dessa_maquina(config):
         # PID ok rodando. Agora checa TTL
         if idade_conexao is None:
             puts("⚠️ Túnel ativo mas sem data_hora_conexao salvo. Mantendo por agora (próxima grava data_hora_conexao).")
-        elif idade_conexao >= ttl_sec:
-            puts(f"⏱️ Túnel com {idade_conexao}s (>= {ttl_sec}s). Reabrindo (rotacionar a cada 10 min)…")
+        elif idade_conexao >= refazer_conexao_em:
+            puts(f"⏱️ Túnel com {idade_conexao}s (>= {refazer_conexao_em}s). Reabrindo (rotacionar a cada 10 min)…")
             desconectar_tunel_antigo(device_id)
             abrir_tunel(config, device)
         else:
