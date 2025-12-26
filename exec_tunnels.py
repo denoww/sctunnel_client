@@ -345,7 +345,7 @@ def obter_porta_remota(host, timeout=5):
 def salvar_conexao(pid, device_id, host, port):
     linhas_novas = []
     if CONEXOES_FILE.exists():
-        with open(CONEXOES_FILE, 'r', encoding='utf-8') as f:
+        with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
             linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
 
     ts = int(time.time())  # epoch seconds
@@ -353,7 +353,7 @@ def salvar_conexao(pid, device_id, host, port):
         f'pid:{pid}---------device_id:{device_id}---------device_host:{host}---------tunnel_porta:{port}---------data_hora_conexao:{ts}\n'
     )
 
-    with open(CONEXOES_FILE, 'w', encoding='utf-8') as f:
+    with open(CONEXOES_FILE, 'w', encoding='utf-8', newline='\n') as f:
         f.writelines(linhas_novas)
 
 def extrair_data_hora_conexao(device_id) -> int | None:
@@ -481,7 +481,7 @@ def desconectar_tunel_antigo(device_id):
 
     linhas_restantes = []
 
-    with open(CONEXOES_FILE, 'r') as f:
+    with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
         for linha in f:
             linha_stripped = linha.strip()
 
@@ -509,7 +509,7 @@ def desconectar_tunel_antigo(device_id):
                 p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
 
     # Regrava apenas as linhas que sobraram (sem esse device_id)
-    with open(CONEXOES_FILE, 'w') as f:
+    with open(CONEXOES_FILE, 'w', encoding='utf-8', newline='\n') as f:
         f.writelines(linhas_restantes)
 
 # def desconectar_tunel_antigo(device_id):
@@ -552,7 +552,7 @@ def garantir_conexao_do_device(config, dispositivo):
         dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
         abrir_tunel(config, dispositivo)
         return
-    with open(CONEXOES_FILE, 'r') as f:
+    with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
         conexoes = f.readlines()
     for linha in conexoes:
         if f'device_id:{device_id}' in linha:
@@ -601,7 +601,7 @@ def extrair_campo_conexao(device_id, campo):
         p_yellow("Arquivo conexoes.txt não encontrado.")
         return None
 
-    with open(CONEXOES_FILE, 'r') as f:
+    with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
         for linha in f:
             if f'device_id:{device_id}' in linha:
                 partes = linha.strip().split('---------')
@@ -751,7 +751,7 @@ def abrir_tunel(config, dispositivo):
 
     # Evita criar novo túnel se já tiver um PID válido rodando
     if CONEXOES_FILE.exists():
-        with open(CONEXOES_FILE, 'r') as f:
+        with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
             for linha in f:
                 if f'device_id:{device_id}' in linha:
                     pid = int(linha.split('pid:')[1].split('---------')[0])
