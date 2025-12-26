@@ -350,7 +350,7 @@ def salvar_conexao(pid, device_id, host, port):
 
     ts = int(time.time())  # epoch seconds
     linhas_novas.append(
-        f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}§§§§data_hora_conexao:{ts}\n'
+        f'pid:{pid}---------device_id:{device_id}---------device_host:{host}---------tunnel_porta:{port}---------data_hora_conexao:{ts}\n'
     )
 
     with open(CONEXOES_FILE, 'w', encoding='utf-8') as f:
@@ -372,7 +372,7 @@ def extrair_data_hora_conexao(device_id) -> int | None:
 #     if CONEXOES_FILE.exists():
 #         with open(CONEXOES_FILE, 'r') as f:
 #             linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
-#     linhas_novas.append(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
+#     linhas_novas.append(f'pid:{pid}---------device_id:{device_id}---------device_host:{host}---------tunnel_porta:{port}\n')
 #     with open(CONEXOES_FILE, 'w') as f:
 #         f.writelines(linhas_novas)
 
@@ -493,7 +493,7 @@ def desconectar_tunel_antigo(device_id):
 
             # Tenta extrair o PID de forma segura
             try:
-                pid_str = linha_stripped.split("pid:", 1)[1].split("§§§§", 1)[0].strip()
+                pid_str = linha_stripped.split("pid:", 1)[1].split("---------", 1)[0].strip()
                 pid = int(pid_str)
             except (IndexError, ValueError):
                 p_yellow(f"⚠️ Linha inválida em conexoes.txt (device_id {device_id}): {linha_stripped!r}")
@@ -524,7 +524,7 @@ def desconectar_tunel_antigo(device_id):
 #     with open(CONEXOES_FILE, 'r') as f:
 #         for linha in f:
 #             if f'device_id:{device_id}' in linha:
-#                 pid = int(linha.split('pid:')[1].split('§§§§')[0])
+#                 pid = int(linha.split('pid:')[1].split('---------')[0])
 #                 try:
 #                     if kill_process(pid):
 #                         puts(f"✅ Processo PID {pid} finalizado.")
@@ -556,7 +556,7 @@ def garantir_conexao_do_device(config, dispositivo):
         conexoes = f.readlines()
     for linha in conexoes:
         if f'device_id:{device_id}' in linha:
-            pid = int(linha.split('pid:')[1].split('§§§§')[0])
+            pid = int(linha.split('pid:')[1].split('---------')[0])
             if pid_existe(pid):
                 puts(f"🔄 Conexão existente para o dispositivo #{codigo} com PID {pid}.")
                 update_tunnel_devices(config, dispositivo)
@@ -604,7 +604,7 @@ def extrair_campo_conexao(device_id, campo):
     with open(CONEXOES_FILE, 'r') as f:
         for linha in f:
             if f'device_id:{device_id}' in linha:
-                partes = linha.strip().split('§§§§')
+                partes = linha.strip().split('---------')
                 for parte in partes:
                     if parte.startswith(f'{campo}:'):
                         return parte.split(f'{campo}:', 1)[1]
@@ -754,7 +754,7 @@ def abrir_tunel(config, dispositivo):
         with open(CONEXOES_FILE, 'r') as f:
             for linha in f:
                 if f'device_id:{device_id}' in linha:
-                    pid = int(linha.split('pid:')[1].split('§§§§')[0])
+                    pid = int(linha.split('pid:')[1].split('---------')[0])
                     if pid_existe(pid):
                         puts(f"🔁 PID {pid} já ativo para device_id {device_id}. Reutilizando conexão.")
                         return
