@@ -1,14 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
 
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-  echo [INFO] Reexecutando como Administrador...
-  powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-  exit /b
-)
-
-
 :: Configura caminhos
 set "APP_DIR=%~dp0"
 set "VBS_PATH=%APP_DIR%windows_agendador_tarefas_exec_oculto.vbs"

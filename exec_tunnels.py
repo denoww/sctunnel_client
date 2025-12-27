@@ -83,8 +83,13 @@ RESET_BAT = PROJECT_DIR / 'reset.bat'         # Idem
 def garantir_permissoes_para_todos(path):
     path = Path(path)
 
-    if not path.exists():
-        path.touch()
+    try:
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)  # ajuda no Linux
+            path.touch()
+    except Exception:
+        # sem permissão pra criar/encostar no arquivo -> não explode
+        return
 
     if os.name == 'nt':  # Windows
         for nome in ["Todos", "Everyone"]:
@@ -107,6 +112,7 @@ def garantir_permissoes_para_todos(path):
 garantir_permissoes_para_todos(CONEXOES_FILE)
 garantir_permissoes_para_todos(CLIENTE_TXT)
 garantir_permissoes_para_todos(RESET_BAT)
+garantir_permissoes_para_todos(LOG_FILE)
 
 
 
@@ -149,15 +155,38 @@ def cortar_ultimas_linhas_logs(path, max_linhas):
         print(f"[AVISO] Falha ao cortar log: {e}")
 
 # Configura o logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s: %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='[%(asctime)s] %(levelname)s: %(message)s',
+#     handlers=[
+#         logging.FileHandler(LOG_FILE, encoding='utf-8'),
+#         logging.StreamHandler()
+#     ]
+# )
 
+def configurar_logging(log_path: Path):
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    # limpa handlers antigos
+    for h in list(logger.handlers):
+        logger.removeHandler(h)
+
+    handlers = [logging.StreamHandler()]
+
+    try:
+        fh = logging.FileHandler(log_path, encoding='utf-8')
+        handlers.append(fh)
+    except Exception as e:
+        print(f"⚠️  WARNING: sem permissão para escrever em {log_path}: {e}")
+
+    fmt = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s')
+    for h in handlers:
+        h.setFormatter(fmt)
+        logger.addHandler(h)
+
+
+configurar_logging(LOG_FILE)
 # Exemplo de uso
 cortar_ultimas_linhas_logs(LOG_FILE, 1000)
 
@@ -294,18 +323,58 @@ def buscar_ip_por_mac(mac, lista):
     return None
 
 
-def obter_porta_remota(host):
-    res = requests.get(f'http://{host}:3020/unused_ports?qtd=1')
-    return res.json()['portas'][0]
+def obter_porta_remota(host, timeout=5):
+    t0 = time.time()
+
+    url = f'http://{host}:3020/unused_ports?qtd=1'
+    puts(f"obter_porta_remota")
+    puts(f"🌐 GET {url}")
+
+    try:
+        res = requests.get(url, timeout=timeout)
+        res.raise_for_status()
+        return res.json()['portas'][0]
+    finally:
+        puts(f"⏱️ obter_porta_remota levou {time.time() - t0:.2f}s (host={host})")
+
+
+# def obter_porta_remota(host):
+#     res = requests.get(f'http://{host}:3020/unused_ports?qtd=1')
+#     return res.json()['portas'][0]
 
 def salvar_conexao(pid, device_id, host, port):
     linhas_novas = []
     if CONEXOES_FILE.exists():
-        with open(CONEXOES_FILE, 'r') as f:
+        with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
             linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
-    linhas_novas.append(f'pid:{pid}§§§§device_id:{device_id}§§§§device_host:{host}§§§§tunnel_porta:{port}\n')
-    with open(CONEXOES_FILE, 'w') as f:
+
+    ts = int(time.time())  # epoch seconds
+    linhas_novas.append(
+        f'pid:{pid}---------device_id:{device_id}---------device_host:{host}---------tunnel_porta:{port}---------data_hora_conexao:{ts}\n'
+    )
+
+    with open(CONEXOES_FILE, 'w', encoding='utf-8', newline='\n') as f:
         f.writelines(linhas_novas)
+
+def extrair_data_hora_conexao(device_id) -> int | None:
+    v = extrair_campo_conexao(device_id, "data_hora_conexao")
+    if not v:
+        return None
+    try:
+        return int(v)
+    except Exception:
+        return None
+
+
+
+# def salvar_conexao(pid, device_id, host, port):
+#     linhas_novas = []
+#     if CONEXOES_FILE.exists():
+#         with open(CONEXOES_FILE, 'r') as f:
+#             linhas_novas = [l for l in f if f'device_id:{device_id}' not in l]
+#     linhas_novas.append(f'pid:{pid}---------device_id:{device_id}---------device_host:{host}---------tunnel_porta:{port}\n')
+#     with open(CONEXOES_FILE, 'w') as f:
+#         f.writelines(linhas_novas)
 
 
 def update_tunnel_devices(config, dispositivo):
@@ -353,45 +422,118 @@ def update_tunnel_devices(config, dispositivo):
 def kill_process(pid):
     try:
         if platform.system() == "Windows":
-            result = subprocess.run(
+            subprocess.run(
                 ["taskkill", "/PID", str(pid), "/F"],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL
             )
         else:
-            os.kill(pid, signal.SIGKILL)
+            try:
+                # mata o grupo de processos (caso ssh tenha filhos)
+                os.killpg(os.getpgid(pid), signal.SIGKILL)
+            except Exception:
+                # fallback: tenta matar só o PID
+                os.kill(pid, signal.SIGKILL)
         return True
+
     except subprocess.CalledProcessError as e:
         p_yellow(f"⚠️ taskkill falhou para PID {pid}: {e}")
+        return False
+    except ProcessLookupError:
+        p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
         return False
     except Exception as e:
         p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
         return False
 
 
+# def kill_process(pid):
+#     try:
+#         if platform.system() == "Windows":
+#             result = subprocess.run(
+#                 ["taskkill", "/PID", str(pid), "/F"],
+#                 check=True,
+#                 stdout=subprocess.DEVNULL,
+#                 stderr=subprocess.DEVNULL
+#             )
+#         else:
+#             os.kill(pid, signal.SIGKILL)
+#         return True
+#     except subprocess.CalledProcessError as e:
+#         p_yellow(f"⚠️ taskkill falhou para PID {pid}: {e}")
+#         return False
+#     except Exception as e:
+#         p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
+#         return False
+
+
 def desconectar_tunel_antigo(device_id):
     """
     Desconecta túneis antigos associados ao device_id.
+    Ignora linhas malformadas em conexoes.txt para evitar IndexError.
     """
     puts(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
+
     if not CONEXOES_FILE.exists():
         p_yellow("Arquivo de conexões não encontrado.")
         return
+
     linhas_restantes = []
-    with open(CONEXOES_FILE, 'r') as f:
+
+    with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
         for linha in f:
-            if f'device_id:{device_id}' in linha:
-                pid = int(linha.split('pid:')[1].split('§§§§')[0])
-                try:
-                    if kill_process(pid):
-                        puts(f"✅ Processo PID {pid} finalizado.")
-                except ProcessLookupError:
-                    p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
-            else:
-                linhas_restantes.append(linha)
-    with open(CONEXOES_FILE, 'w') as f:
+            linha_stripped = linha.strip()
+
+            # Se a linha não tem esse device_id, só mantém a linha
+            if f"device_id:{device_id}" not in linha_stripped:
+                if linha_stripped:
+                    linhas_restantes.append(linha)
+                continue
+
+            # Tenta extrair o PID de forma segura
+            try:
+                pid_str = linha_stripped.split("pid:", 1)[1].split("---------", 1)[0].strip()
+                pid = int(pid_str)
+            except (IndexError, ValueError):
+                p_yellow(f"⚠️ Linha inválida em conexoes.txt (device_id {device_id}): {linha_stripped!r}")
+                # não regrava essa linha, só descarta
+                continue
+
+            try:
+                if kill_process(pid):
+                    puts(f"✅ Processo PID {pid} finalizado.")
+            except ProcessLookupError:
+                p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
+            except Exception as e:
+                p_red(f"❌ Erro ao finalizar PID {pid}: {e}")
+
+    # Regrava apenas as linhas que sobraram (sem esse device_id)
+    with open(CONEXOES_FILE, 'w', encoding='utf-8', newline='\n') as f:
         f.writelines(linhas_restantes)
+
+# def desconectar_tunel_antigo(device_id):
+#     """
+#     Desconecta túneis antigos associados ao device_id.
+#     """
+#     puts(f"🔌 Desconectando túneis antigos para o dispositivo ID {device_id}")
+#     if not CONEXOES_FILE.exists():
+#         p_yellow("Arquivo de conexões não encontrado.")
+#         return
+#     linhas_restantes = []
+#     with open(CONEXOES_FILE, 'r') as f:
+#         for linha in f:
+#             if f'device_id:{device_id}' in linha:
+#                 pid = int(linha.split('pid:')[1].split('---------')[0])
+#                 try:
+#                     if kill_process(pid):
+#                         puts(f"✅ Processo PID {pid} finalizado.")
+#                 except ProcessLookupError:
+#                     p_yellow(f"⚠️ Processo PID {pid} não encontrado.")
+#             else:
+#                 linhas_restantes.append(linha)
+#     with open(CONEXOES_FILE, 'w') as f:
+#         f.writelines(linhas_restantes)
 
 def garantir_conexao_do_device(config, dispositivo):
     puts("entrou em garantir_conexao_do_device")
@@ -402,19 +544,19 @@ def garantir_conexao_do_device(config, dispositivo):
     host = dispositivo.get('host')
     codigo = dispositivo.get('codigo')
     tunnel_host = config['sc_tunnel_server']['host']
-    dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
     if not host:
         p_yellow(f"❌ Dispositivo #{codigo} sem IP/host definido.")
         return
     if not CONEXOES_FILE.exists():
         puts(f"🔄 Nenhuma conexão existente para o dispositivo #{codigo}. Estabelecendo nova conexão.")
+        dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
         abrir_tunel(config, dispositivo)
         return
-    with open(CONEXOES_FILE, 'r') as f:
+    with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
         conexoes = f.readlines()
     for linha in conexoes:
         if f'device_id:{device_id}' in linha:
-            pid = int(linha.split('pid:')[1].split('§§§§')[0])
+            pid = int(linha.split('pid:')[1].split('---------')[0])
             if pid_existe(pid):
                 puts(f"🔄 Conexão existente para o dispositivo #{codigo} com PID {pid}.")
                 update_tunnel_devices(config, dispositivo)
@@ -423,9 +565,11 @@ def garantir_conexao_do_device(config, dispositivo):
             else:
                 p_yellow(f"⚠️ PID {pid} não está ativo. Reconectando.")
                 desconectar_tunel_antigo(device_id)
+                dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
                 abrir_tunel(config, dispositivo)
                 return
     puts(f"🔄 Nenhuma conexão registrada para o dispositivo #{codigo}. Estabelecendo nova conexão.")
+    dispositivo['porta_remota'] = obter_porta_remota(tunnel_host)
     abrir_tunel(config, dispositivo)
 
 
@@ -457,10 +601,10 @@ def extrair_campo_conexao(device_id, campo):
         p_yellow("Arquivo conexoes.txt não encontrado.")
         return None
 
-    with open(CONEXOES_FILE, 'r') as f:
+    with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
         for linha in f:
             if f'device_id:{device_id}' in linha:
-                partes = linha.strip().split('§§§§')
+                partes = linha.strip().split('---------')
                 for parte in partes:
                     if parte.startswith(f'{campo}:'):
                         return parte.split(f'{campo}:', 1)[1]
@@ -488,33 +632,97 @@ def descobrir_meu_ip():
     return None  # Nenhum IP válido encontrado
 
 
-def abrir_ssh_desse_device(config):
+def ligar_acesso_remoto_dessa_maquina(config):
+    device_id = 0
+    refazer_conexao_em = 1 * 60 * 60  # 1 horas
+
     ip_local = descobrir_meu_ip()
     if ip_local:
         puts(f"📡 IP local detectado: {ip_local}")
     else:
         p_red("❌ Não foi possível detectar um IP IPv4 válido.")
+        return
 
     porta = "22"
+    puts(f"🔐 Acesso remoto: preparando túnel SSH para {ip_local}:{porta}")
 
-    host = f"{ip_local}"
-    puts(f"🔐 Abrindo túnel SSH na porta {porta} para o device em {host}")
-
-    # monta objeto como no shell
+    # objeto do device (igual você já faz)
     device = {
-        "id": 0,
-        "codigo": "0",
+        "id": device_id,
+        "codigo": str(device_id),
         "host": ip_local,
         "port": porta
     }
 
-    abrir_tunel(config, device)
+    # 1) Verifica se existe PID ativo
+    pid_str = extrair_campo_conexao(device_id, "pid")
+    pid_ok = False
+    pid = None
+    if pid_str:
+        try:
+            pid = int(pid_str)
+            pid_ok = pid_existe(pid)
+        except Exception:
+            pid_ok = False
 
+    # 2) Verifica idade_conexao do túnel salvo
+    data_hora_conexao = extrair_data_hora_conexao(device_id)
+    now = int(time.time())
+    idade_conexao = (now - data_hora_conexao) if data_hora_conexao else None
+
+    # 3) Decide o que fazer
+    if not pid_ok:
+        # não tem PID válido rodando -> limpa e abre
+        puts("🔄 Sem túnel ativo (ou PID inválido). Reconectando acesso remoto…")
+        desconectar_tunel_antigo(device_id)
+        abrir_tunel(config, device)
+
+    else:
+        # PID ok rodando. Agora checa TTL
+        if idade_conexao is None:
+            puts("⚠️ Túnel ativo mas sem data_hora_conexao salvo. Mantendo por agora (próxima grava data_hora_conexao).")
+        elif idade_conexao >= refazer_conexao_em:
+            puts(f"⏱️ Túnel com {idade_conexao}s (>= {refazer_conexao_em}s). Reabrindo (rotacionar a cada 10 min)…")
+            desconectar_tunel_antigo(device_id)
+            abrir_tunel(config, device)
+        else:
+            puts(f"✅ Túnel ativo (PID {pid}) há {idade_conexao}s. Não precisa reconectar.")
+
+    # sempre imprime o comando (se você quiser só quando reconectar, dá pra ajustar)
     ssh_cmd = gerar_ssh_cmd(config)
     print("##################################################################")
     p_green("Acesse essa máquina com")
     p_green(ssh_cmd)
     print("##################################################################")
+
+
+# def ligar_acesso_remoto_dessa_maquina(config):
+#     ip_local = descobrir_meu_ip()
+#     if ip_local:
+#         puts(f"📡 IP local detectado: {ip_local}")
+#     else:
+#         p_red("❌ Não foi possível detectar um IP IPv4 válido.")
+
+#     porta = "22"
+
+#     host = f"{ip_local}"
+#     puts(f"🔐 Abrindo túnel SSH na porta {porta} para o device em {host}")
+
+#     # monta objeto como no shell
+#     device = {
+#         "id": 0,
+#         "codigo": "0",
+#         "host": ip_local,
+#         "port": porta
+#     }
+
+#     abrir_tunel(config, device)
+
+#     ssh_cmd = gerar_ssh_cmd(config)
+#     print("##################################################################")
+#     p_green("Acesse essa máquina com")
+#     p_green(ssh_cmd)
+#     print("##################################################################")
 
 
 def pid_existe(pid):
@@ -543,10 +751,10 @@ def abrir_tunel(config, dispositivo):
 
     # Evita criar novo túnel se já tiver um PID válido rodando
     if CONEXOES_FILE.exists():
-        with open(CONEXOES_FILE, 'r') as f:
+        with open(CONEXOES_FILE, 'r', encoding='utf-8', errors='replace') as f:
             for linha in f:
                 if f'device_id:{device_id}' in linha:
-                    pid = int(linha.split('pid:')[1].split('§§§§')[0])
+                    pid = int(linha.split('pid:')[1].split('---------')[0])
                     if pid_existe(pid):
                         puts(f"🔁 PID {pid} já ativo para device_id {device_id}. Reutilizando conexão.")
                         return
@@ -589,15 +797,6 @@ def abrir_tunel(config, dispositivo):
     ]
 
 
-
-    # Execução do processo
-    proc = subprocess.Popen(
-        comando_ssh,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        start_new_session=True  # funciona em Linux; no Windows é ignorado com segurança
-    )
 
     # puts("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     # puts("PEM_FILE")
@@ -804,7 +1003,14 @@ def processar_dispositivos(dispositivos, dispositivos_rede, config):
 
 
 
-        ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
+        ip = dispositivo.get('ip') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
+
+        # ip = dispositivo.get('host') or buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede)
+        # ip =  buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede) or dispositivo.get('ip')
+        # ip =  buscar_ip_por_mac(mac1, dispositivos_rede) or buscar_ip_por_mac(mac2, dispositivos_rede) or dispositivo.get('host')
+
+
+
         if not ip:
             p_yellow(f"❌ Dispositivo #{codigo} sem IP conhecido.")
             continue
@@ -839,7 +1045,7 @@ def main():
 
 
     puts("Abrir ssh pra esse próprio device")
-    abrir_ssh_desse_device(config)
+    ligar_acesso_remoto_dessa_maquina(config)
 
     dispositivos_rede = executar_varredura()
 
