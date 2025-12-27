@@ -356,7 +356,9 @@ def salvar_conexao(pid, device_id, host, port):
     with open(CONEXOES_FILE, 'w', encoding='utf-8', newline='\n') as f:
         f.writelines(linhas_novas)
 
-def extrair_data_hora_conexao(device_id) -> int | None:
+from typing import Optional
+
+def extrair_data_hora_conexao(device_id) -> Optional[int]:
     v = extrair_campo_conexao(device_id, "data_hora_conexao")
     if not v:
         return None
@@ -364,7 +366,6 @@ def extrair_data_hora_conexao(device_id) -> int | None:
         return int(v)
     except Exception:
         return None
-
 
 
 # def salvar_conexao(pid, device_id, host, port):
