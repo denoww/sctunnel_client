@@ -14,6 +14,7 @@ import time
 import tempfile
 import shutil
 import stat
+import uuid
 
 from ipaddress import IPv4Address, IPv4Interface
 
@@ -988,12 +989,24 @@ def executar_varredura():
     return dispositivos
 
 
-import json
+
+
+def get_macs_do_device_executor():
+    mac = uuid.getnode()
+    return ':'.join(f"{(mac >> ele) & 0xff:02x}" for ele in range(40, -1, -8))
+
 
 def consultar_erp(dispositivos_rede, config):
     puts("consultar_erp...")
-    macs = sorted({d['mac'] for d in dispositivos_rede})
-    mac_str = ','.join(macs)
+
+    # macs = sorted({d['mac'] for d in dispositivos_rede})
+    # mac_str = ','.join(macs)
+
+    # 🔹 Pega apenas o MAC do dispositivo executor
+    local_mac = get_macs_do_device_executor()
+    mac_str = local_mac  # mantém formato string, separado por vírgula (só um)
+
+
     varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
     cliente_id = get_cliente_id(config)
