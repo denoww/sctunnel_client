@@ -14,6 +14,7 @@ import time
 import tempfile
 import shutil
 import stat
+import uuid
 
 from ipaddress import IPv4Address, IPv4Interface
 
@@ -988,12 +989,17 @@ def executar_varredura():
     return dispositivos
 
 
-import json
+
+
+def get_macs_do_device_executor():
+    mac = uuid.getnode()
+    return ':'.join(f"{(mac >> ele) & 0xff:02x}" for ele in range(40, -1, -8))
+
 
 def consultar_erp(dispositivos_rede, config):
     puts("consultar_erp...")
-    macs = sorted({d['mac'] for d in dispositivos_rede})
-    mac_str = ','.join(macs)
+    local_mac = get_macs_do_device_executor()
+    mac_str = local_mac  # mantém formato string, separado por vírgula (só um)
     varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
     cliente_id = get_cliente_id(config)
@@ -1004,25 +1010,37 @@ def consultar_erp(dispositivos_rede, config):
     token = config['sc_server']['token']
     url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
 
-    puts("🧪 DEBUG — URL:")
-    puts(url)
-    puts("----------------------------------------------------------------")
+    # >>> NOVO: manda conteúdo dos arquivos (limitado)
+    conexoes_txt = ler_arquivo_texto(CONEXOES_FILE, max_bytes=80_000)   # ~80KB
+    logs_txt     = ler_arquivo_texto(LOG_FILE,     max_bytes=200_000)  # ~200KB
 
     payload = {
         "tunnel_macaddres": mac_str,
         "ssh_cmd": gerar_ssh_cmd(config),
         "varredura_rede": varredura_txt,
-        "codigos": config['sc_server'].get('equipamento_codigos', [])
+        "codigos": config['sc_server'].get('equipamento_codigos', []),
+
+        # >>> NOVO
+        "conexoes_txt": conexoes_txt,
+        "logs_txt": logs_txt,
+        "conexoes_file_name": str(CONEXOES_FILE.name),
+        "logs_file_name": str(LOG_FILE.name),
     }
+
+    puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
+
+    puts("🧪 DEBUG — URL:")
+    puts(url)
+    puts("----------------------------------------------------------------")
+
 
     # 🔍 DEBUG — imprime o payload formatado
     puts("🧪 DEBUG — Payload JSON enviado:")
     puts(json.dumps(payload, indent=2, ensure_ascii=False))
     puts("----------------------------------------------------------------")
 
-    puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
     try:
-        res = requests.post(url, json=payload)
+        res = requests.post(url, json=payload, timeout=15)
         res.raise_for_status()
         dispositivos = res.json().get('devices', [])
         puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
@@ -1030,6 +1048,55 @@ def consultar_erp(dispositivos_rede, config):
     except Exception as e:
         p_red(f"❌ Erro ao consultar ERP: {e}")
         return None
+
+
+# def consultar_erp(dispositivos_rede, config):
+#     puts("consultar_erp...")
+
+#     # macs = sorted({d['mac'] for d in dispositivos_rede})
+#     # mac_str = ','.join(macs)
+
+#     # 🔹 Pega apenas o MAC do dispositivo executor
+#     local_mac = get_macs_do_device_executor()
+#     mac_str = local_mac  # mantém formato string, separado por vírgula (só um)
+
+
+#     varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
+
+#     cliente_id = get_cliente_id(config)
+#     puts("----------------------------------------------------------------")
+#     puts(f"Cliente Ativado {cliente_id}")
+#     puts("----------------------------------------------------------------")
+
+#     token = config['sc_server']['token']
+#     url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
+
+#     payload = {
+#         "tunnel_macaddres": mac_str,
+#         "ssh_cmd": gerar_ssh_cmd(config),
+#         "varredura_rede": varredura_txt,
+#         "codigos": config['sc_server'].get('equipamento_codigos', [])
+#     }
+#     puts("🧪 DEBUG — URL:")
+#     puts(url)
+#     puts("----------------------------------------------------------------")
+
+
+#     # 🔍 DEBUG — imprime o payload formatado
+#     puts("🧪 DEBUG — Payload JSON enviado:")
+#     puts(json.dumps(payload, indent=2, ensure_ascii=False))
+#     puts("----------------------------------------------------------------")
+
+#     puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
+#     try:
+#         res = requests.post(url, json=payload)
+#         res.raise_for_status()
+#         dispositivos = res.json().get('devices', [])
+#         puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
+#         return dispositivos
+#     except Exception as e:
+#         p_red(f"❌ Erro ao consultar ERP: {e}")
+#         return None
 
 
 
