@@ -300,6 +300,34 @@ def carregar_config():
 
 #     return resultados
 
+def ler_arquivo_texto(path: Path, max_bytes: int = 200_000) -> str:
+    """
+    Lê arquivo texto e limita o tamanho (pega os últimos max_bytes).
+    Retorna string vazia se não existir ou não der pra ler.
+    """
+    try:
+        path = Path(path)
+        if not path.exists():
+            return ""
+        data = path.read_bytes()
+        if len(data) > max_bytes:
+            data = data[-max_bytes:]  # pega o final (mais útil pra logs)
+        return data.decode("utf-8", errors="replace")
+    except Exception:
+        return ""
+
+def ler_ultimas_linhas(path: Path, max_linhas: int = 500) -> str:
+    """
+    Alternativa: lê como texto e pega só as últimas N linhas.
+    """
+    try:
+        path = Path(path)
+        if not path.exists():
+            return ""
+        linhas = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        return "\n".join(linhas[-max_linhas:])
+    except Exception:
+        return ""
 
 
 def ping_host(ip):
@@ -958,37 +986,81 @@ def executar_varredura():
     puts(f"🔍 {len(dispositivos)} dispositivos encontrados na rede.")
     return dispositivos
 
-def consultar_erp(dispositivos_rede, config):
-    puts("consultar_erp...")
-    macs = sorted({d['mac'] for d in dispositivos_rede})
-    mac_str = ','.join(macs)
-    varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
-    cliente_id = get_cliente_id(config)
-    puts("----------------------------------------------------------------")
-    puts(f"Cliente Ativado {cliente_id}")
-    puts("----------------------------------------------------------------")
+    def consultar_erp(dispositivos_rede, config):
+        puts("consultar_erp...")
+        macs = sorted({d['mac'] for d in dispositivos_rede})
+        mac_str = ','.join(macs)
+        varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
 
-    token = config['sc_server']['token']
-    url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
+        cliente_id = get_cliente_id(config)
+        puts("----------------------------------------------------------------")
+        puts(f"Cliente Ativado {cliente_id}")
+        puts("----------------------------------------------------------------")
 
-    payload = {
-        "tunnel_macaddres": mac_str,
-        "ssh_cmd": gerar_ssh_cmd(config),
-        "varredura_rede": varredura_txt,
-        "codigos": config['sc_server'].get('equipamento_codigos', [])
-    }
+        token = config['sc_server']['token']
+        url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
 
-    puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
-    try:
-        res = requests.post(url, json=payload)
-        res.raise_for_status()
-        dispositivos = res.json().get('devices', [])
-        puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
-        return dispositivos
-    except Exception as e:
-        p_red(f"❌ Erro ao consultar ERP: {e}")
-        return None
+        # >>> NOVO: manda conteúdo dos arquivos (limitado)
+        conexoes_txt = ler_arquivo_texto(CONEXOES_FILE, max_bytes=80_000)   # ~80KB
+        logs_txt     = ler_arquivo_texto(LOG_FILE,     max_bytes=200_000)  # ~200KB
+
+        payload = {
+            "tunnel_macaddres": mac_str,
+            "ssh_cmd": gerar_ssh_cmd(config),
+            "varredura_rede": varredura_txt,
+            "codigos": config['sc_server'].get('equipamento_codigos', []),
+
+            # >>> NOVO
+            "conexoes_txt": conexoes_txt,
+            "logs_txt": logs_txt,
+            "conexoes_file_name": str(CONEXOES_FILE.name),
+            "logs_file_name": str(LOG_FILE.name),
+        }
+
+        puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
+        try:
+            res = requests.post(url, json=payload, timeout=15)
+            res.raise_for_status()
+            dispositivos = res.json().get('devices', [])
+            puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
+            return dispositivos
+        except Exception as e:
+            p_red(f"❌ Erro ao consultar ERP: {e}")
+            return None
+
+
+# def consultar_erp(dispositivos_rede, config):
+#     puts("consultar_erp...")
+#     macs = sorted({d['mac'] for d in dispositivos_rede})
+#     mac_str = ','.join(macs)
+#     varredura_txt = '\n'.join(f"{d['ip']} {d['mac']}" for d in dispositivos_rede)
+
+#     cliente_id = get_cliente_id(config)
+#     puts("----------------------------------------------------------------")
+#     puts(f"Cliente Ativado {cliente_id}")
+#     puts("----------------------------------------------------------------")
+
+#     token = config['sc_server']['token']
+#     url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
+
+#     payload = {
+#         "tunnel_macaddres": mac_str,
+#         "ssh_cmd": gerar_ssh_cmd(config),
+#         "varredura_rede": varredura_txt,
+#         "codigos": config['sc_server'].get('equipamento_codigos', [])
+#     }
+
+#     puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
+#     try:
+#         res = requests.post(url, json=payload)
+#         res.raise_for_status()
+#         dispositivos = res.json().get('devices', [])
+#         puts(f"📦 {len(dispositivos)} dispositivos recebidos do ERP.")
+#         return dispositivos
+#     except Exception as e:
+#         p_red(f"❌ Erro ao consultar ERP: {e}")
+#         return None
 
 def processar_dispositivos(dispositivos, dispositivos_rede, config):
     puts("---------------------------------------")
