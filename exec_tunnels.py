@@ -988,6 +988,8 @@ def executar_varredura():
     return dispositivos
 
 
+import json
+
 def consultar_erp(dispositivos_rede, config):
     puts("consultar_erp...")
     macs = sorted({d['mac'] for d in dispositivos_rede})
@@ -1002,8 +1004,7 @@ def consultar_erp(dispositivos_rede, config):
     token = config['sc_server']['token']
     url = f"{config['sc_server']['host']}/portarias/get_tunnel_devices.json?token={token}&cliente_id={cliente_id}"
 
-    # 🔍 DEBUG: imprime a URL do GET para copiar e colar
-    puts("🧪 DEBUG — URL GET para teste manual:")
+    puts("🧪 DEBUG — URL:")
     puts(url)
     puts("----------------------------------------------------------------")
 
@@ -1014,15 +1015,9 @@ def consultar_erp(dispositivos_rede, config):
         "codigos": config['sc_server'].get('equipamento_codigos', [])
     }
 
-    # 🔍 DEBUG: opcional — imprime curl equivalente
-    curl_cmd = (
-        f"curl -X POST '{url}' "
-        f"-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(payload)}'"
-    )
-
-    puts("🧪 DEBUG — curl equivalente:")
-    puts(curl_cmd)
+    # 🔍 DEBUG — imprime o payload formatado
+    puts("🧪 DEBUG — Payload JSON enviado:")
+    puts(json.dumps(payload, indent=2, ensure_ascii=False))
     puts("----------------------------------------------------------------")
 
     puts("🔗 Consultando ERP para obter dispositivos com túnel ativo...")
@@ -1035,6 +1030,7 @@ def consultar_erp(dispositivos_rede, config):
     except Exception as e:
         p_red(f"❌ Erro ao consultar ERP: {e}")
         return None
+
 
 
 
