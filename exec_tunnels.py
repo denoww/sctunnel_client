@@ -1050,6 +1050,7 @@ def consultar_erp(dispositivos_rede, config):
         return None
 
 
+
 # def consultar_erp(dispositivos_rede, config):
 #     puts("consultar_erp...")
 
