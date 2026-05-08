@@ -5,7 +5,7 @@
 **2.** Faça login:
 
 - usuário: `orangepi`
-- senha: `***REMOVED***`
+- senha: peça pro instalador
 
 **3.** Rode (substitua `<cliente_id>`):
 
