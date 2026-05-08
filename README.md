@@ -6,7 +6,9 @@
 
 No Claude Code, dentro deste repo, mande:
 
-> `ache todos orangepi da rede e instale no cliente <id>`
+```text
+ache todos orangepi da rede e instale no cliente <id>
+```
 
 Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
 
