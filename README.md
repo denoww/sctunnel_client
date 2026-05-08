@@ -12,6 +12,24 @@ ache todos orangepi da rede e instale no cliente <id>
 
 Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
 
+## 🛠️ Build & deploy do `install.sh` (mantenedor)
+
+Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600).
+
+Comando manual:
+
+```bash
+bash v2/build.sh && bash v2/upload.sh
+```
+
+Pelo Claude Code, dentro deste repo:
+
+```text
+faz novo build e sobe
+```
+
+Playbook em [`CLAUDE.md`](CLAUDE.md). Detalhes em [`v2/README.md`](v2/README.md).
+
 ## 📥 Instalar (manual, 1 máquina)
 
 ```bash
@@ -61,16 +79,6 @@ Rodar manualmente:
 ```bash
 sudo /opt/sctunnel/run.sh
 ```
-
-## 🛠️ Build (mantenedor)
-
-Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600).
-
-```bash
-bash v2/build.sh && bash v2/upload.sh
-```
-
-Detalhes em [`v2/README.md`](v2/README.md).
 
 ---
 

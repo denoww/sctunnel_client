@@ -58,3 +58,32 @@ Variantes aceitas: "instala em todos os orangepi", "rode o instalador em todos o
 - Se nenhum Orange Pi for encontrado, ainda assim mostrar o resumo dizendo "0 hosts elegíveis" e listar os candidatos descartados — ajuda a debugar heurística.
 - Se um Orange Pi já tiver a v2 instalada, `install.sh` é idempotente — re-rodar atualiza versão sem quebrar conexões existentes (cliente_id é reescrito, túneis preservados via `conexoes.txt`).
 - Para parar tudo antes de reinstalar (limpeza completa): `curl -fsSL https://sctunnel1.seucondominio.com.br/uninstall.sh | sudo bash`.
+
+## Comando: "faz novo build e sobe"
+
+Variantes aceitas: "novo build", "rebuilda", "build e sobe", "atualiza o instalador", "atualiza o install.sh", "deploya", "publica nova versão".
+
+### Passos
+
+1. **Validar pré-requisitos.** Confirmar que `~/scTunnel.pem` existe e `~/.sctunnel/token` é legível. Se faltar algum, abortar com mensagem clara dizendo o que falta e como gerar (token: `printf '%s' '<TOKEN>' > ~/.sctunnel/token && chmod 600 ~/.sctunnel/token`).
+
+2. **Build local.** Rodar `bash v2/build.sh` e mostrar as 3 últimas linhas do output (incluem `payload size`, `version`, `OK -> ... bytes`). Falha → reportar e parar.
+
+3. **Upload.** Rodar `bash v2/upload.sh` e mostrar últimas linhas (que incluem `HTTP 200 — N bytes` pra `install.sh` e `uninstall.sh`). Falha → reportar e parar.
+
+4. **Verificação externa.** `curl -sI https://sctunnel1.seucondominio.com.br/install.sh | head -3` pra confirmar HTTP 200 e tamanho. Confirmar que o tamanho remoto bate com o tamanho de `v2/dist/install.sh` (`wc -c`).
+
+5. **Resumo final.** Imprimir bloco com build version (timestamp), tamanho do `install.sh`, URL pública, e o comando 1-liner pra instalar (`curl ... | sudo bash -s -- <id>`). Se o usuário pediu também pra testar (frase contém "testa", "valida no orangepi", etc.), seguir pra próxima etapa.
+
+6. **Teste opcional no Orange Pi.** Só executar se solicitado. Pegar 1 Orange Pi conhecido (preferir o `192.168.15.131`) e rodar o instalador via SSH com cliente_id atual (ler `cat /opt/sctunnel/cliente.txt` antes pra preservar). Mostrar tail do `tunnels.log` por 5s.
+
+### Segurança
+
+- **NUNCA** commitar `v2/dist/install.sh` (`.gitignore` já cobre, mas verificar com `git status` antes de qualquer commit relacionado).
+- **NUNCA** logar conteúdo do PEM ou do token na conversa nem em arquivos.
+
+### Pré-requisitos no host do mantenedor
+
+- `~/scTunnel.pem` (chave SSH dos túneis e do `ubuntu@sctunnel1`).
+- `~/.sctunnel/token` (chmod 600) com o `PORTARIA_SERVER_SALT`.
+- Conectividade ao DNS público `sctunnel1.seucondominio.com.br` (a EC2 us-east-1).
