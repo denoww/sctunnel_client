@@ -2,14 +2,23 @@
 
 > Linux (v2) abaixo. Windows (v1) mais embaixo.
 
-## 💾 Imagem do SD Card
+## 💾 Gravar SD Card (Orange Pi novo)
 
-Antes de instalar, grave o sistema operacional no cartão SD do Orange Pi:
+**1. Baixar a imagem:**
 
-- **Orange Pi 3 LTS** → [pasta no Google Drive](https://drive.google.com/drive/folders/1ctuKgHNN9r517tiAv9GGGaR7UYQgZiXP) → baixe `Orangepi3-lts_3.0.8_debian_bullseye_server_linux` (394 MB, Debian 11 sem GUI)
-- **Orange Pi 3B** → [pasta no Google Drive](https://drive.google.com/drive/folders/1-mcXPDx1QpE9ZI8oTivmJ1Nd5HfU5nFv) → baixe `Orangepi3b_1.0.8_debian_bookworm_server_linux` (729 MB, Debian 12 sem GUI)
+- **Orange Pi 3 LTS** → [Google Drive](https://drive.google.com/drive/folders/1ctuKgHNN9r517tiAv9GGGaR7UYQgZiXP) → `Orangepi3-lts_3.0.8_debian_bullseye_server_linux` (394 MB)
+- **Orange Pi 3B** → [Google Drive](https://drive.google.com/drive/folders/1-mcXPDx1QpE9ZI8oTivmJ1Nd5HfU5nFv) → `Orangepi3b_1.0.8_debian_bookworm_server_linux` (729 MB)
 
-Grave no SD com [balenaEtcher](https://etcher.balena.io/) ou Rufus, plugue no Orange Pi e ligue.
+**2. Baixar o gravador:** [balenaEtcher](https://etcher.balena.io/) (Windows / Mac / Linux).
+
+**3. Gravar:**
+
+1. Plugue o SD card (mín. 8 GB) no PC.
+2. Abra o balenaEtcher → **Flash from file** → escolha o `.img.xz` baixado.
+3. **Select target** → escolha o SD card (confira a letra/tamanho — se errar, formata seu HD).
+4. **Flash!** → espera ~3 min.
+
+**4. Bootar:** retira o SD do PC, encaixa no Orange Pi, liga na tomada. Espera 1-2 min pra subir, depois rode no Claude Code: `ache todos orangepi da rede e instale no cliente <id>`.
 
 ## 🤖 Frota Orange Pi (via Claude)
 
