@@ -33,6 +33,14 @@ Variantes aceitas: "instala em todos os orangepi", "rode o instalador em todos o
 
    Linhas: uma por candidato (incluir os descartados com motivo em "Notas"). Status: `✅ instalado`, `⚠️ skip` (não-orangepi), `❌ falhou` (com erro curto).
 
+7. **Comandos de log por SSH.** Após a tabela, sob o título "📡 Ver logs por SSH", imprimir um bloco de código (uma linha por device instalado), no formato:
+
+   ```bash
+   ssh orangepi@<ip> 'sudo tail -f /opt/sctunnel/logs/tunnels.log'
+   ```
+
+   Cada linha em seu próprio fenced code block (pra GitHub render botão de copiar). Se nenhum device foi instalado, omitir esta seção.
+
 ### Segurança
 
 - **NUNCA** colocar a senha do Orange Pi neste arquivo nem em qualquer arquivo dentro do repo. Ela vive em `~/.sctunnel/orangepi_password` (chmod 600), fora do versionamento.
