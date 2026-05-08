@@ -2,7 +2,15 @@
 
 > Linux (v2) abaixo. Windows (v1) mais embaixo.
 
-## 📥 Instalar
+## 🤖 Frota Orange Pi (via Claude)
+
+No Claude Code, dentro deste repo, mande:
+
+> `ache todos orangepi da rede e instale no cliente <id>`
+
+Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
+
+## 📥 Instalar (manual, 1 máquina)
 
 ```bash
 curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- <cliente_id>
@@ -61,14 +69,6 @@ bash v2/build.sh && bash v2/upload.sh
 ```
 
 Detalhes em [`v2/README.md`](v2/README.md).
-
-## 🤖 Frota Orange Pi (via Claude)
-
-No Claude Code, dentro deste repo, mande:
-
-> `ache todos orangepi da rede e instale no cliente <id>`
-
-Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
 
 ---
 
