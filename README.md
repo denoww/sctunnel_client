@@ -1,6 +1,16 @@
 # 📡 sctunnel_client
 
+## 🚀 Instalação rápida (Linux — v2)
 
+```bash
+curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- <cliente_id>
+```
+
+Exemplo: `curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- 51`
+
+Instala em `/opt/sctunnel/`, cria o comando global `set_cliente`, agenda no cron e abre os túneis. Para trocar de cliente depois: `sudo set_cliente <novo_id>`.
+
+---
 
 ## testar com python + linux
 

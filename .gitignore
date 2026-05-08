@@ -16,3 +16,6 @@ log_cron.txt
 # Ignorar arquivos .log em qualquer lugar do projeto
 /logs
 *.log
+
+# v2: artefato de build contém PEM + token embutidos — NUNCA commitar
+v2/dist/
