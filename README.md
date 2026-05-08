@@ -2,15 +2,24 @@
 
 > Linux (v2) abaixo. Windows (v1) mais embaixo.
 
-## 🤖 Frota Orange Pi (via Claude)
+## 🤖 Comandos do Claude Code
 
-No Claude Code, dentro deste repo, mande:
+Dentro deste repo, abra o Claude Code e mande uma das frases. Playbooks completos em [`CLAUDE.md`](CLAUDE.md).
 
-```text
-ache todos orangepi da rede e instale no cliente <id>
+| Comando | O que faz | Pré-req |
+|---|---|---|
+| `ache todos orangepi da rede e instale no cliente <id>` | Varre a sub-rede, identifica Orange Pis e roda o `install.sh` em todos. | `~/.sctunnel/orangepi_password` (chmod 600) |
+| `clona o cartão` | Com 2 pendrives plugados (Orange Pi + em branco), gera clone bootável no segundo, preservando U-Boot e UUID. | destino ≥ 4 GB real (cuidado com flash falso: `apt install f3` + `sudo f3probe --destructive --time-ops /dev/sdX`) |
+| `faz novo build e sobe` | Build local do `install.sh` v2 e upload pro servidor `sctunnel1`. | `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600) |
+
+Equivalentes diretos por terminal (sem Claude):
+
+```bash
+bash clone_cartao.sh                       # auto-detecta fonte e destino
+bash v2/build.sh && bash v2/upload.sh      # build & upload do install.sh
 ```
 
-Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
+Flags do `clone_cartao.sh`: `--src /dev/sdX`, `--dst /dev/sdY`, `--img ~/orangepi.img`, `--yes`.
 
 ## 💾 Gravar SD Card (Orange Pi novo)
 
@@ -28,25 +37,17 @@ Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` 
 3. **Select target** → escolha o SD card (confira a letra/tamanho — se errar, formata seu HD).
 4. **Flash!** → espera ~3 min.
 
-**4. Bootar:** retira o SD do PC, encaixa no Orange Pi, liga na tomada. Espera 1–2 min pra subir, depois rode no Claude Code: `ache todos orangepi da rede e instale no cliente <id>`.
+**4. Bootar:** retira o SD do PC, encaixa no Orange Pi, liga na tomada. Espera 1–2 min pra subir, depois roda o comando do Claude Code (ver tabela acima) pra detectar e instalar.
 
 ## 🛠️ Build & deploy do `install.sh` (mantenedor)
 
-Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600).
-
-Comando manual:
+Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600). Detalhes em [`v2/README.md`](v2/README.md).
 
 ```bash
 bash v2/build.sh && bash v2/upload.sh
 ```
 
-Pelo Claude Code, dentro deste repo:
-
-```text
-faz novo build e sobe
-```
-
-Playbook em [`CLAUDE.md`](CLAUDE.md). Detalhes em [`v2/README.md`](v2/README.md).
+(Ou usa o comando `faz novo build e sobe` no Claude Code — ver tabela no topo.)
 
 ## 📥 Instalar (manual, 1 máquina)
 
