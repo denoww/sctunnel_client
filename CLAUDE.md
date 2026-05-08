@@ -36,10 +36,10 @@ Variantes aceitas: "instala em todos os orangepi", "rode o instalador em todos o
 7. **Comandos de log por SSH.** Após a tabela, sob o título "📡 Ver logs por SSH", imprimir um bloco de código (uma linha por device instalado), no formato:
 
    ```bash
-   ssh orangepi@<ip> 'sudo tail -f /opt/sctunnel/logs/tunnels.log'
+   ssh orangepi@<ip> 'tail -f /opt/sctunnel/logs/tunnels.log'
    ```
 
-   Cada linha em seu próprio fenced code block (pra GitHub render botão de copiar). Se nenhum device foi instalado, omitir esta seção.
+   **Sem `sudo`** — `tunnels.log` e `cron.log` são criados com modo 644 (umask 022 herdado do cron rodando como root), legíveis por qualquer usuário. Usar `sudo` quebra: ssh sem `-t` não aloca TTY e o sudo aborta com `a terminal is required`. Cada linha em seu próprio fenced code block (pra GitHub render botão de copiar). Se nenhum device foi instalado, omitir esta seção.
 
 ### Segurança
 
