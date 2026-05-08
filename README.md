@@ -61,6 +61,16 @@ bash v2/upload.sh   # scp install.sh + uninstall.sh -> sctunnel1:/var/www/sctunn
 
 Detalhes adicionais (env vars, troubleshooting do servidor, layout do diretório) em [`v2/README.md`](v2/README.md).
 
+## 🤖 Instalar em todos os Orange Pi da rede (via Claude)
+
+Abra Claude Code dentro deste repositório e mande exatamente:
+
+> **"ache todos orangepi da rede e instale no cliente \<id\>"**
+
+Exemplo: `ache todos orangepi da rede e instale no cliente 6353`.
+
+O Claude segue o playbook em [`CLAUDE.md`](CLAUDE.md): varre a sub-rede local, identifica os Orange Pi por heurística de MAC + confirma via SSH, roda o `install.sh` em cada um, e ao final imprime uma tabela com IP / hostname / modelo / status. Pré-requisito local: `~/.sctunnel/orangepi_password` (chmod 600) com a senha SSH dos Orange Pi.
+
 ---
 
 ## testar com python + linux
