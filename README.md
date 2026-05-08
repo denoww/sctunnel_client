@@ -1,6 +1,6 @@
 # 📡 sctunnel_client
 
-> Linux (v2) — comandos diretos abaixo. Windows (v1) continua mais embaixo neste README.
+> Linux (v2) abaixo. Windows (v1) mais embaixo.
 
 ## 📥 Instalar
 
@@ -8,11 +8,7 @@
 curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- <cliente_id>
 ```
 
-Exemplo: `curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- 51`
-
-Instala em `/opt/sctunnel/`, cria o comando global `set_cliente`, agenda no cron e abre os túneis.
-
-Para trocar de cliente sem reinstalar:
+Trocar cliente:
 
 ```bash
 sudo set_cliente <novo_id>
@@ -24,52 +20,55 @@ sudo set_cliente <novo_id>
 curl -fsSL https://sctunnel1.seucondominio.com.br/uninstall.sh | sudo bash
 ```
 
-Remove `/opt/sctunnel/`, o cron, o comando `set_cliente` e mata todos os túneis SSH.
+## 📜 Logs
 
-## 📜 Ver logs (após instalação)
+Runtime:
 
 ```bash
-# log do runtime (cada execução do cron)
 sudo tail -f /opt/sctunnel/logs/tunnels.log
+```
 
-# log bruto do cron (stdout/stderr de cada disparo */1min)
+Cron bruto:
+
+```bash
 sudo tail -f /opt/sctunnel/logs/cron.log
+```
 
-# túneis SSH ativos
+Túneis SSH ativos:
+
+```bash
 ps -eo pid,cmd | grep "ssh -N" | grep -v grep
+```
 
-# estado salvo das conexões (PIDs e portas remotas)
+Estado das conexões:
+
+```bash
 sudo cat /opt/sctunnel/conexoes.txt
+```
 
-# rodar manualmente fora do cron
+Rodar manualmente:
+
+```bash
 sudo /opt/sctunnel/run.sh
 ```
 
 ## 🛠️ Build (mantenedor)
 
-Pré-requisitos na máquina do mantenedor:
-
-- `~/scTunnel.pem` (chave SSH usada pelos túneis)
-- `~/.sctunnel/token` (chmod 600, contém o `PORTARIA_SERVER_SALT`) — ou env `SCTUNNEL_TOKEN`
-
-Gerar e publicar nova versão do `install.sh`:
+Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600).
 
 ```bash
-bash v2/build.sh    # gera v2/dist/install.sh com PEM + token + código embutidos
-bash v2/upload.sh   # scp install.sh + uninstall.sh -> sctunnel1:/var/www/sctunnel/
+bash v2/build.sh && bash v2/upload.sh
 ```
 
-Detalhes adicionais (env vars, troubleshooting do servidor, layout do diretório) em [`v2/README.md`](v2/README.md).
+Detalhes em [`v2/README.md`](v2/README.md).
 
-## 🤖 Instalar em todos os Orange Pi da rede (via Claude)
+## 🤖 Frota Orange Pi (via Claude)
 
-Abra Claude Code dentro deste repositório e mande exatamente:
+No Claude Code, dentro deste repo, mande:
 
-> **"ache todos orangepi da rede e instale no cliente \<id\>"**
+> `ache todos orangepi da rede e instale no cliente <id>`
 
-Exemplo: `ache todos orangepi da rede e instale no cliente 6353`.
-
-O Claude segue o playbook em [`CLAUDE.md`](CLAUDE.md): varre a sub-rede local, identifica os Orange Pi por heurística de MAC + confirma via SSH, roda o `install.sh` em cada um, e ao final imprime uma tabela com IP / hostname / modelo / status. Pré-requisito local: `~/.sctunnel/orangepi_password` (chmod 600) com a senha SSH dos Orange Pi.
+Playbook em [`CLAUDE.md`](CLAUDE.md). Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
 
 ---
 
