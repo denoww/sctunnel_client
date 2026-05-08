@@ -26,12 +26,16 @@ faz novo build e sobe
 
 Equivalentes diretos por terminal (sem Claude):
 
-```bash
-bash clone_cartao.sh                       # auto-detecta fonte e destino
-```
+Clonar pendrive (auto-detecta fonte e destino):
 
 ```bash
-bash v2/build.sh && bash v2/upload.sh      # build & upload do install.sh
+bash clone_cartao.sh
+```
+
+Build & upload do `install.sh`:
+
+```bash
+bash v2/build.sh && bash v2/upload.sh
 ```
 
 Flags do `clone_cartao.sh`: `--src /dev/sdX`, `--dst /dev/sdY`, `--img ~/orangepi.img`, `--yes`.
