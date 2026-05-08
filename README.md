@@ -1,6 +1,8 @@
 # 📡 sctunnel_client
 
-## 🚀 Instalação rápida (Linux — v2)
+> Linux (v2) — comandos diretos abaixo. Windows (v1) continua mais embaixo neste README.
+
+## 📥 Instalar
 
 ```bash
 curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- <cliente_id>
@@ -8,7 +10,56 @@ curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- <
 
 Exemplo: `curl -fsSL https://sctunnel1.seucondominio.com.br/install.sh | sudo bash -s -- 51`
 
-Instala em `/opt/sctunnel/`, cria o comando global `set_cliente`, agenda no cron e abre os túneis. Para trocar de cliente depois: `sudo set_cliente <novo_id>`.
+Instala em `/opt/sctunnel/`, cria o comando global `set_cliente`, agenda no cron e abre os túneis.
+
+Para trocar de cliente sem reinstalar:
+
+```bash
+sudo set_cliente <novo_id>
+```
+
+## 🗑️ Desinstalar
+
+```bash
+curl -fsSL https://sctunnel1.seucondominio.com.br/uninstall.sh | sudo bash
+```
+
+Remove `/opt/sctunnel/`, o cron, o comando `set_cliente` e mata todos os túneis SSH.
+
+## 📜 Ver logs (após instalação)
+
+```bash
+# log do runtime (cada execução do cron)
+sudo tail -f /opt/sctunnel/logs/tunnels.log
+
+# log bruto do cron (stdout/stderr de cada disparo */1min)
+sudo tail -f /opt/sctunnel/logs/cron.log
+
+# túneis SSH ativos
+ps -eo pid,cmd | grep "ssh -N" | grep -v grep
+
+# estado salvo das conexões (PIDs e portas remotas)
+sudo cat /opt/sctunnel/conexoes.txt
+
+# rodar manualmente fora do cron
+sudo /opt/sctunnel/run.sh
+```
+
+## 🛠️ Build (mantenedor)
+
+Pré-requisitos na máquina do mantenedor:
+
+- `~/scTunnel.pem` (chave SSH usada pelos túneis)
+- `~/.sctunnel/token` (chmod 600, contém o `PORTARIA_SERVER_SALT`) — ou env `SCTUNNEL_TOKEN`
+
+Gerar e publicar nova versão do `install.sh`:
+
+```bash
+bash v2/build.sh    # gera v2/dist/install.sh com PEM + token + código embutidos
+bash v2/upload.sh   # scp install.sh + uninstall.sh -> sctunnel1:/var/www/sctunnel/
+```
+
+Detalhes adicionais (env vars, troubleshooting do servidor, layout do diretório) em [`v2/README.md`](v2/README.md).
 
 ---
 
