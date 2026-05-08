@@ -36,7 +36,7 @@ bash v2/build.sh && bash v2/upload.sh      # build & upload do install.sh
 
 Flags do `clone_cartao.sh`: `--src /dev/sdX`, `--dst /dev/sdY`, `--img ~/orangepi.img`, `--yes`.
 
-## 💾 Gravar SD Card (Orange Pi novo)
+## 💾 Criando o primeiro pen drive
 
 **1. Baixar a imagem:**
 
