@@ -4,18 +4,33 @@
 
 ## 🤖 Comandos do Claude Code
 
-Dentro deste repo, abra o Claude Code e mande uma das frases. Playbooks completos em [`CLAUDE.md`](CLAUDE.md).
+Dentro deste repo, abra o Claude Code e mande uma das frases abaixo. Playbooks completos em [`CLAUDE.md`](CLAUDE.md).
 
-| Comando | O que faz | Pré-req |
-|---|---|---|
-| `ache todos orangepi da rede e instale no cliente <id>` | Varre a sub-rede, identifica Orange Pis e roda o `install.sh` em todos. | `~/.sctunnel/orangepi_password` (chmod 600) |
-| `clona o cartão` | Com 2 pendrives plugados (Orange Pi + em branco), gera clone bootável no segundo, preservando U-Boot e UUID. | destino ≥ 4 GB real (cuidado com flash falso: `apt install f3` + `sudo f3probe --destructive --time-ops /dev/sdX`) |
-| `faz novo build e sobe` | Build local do `install.sh` v2 e upload pro servidor `sctunnel1`. | `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600) |
+**Frota Orange Pi** — varre a sub-rede, identifica Orange Pis e roda `install.sh` em todos. Pré-req: `~/.sctunnel/orangepi_password` (chmod 600).
+
+```text
+ache todos orangepi da rede e instale no cliente <id>
+```
+
+**Clonar pendrive** — com 2 pendrives plugados (Orange Pi + em branco), gera clone bootável no segundo, preservando U-Boot e UUID. Pré-req: destino ≥ 4 GB **real** (flash falso é comum — valida com `apt install f3` + `sudo f3probe --destructive --time-ops /dev/sdX`).
+
+```text
+clona o cartão
+```
+
+**Build & deploy** — build local do `install.sh` v2 e upload pro servidor `sctunnel1`. Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600).
+
+```text
+faz novo build e sobe
+```
 
 Equivalentes diretos por terminal (sem Claude):
 
 ```bash
 bash clone_cartao.sh                       # auto-detecta fonte e destino
+```
+
+```bash
 bash v2/build.sh && bash v2/upload.sh      # build & upload do install.sh
 ```
 
