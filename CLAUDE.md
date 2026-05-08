@@ -100,30 +100,49 @@ Objetivo: a partir de um pendrive/SD com Orange Pi 3 LTS (origem) e um pendrive 
 
 ### Passos
 
-1. **Listar USBs.** `lsblk -dpo NAME,SIZE,TRAN | awk '$3=="usb"'` pra ver pendrives plugados.
+**Importante:** o script `clone_cartao.sh` **já faz toda a auto-detecção** (lsblk, leitura do sector 16 com sudo, validação de tamanho, prompt de confirmação). Claude **não deve** reimplementar essa lógica nem chamar `dd`/`sudo` via Bash tool — o Bash tool não tem TTY interativo, então sudo trava pedindo senha. O fluxo certo é:
 
-2. **Identificar fonte.** Pra cada USB, ler sector 16 (`sudo dd if=/dev/sdX bs=512 skip=16 count=1 | xxd`) — o que tiver a magic `eGON.BT0` (hex `65474f4e2e425430`) é o pendrive Orange Pi.
+1. **Listar USBs (sem sudo).** `lsblk -dpo NAME,SIZE,TRAN,MODEL | awk 'NR==1 || $3=="usb"'`. Confirmar visualmente que tem ao menos 2 pendrives plugados. Se só houver 1, pedir pro usuário plugar o segundo antes de seguir.
 
-3. **Identificar destino.** Outro USB qualquer com **capacidade real ≥ 4 GB**. Se houver suspeita de pendrive falsificado (capacidade declarada implausível, falha de write em poucos MB), validar com `sudo f3probe --destructive --time-ops /dev/sdX` (`apt install f3`).
+2. **Pedir pro usuário rodar o script no shell dele.** Não chamar via Bash tool. O `!` prefixa o comando no prompt do Claude Code com TTY interativo (sudo + `read` funcionam):
 
-4. **Resumo + confirmação.** Mostrar ao usuário: fonte (read-only), destino (será apagado), tamanho. Pedir confirmação ANTES de qualquer escrita.
+   ```text
+   ! bash clone_cartao.sh
+   ```
 
-5. **Executar.** `bash clone_cartao.sh --src /dev/sdX --dst /dev/sdY` (ou `bash clone_cartao.sh` se a auto-detecção for inequívoca). O script:
-   - monta a fonte read-only
-   - copia U-Boot dos sectors 16..8191
-   - cria partição no destino igual à eMMC do Orange Pi 3 LTS (start=8192, end=15106047, ~7.2 GB)
-   - `mkfs.ext4 -U <UUID_DA_FONTE>` no destino
-   - rsync `-aAXxH --numeric-ids` da fonte pro destino
-   - reescreve U-Boot no destino e verifica magic
+   Variantes úteis (mostrar ao usuário se aplicável):
+   - `! bash clone_cartao.sh --src /dev/sdX --dst /dev/sdY` — quando há ambiguidade na auto-detecção
+   - `! bash clone_cartao.sh --img ~/orangepi.img` — também exporta `.img` flashável no final
+   - `! bash clone_cartao.sh --yes` — pula a confirmação manual (uso scriptado)
 
-6. **Resultado.** Confirmar que `eGON.BT0` aparece no sector 16 do destino (o script já mostra). Imprimir comando final pra flashar em outro Orange Pi:
+3. **Aguardar saída do usuário.** O script:
+   - mostra resumo (fonte/destino/tamanhos) e pede `sim` pra confirmar
+   - pede senha de sudo 1× (TTY do usuário)
+   - copia U-Boot dos sectors 16..8191 da fonte
+   - cria partição no destino: start=8192, end=15106047 (~7.2 GB, igual à eMMC do Orange Pi 3 LTS)
+   - `mkfs.ext4 -U <UUID_DA_FONTE>` no destino (preserva UUID pro boot funcionar)
+   - rsync `-aAXxH --numeric-ids` da fonte (montada read-only) pro destino
+   - reescreve U-Boot no destino e mostra a magic `eGON.BT0` como verificação
+
+4. **Ler o resultado.** Quando o usuário colar a saída final do script, confirmar:
+   - `eGON.BT0` apareceu no sector 16 do destino → bootável
+   - `lsblk` final mostra a partição esperada
+   - Se o usuário pediu `.img`, confirmar tamanho gerado
+
+5. **Próximos passos opcionais.** Se o usuário pediu pra flashar em outro Orange Pi:
 
    ```bash
    sudo dd if=/dev/sdY of=~/orangepi-clone.img bs=4M count=1900   # 7.6 GB de imagem
    # depois balenaEtcher ou dd no SD/eMMC alvo
    ```
 
-   Se o usuário pediu `.img` direto, rodar `clone_cartao.sh --img ~/orangepi.img` (cria a imagem dentro do mesmo run).
+### Quando suspeitar de flash falsificado
+
+Se o destino tem capacidade declarada implausível (ex.: pendrive de R$ 20 com 256 GB) ou se o `dd` do script falhar com "no space left" antes de copiar tudo, é flash falso. Pedir pro usuário validar:
+
+```text
+! sudo apt install -y f3 && sudo f3probe --destructive --time-ops /dev/sdX
+```
 
 ### Segurança
 
