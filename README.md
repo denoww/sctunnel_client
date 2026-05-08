@@ -24,22 +24,6 @@ clona o cartão
 faz novo build e sobe
 ```
 
-Equivalentes diretos por terminal (sem Claude):
-
-Clonar pendrive (auto-detecta fonte e destino):
-
-```bash
-bash clone_cartao.sh
-```
-
-Build & upload do `install.sh`:
-
-```bash
-bash v2/build.sh && bash v2/upload.sh
-```
-
-Flags do `clone_cartao.sh`: `--src /dev/sdX`, `--dst /dev/sdY`, `--img ~/orangepi.img`, `--yes`.
-
 ## 💾 Criando o primeiro pen drive
 
 **1. Baixar a imagem:**
@@ -56,7 +40,17 @@ Flags do `clone_cartao.sh`: `--src /dev/sdX`, `--dst /dev/sdY`, `--img ~/orangep
 3. **Select target** → escolha o SD card (confira a letra/tamanho — se errar, formata seu HD).
 4. **Flash!** → espera ~3 min.
 
-**4. Bootar:** retira o SD do PC, encaixa no Orange Pi, liga na tomada. Espera 1–2 min pra subir, depois roda o comando do Claude Code (ver tabela acima) pra detectar e instalar.
+**4. Bootar:** retira o SD do PC, encaixa no Orange Pi, liga na tomada. Espera 1–2 min pra subir, depois roda o comando do Claude Code (ver topo) pra detectar e instalar.
+
+## 🧬 Clonar pendrive Orange Pi existente (manual)
+
+Duplica um pendrive/SD que já está rodando num Orange Pi pra outro pendrive — preservando U-Boot e UUID. Pré-req: 2 pendrives USB plugados (origem com Orange Pi + destino com ≥ 4 GB **real**).
+
+```bash
+bash clone_cartao.sh
+```
+
+Flags: `--src /dev/sdX`, `--dst /dev/sdY`, `--img ~/orangepi.img`, `--yes`. Playbook em [`CLAUDE.md`](CLAUDE.md).
 
 ## 🛠️ Build & deploy do `install.sh` (mantenedor)
 
@@ -66,7 +60,7 @@ Pré-req: `~/scTunnel.pem` e `~/.sctunnel/token` (chmod 600). Detalhes em [`v2/R
 bash v2/build.sh && bash v2/upload.sh
 ```
 
-(Ou usa o comando `faz novo build e sobe` no Claude Code — ver tabela no topo.)
+(Ou usa o comando `faz novo build e sobe` no Claude Code — ver topo.)
 
 ## 📥 Instalar (manual, 1 máquina)
 
