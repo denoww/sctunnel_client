@@ -2,6 +2,15 @@
 
 > Linux (v2) abaixo. Windows (v1) mais embaixo.
 
+## 💾 Imagem do SD Card
+
+Antes de instalar, grave o sistema operacional no cartão SD do Orange Pi:
+
+- **Orange Pi 3 LTS** → [pasta no Google Drive](https://drive.google.com/drive/folders/1ctuKgHNN9r517tiAv9GGGaR7UYQgZiXP) → baixe `Orangepi3-lts_3.0.8_debian_bullseye_server_linux` (394 MB, Debian 11 sem GUI)
+- **Orange Pi 3B** → [pasta no Google Drive](https://drive.google.com/drive/folders/1-mcXPDx1QpE9ZI8oTivmJ1Nd5HfU5nFv) → baixe `Orangepi3b_1.0.8_debian_bookworm_server_linux` (729 MB, Debian 12 sem GUI)
+
+Grave no SD com [balenaEtcher](https://etcher.balena.io/) ou Rufus, plugue no Orange Pi e ligue.
+
 ## 🤖 Frota Orange Pi (via Claude)
 
 No Claude Code, dentro deste repo, mande:
