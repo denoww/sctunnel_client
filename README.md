@@ -1,5 +1,7 @@
 # 📡 sctunnel_client
 
+> 👷 **Técnico instalando Orange Pi novo?** → [`INSTALADOR.md`](INSTALADOR.md)
+
 > Linux (v2) abaixo. Windows (v1) mais embaixo.
 
 ## 🤖 Comandos do Claude Code
