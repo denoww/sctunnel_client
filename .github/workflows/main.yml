@@ -1,9 +1,14 @@
+# ⛔ DESCONTINUADO 2026-06-14 — sctunnel substituído pelo turbgate.
+# Este workflow gerava o sctunnel_setup.exe (instalador Windows) e o publicava
+# como release pública `latest`. Foi DESATIVADO (gh workflow disable) e o asset
+# removido para impedir novas instalações de sctunnel no Windows. Use o turbgate:
+# https://turbgate.botbox.info/setup.exe . Mantido só para histórico.
 name: Build EXE no Windows
 run-name: ${{ github.workflow }} - ${{ github.actor }}
 
 on:
-  push:
-    branches: [ main ]
+  # Gatilhos removidos (era: push em main + workflow_dispatch). NÃO reativar:
+  # sctunnel está descontinuado. Veja README.
   workflow_dispatch:
 
 jobs:

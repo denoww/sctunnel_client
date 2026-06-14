@@ -1,8 +1,21 @@
 # 📡 sctunnel_client
 
-> 👷 **Técnico instalando Orange Pi novo?** → [`INSTALADOR.md`](INSTALADOR.md)
+> ## ⛔ DESCONTINUADO (2026-06-14) — use o **turbgate**
+>
+> O sctunnel foi substituído pelo **turbgate** (mTLS, token por cliente, multiplexado).
+> **Não faça novas instalações de sctunnel** — principalmente no Windows.
+>
+> - Instalador (todas plataformas): https://turbgate.botbox.info — Windows: `https://turbgate.botbox.info/setup.exe`
+> - O instalador Windows do sctunnel (`sctunnel_setup.exe`) foi **removido** e o workflow de build (`Build EXE no Windows`) está **desativado**.
+> - O ERP (`/portarias/get_tunnel_devices`) **bloqueia novas instalações** de sctunnel (freeze por `Cliente::Token` vs `PORTARIA_SERVER_SALT`). Equipamentos que já rodam continuam até migrarem.
+>
+> Conteúdo abaixo mantido apenas para referência dos equipamentos legados ainda não migrados.
 
-> Linux (v2) abaixo. Windows (v1) mais embaixo.
+---
+
+> 👷 **Técnico instalando Orange Pi novo?** → instale **turbgate**, não sctunnel.
+
+> Linux (v2) abaixo. Windows (v1) mais embaixo. *(legado — não usar para instalações novas)*
 
 ## 🤖 Comandos do Claude Code
 
